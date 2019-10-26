@@ -19,21 +19,26 @@
 <link rel="stylesheet" href=
 "https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
 
+<link rel="stylesheet" href="index.css" />
+
+</head>
 <body>
 <div class="app">
 
 <nav id="top_nav" class="nav-extended">
   <div class="nav-wrapper">
+    <div id="top_nav_search_bar">
+    </div>
     <a href="#" data-target="side_nav" class="sidenav-trigger">
       <i class="material-icons">menu</i>
     </a>
     <a class="brand-logo">MyClip</a>
     <ul class="right">
-      <li><a href="#"><i class="material-icons">search</i></a></li>
-      <li><a href="#"><i class="material-icons">sort</i></a></li>
+      <li><a id="top_nav_search_icon" href="#" class="waves-effect"><i class="material-icons">search</i></a></li>
+      <li><a href="#" class="waves-effect"><i class="material-icons">sort</i></a></li>
     </ul>
   </div>
-  <div class="nav-content col">
+  <div class="nav-content" style="display:none">
     <a href="#" class="btn-flat waves-effect">
       <i style="padding-top:5px;height:36px;line-height:normal;"
           class="large material-icons">keyboard_arrow_up</i>
@@ -61,6 +66,14 @@
 document.addEventListener("DOMContentLoaded", () => {
   let elems = document.querySelectorAll(".sidenav");
   M.Sidenav.init(elems, {});
+});
+
+window.addEventListener("load", () => {
+  const top_nav_search_bar = document.getElementById("top_nav_search_bar");
+  const top_nav_search_icon = document.getElementById("top_nav_search_icon");
+  top_nav_search_icon.addEventListener("click", e => {
+    top_nav_search_bar.classList.toggle("show");
+  });
 });
 </script>
 </body>

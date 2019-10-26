@@ -1,0 +1,22 @@
+
+
+#top_nav_search_bar {
+  width: calc(100%);
+  position: absolute;
+  z-index: 2;
+  display: none;
+  pointer-events: none;
+  background: white;
+}
+#top_nav_search_bar input {
+  height: 64px;
+  width: calc(100% - 4rem);
+}
+#top_nav_search_bar input:focus {
+  outline: none;
+}
+
+#top_nav_search_bar.show {
+  display: block;
+  pointer-events: all;
+}
