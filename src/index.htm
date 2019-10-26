@@ -10,58 +10,58 @@
 }
 :root, html, * {
   box-sizing: border-box;
+  user-select: none;
 }
 </style>
-<script
-    src="https://kit.fontawesome.com/45ac5d2477.js"
-    crossorigin="anonymous"></script>
-<!-- bootstrap css -->
 <link rel="stylesheet"
-    href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
-    crossorigin="anonymous" />
-</head>
-
-
+    href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<!-- materialize css -->
+<link rel="stylesheet" href=
+"https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
 
 <body>
 <div class="app">
-  <!--
-  https://getbootstrap.com/docs/4.3/components/navbar/#supported-content
-  -->
-  <nav class="navbar navbar-dark bg-primary">
-    <button class="navbar-toggler" type="button"
-        aria-controls="collapsable" aria-expanded="false"
-        aria-label="Toggle collapsable">
-      <i class="fas fa-bars"></i>
-    </button>
-    <div class="nav">
-      <a class="nav-link text-light" href="#home">Home</a>
-      <a class="nav-link text-light" href="#home"
-          data-toggle="collapse" data-target="#collapsable">
-        <i class="fas fa-sort"></i>
-      </a>
-    </div>
 
-    <div class="collapse navbar-collapse" id="collapsable">
-      <a class="nav-link text-light" href="#home">side nav</a>
-    </div>
-  </nav>
+<nav id="top_nav" class="nav-extended">
+  <div class="nav-wrapper">
+    <a href="#" data-target="side_nav" class="sidenav-trigger">
+      <i class="material-icons">menu</i>
+    </a>
+    <a class="brand-logo">MyClip</a>
+    <ul class="right">
+      <li><a href="#"><i class="material-icons">search</i></a></li>
+      <li><a href="#"><i class="material-icons">sort</i></a></li>
+    </ul>
+  </div>
+  <div class="nav-content col">
+    <a href="#" class="btn-flat waves-effect">
+      <i style="padding-top:5px;height:36px;line-height:normal;"
+          class="large material-icons">keyboard_arrow_up</i>
+    </a>
+    <span style="vertical-align:sub;font-size:1.5em">/</span>
+    <a href="#" style="padding:0 5px" class="btn-flat waves-effect">First</a>
+    <span style="vertical-align:sub;font-size:1.5em">/</span>
+    <a href="#" style="padding:0 5px" class="btn-flat waves-effect">Second</a>
+  </div>
+</nav>
+<ul id="side_nav" class="sidenav">
+  <li><a href="#!" class="sidenav-close">
+    <i class="material-icons">close</i></a>
+  </li>
+  <li>side nav item 1</li>
+  <li>side nav item 2</li>
+</ul>
 
-  <!--
-  https://bootstrapious.com/p/bootstrap-sidebar
-  -->
 </div>
-
-<!-- bootstrap javascript dependencies -->
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-    crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-    crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-    crossorigin="anonymous"></script>
+<!-- Compiled and minified JavaScript -->
+<script src=
+"https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"
+></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  let elems = document.querySelectorAll(".sidenav");
+  M.Sidenav.init(elems, {});
+});
+</script>
 </body>
 </html>
