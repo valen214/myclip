@@ -1,6 +1,46 @@
 
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.button:hover {
+  background: #aaa;
+  transition: background 0.2s;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**********************************************************
+
+
+
+
+
+
+*************************************************************/
 #app {
   width: 100vw;
+  height: 100%;
 }
 
 #top_nav_search_bar {
@@ -16,16 +56,12 @@
 }
 #top_nav_search_bar input {
   width: calc(100% - 108px);
-  height: 64px;
+  height: 56px;
   position: absolute;
-  background: white;
   user-select: text;
 }
 #top_nav_search_bar input:focus {
   outline: none;
-}
-#top_nav_search_bar.show input {
-  background: white;
 }
 
 #top_nav_search_bar_icon,
@@ -62,4 +98,86 @@
 #top_nav_search_icon,
 #top_nav_sort_icon {
   float: left;
+}
+
+
+
+/**********************************************************
+
+
+
+
+
+
+*************************************************************/
+#clip_path {
+  display: none;
+}
+
+#clip_path.show {
+  display: block;
+}
+
+/**********************************************************
+
+
+
+
+
+
+*************************************************************/
+#clip_item_container {
+  margin-top: 25px;
+  padding: 0 25px;
+  width: 100%;
+}
+
+#clip_item_left_column {
+  width: 48%;
+  float: left;
+}
+#clip_item_right_column {
+  width: 48%;
+  float: right;
+}
+
+.clip_item {
+  display: block;
+  background: #eee;
+  height: 100px;
+}
+
+.clip_item + .clip_item {
+  margin-top: 15px;
+}
+
+/**********************************************************
+
+
+
+
+
+
+*************************************************************/
+#create_clip_button {
+  position: fixed;
+  background: #ddd;
+  right: 50px;
+  bottom: 50px;
+  width: 50px;
+  height: 50px;
+}
+#create_clip_options {
+  position: fixed;
+  background: #ddd;
+  right: 50px;
+  bottom: 50px;
+  width: 160px;
+  height: 160px;
+}
+#create_clip_options_text,
+#create_clip_options_image,
+#create_clip_options_file {
+  width: 70px;
+  height: 70px;
 }

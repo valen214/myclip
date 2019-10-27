@@ -2,7 +2,8 @@
 <html>
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <style>
 :root, html {
   width: 100%;
@@ -14,13 +15,14 @@
 }
 </style>
 <link rel="stylesheet"
-    href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    href="https://fonts.googleapis.com/icon?family=Material+Icons" />
 <!-- materialize css -->
 <link rel="stylesheet" href=
-"https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+"https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" />
 
 <link rel="stylesheet" href="index.css" />
-
+<script defer src="myclip.js"></script>
+<script defer src="event_handlers.js"></script>
 </head>
 <body>
 <div class="app">
@@ -34,35 +36,89 @@
   </a>
   <input type="search" />
 </div>
-<nav id="top_nav" class="nav-extended">
-  <div class="nav-wrapper">
-    <a href="#" data-target="side_nav" class="sidenav-trigger">
-      <i class="material-icons">menu</i>
-    </a>
-    <a class="brand-logo">MyClip</a>
-    <ul class="right">
-      <li><a id="top_nav_search_icon" href="#" class="waves-effect"><i class="material-icons">search</i></a></li>
-      <li><a id="top_nav_sort_icon" href="#" class="waves-effect"><i class="material-icons">sort</i></a></li>
-    </ul>
-  </div>
-  <div class="nav-content" style="display:none">
-    <a href="#" class="btn-flat waves-effect">
-      <i style="padding-top:5px;height:36px;line-height:normal;"
-          class="large material-icons">keyboard_arrow_up</i>
-    </a>
-    <span style="vertical-align:sub;font-size:1.5em">/</span>
-    <a href="#" style="padding:0 5px" class="btn-flat waves-effect">First</a>
-    <span style="vertical-align:sub;font-size:1.5em">/</span>
-    <a href="#" style="padding:0 5px" class="btn-flat waves-effect">Second</a>
-  </div>
+<nav id="top_nav">
+  <a href="#" data-target="side_nav" class="sidenav-trigger">
+    <i class="material-icons">menu</i>
+  </a>
+  <a class="brand-logo">MyClip</a>
+  <ul class="right">
+    <li><a id="top_nav_search_icon" href="#" class="waves-effect">
+      <i class="material-icons">search</i></a>
+    </li>
+    <li><a id="top_nav_sort_icon" href="#" class="waves-effect">
+      <i class="material-icons">sort</i></a>
+    </li>
+  </ul>
 </nav>
+<div id="clip_path">
+  <a href="#" class="btn-flat waves-effect">
+    <i style="padding-top:5px;height:36px;line-height:normal;"
+        class="large material-icons">keyboard_arrow_up</i>
+  </a>
+  <span style="vertical-align:sub;font-size:1.5em">/</span>
+  <a href="#" style="padding:0 5px" class="btn-flat waves-effect">First</a>
+  <span style="vertical-align:sub;font-size:1.5em">/</span>
+  <a href="#" style="padding:0 5px" class="btn-flat waves-effect">Second</a>
+</div>
 <ul id="side_nav" class="sidenav">
   <li><a href="#!" class="sidenav-close">
     <i class="material-icons">close</i></a>
   </li>
   <li>side nav item 1</li>
   <li>side nav item 2</li>
+  <li><a id="side_nav_sign_in">sign in</a></li>
 </ul>
+
+<div id="clip_item_container">
+  <div class="row">
+    <div id="clip_item_left_column">
+      <div class="clip_item">
+        hello
+      </div>
+      <div class="clip_item">
+        hello
+      </div>
+      <div class="clip_item">
+        hello
+      </div>
+      <div class="clip_item">
+        hello
+      </div>
+      <div class="clip_item">
+        hello
+      </div>
+      <div class="clip_item">
+        hello
+      </div>
+      <div class="clip_item">
+        hello
+      </div>
+      <div class="clip_item">
+        hello
+      </div>
+    </div>
+    <div id="clip_item_right_column">
+      <div class="clip_item">
+        hello
+      </div>
+    </div>
+  </div>
+</div>
+
+<a id="create_clip_button"
+    class="btn-floating btn-large waves-effect waves-light red">
+  <i class="material-icons">add</i>
+</a>
+<div id="create_clip_options">
+  <div>
+    <a id="create_clip_options_text" class="button">text</a>
+    <a id="create_clip_options_image" class="button">image</a>
+  </div>
+  <div>
+    <a id="create_clip_options_file" class="button">file</a>
+  </div>
+</div>
+
 
 </div>
 <!-- Compiled and minified JavaScript -->
@@ -92,5 +148,10 @@ window.addEventListener("load", () => {
   });
 });
 </script>
+<!--
+https://www.polymer-project.org/
+https://lit-html.polymer-project.org/
+https://github.com/marcj/css-element-queries/blob/master/src/ResizeSensor.js
+-->
 </body>
 </html>
