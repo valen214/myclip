@@ -8,7 +8,7 @@
   width: 100%;
   height: 100%;
 }
-:root, html, * {
+:root, html {
   box-sizing: border-box;
   user-select: none;
 }
@@ -25,17 +25,24 @@
 <body>
 <div class="app">
 
+<div id="top_nav_search_bar">
+  <a id="top_nav_search_bar_icon" class="waves-effect">
+    <i class="material-icons">search</i>
+  </a>
+  <a id="top_nav_search_bar_close" class="waves-effect">
+    <i class="material-icons">close</i>
+  </a>
+  <input type="search" />
+</div>
 <nav id="top_nav" class="nav-extended">
   <div class="nav-wrapper">
-    <div id="top_nav_search_bar">
-    </div>
     <a href="#" data-target="side_nav" class="sidenav-trigger">
       <i class="material-icons">menu</i>
     </a>
     <a class="brand-logo">MyClip</a>
     <ul class="right">
       <li><a id="top_nav_search_icon" href="#" class="waves-effect"><i class="material-icons">search</i></a></li>
-      <li><a href="#" class="waves-effect"><i class="material-icons">sort</i></a></li>
+      <li><a id="top_nav_sort_icon" href="#" class="waves-effect"><i class="material-icons">sort</i></a></li>
     </ul>
   </div>
   <div class="nav-content" style="display:none">
@@ -71,8 +78,17 @@ document.addEventListener("DOMContentLoaded", () => {
 window.addEventListener("load", () => {
   const top_nav_search_bar = document.getElementById("top_nav_search_bar");
   const top_nav_search_icon = document.getElementById("top_nav_search_icon");
-  top_nav_search_icon.addEventListener("click", e => {
-    top_nav_search_bar.classList.toggle("show");
+
+  window.addEventListener("click", ({ target }) => {
+    if(top_nav_search_icon.contains(target)){
+      top_nav_search_bar.classList.toggle("show");
+    } else if(top_nav_search_bar.contains(target)){
+      if(top_nav_search_bar_close.contains(target)){
+        top_nav_search_bar.classList.remove("show");
+      }
+    } else{
+      top_nav_search_bar.classList.remove("show");
+    }
   });
 });
 </script>

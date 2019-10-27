@@ -1,22 +1,65 @@
 
+#app {
+  width: 100vw;
+}
 
 #top_nav_search_bar {
-  width: calc(100%);
+  width: 100vw;
   position: absolute;
-  z-index: 2;
-  display: none;
-  pointer-events: none;
   background: white;
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+#top_nav_search_bar.show {
+  z-index: 2;
+  opacity: 1;
 }
 #top_nav_search_bar input {
+  width: calc(100% - 108px);
   height: 64px;
-  width: calc(100% - 4rem);
+  position: absolute;
+  background: white;
+  user-select: text;
 }
 #top_nav_search_bar input:focus {
   outline: none;
 }
+#top_nav_search_bar.show input {
+  background: white;
+}
 
-#top_nav_search_bar.show {
-  display: block;
-  pointer-events: all;
+#top_nav_search_bar_icon,
+#top_nav_search_bar_close {
+  display: inline-block;
+  vertical-align: middle;
+  width: 54px;
+  padding: 0 15px;
+}
+
+#top_nav_search_bar_icon i,
+#top_nav_search_bar_close i {
+  color: black;
+  height: 64px;
+  line-height: 64px;
+  font-size: 24px;
+}
+
+#top_nav_search_bar_icon {
+  margin: 0 54px 0 0;
+  transition: margin 0.5s;
+}
+#top_nav_search_bar.show #top_nav_search_bar_icon {
+  margin: 0;
+}
+
+#top_nav_search_bar_close {
+  float: right;
+}
+
+
+
+
+#top_nav_search_icon,
+#top_nav_sort_icon {
+  float: left;
 }
