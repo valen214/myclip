@@ -4,6 +4,8 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  user-select: none;
+  -moz-user-select: none;
 }
 .button:hover {
   background: #aaa;
