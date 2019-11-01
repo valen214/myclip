@@ -14,9 +14,9 @@ import 'regenerator-runtime/runtime'
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
-import { TopNav } from "./components/TopNav";
+import App from "./components/App";
 
 ReactDOM.render(
-  <TopNav compiler="OK" framework="BYE" />,
+  <App />,
   document.getElementById("app")
 );
