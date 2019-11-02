@@ -17,6 +17,13 @@ import { TransitionProps } from '@material-ui/core/transitions';
 
 import AddIcon from "@material-ui/icons/Add";
 
+import TextClipPage from "./TextClipPage";
+
+const useStyles = makeStyles((theme: Theme) => createStyles({
+  createClipButton: {
+    height: "100%",
+  }
+}));
 
 const Transition = React.forwardRef<unknown, TransitionProps>(
     (props: any, ref: any) => (<Zoom ref={ref} {...props} />)
@@ -24,7 +31,9 @@ const Transition = React.forwardRef<unknown, TransitionProps>(
 
 
 const CreateCilpMenu = ({showButton, className}: any) => {
+  const classes = useStyles({});
   const [ anchorEl, setAnchorEl ] = useState<null | HTMLElement>(null);
+  const [ openTextPage, setOpenTextPage ] = useState(false);
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(e.currentTarget);
@@ -34,24 +43,23 @@ const CreateCilpMenu = ({showButton, className}: any) => {
     setAnchorEl(null);
   }
 
+  const createClipButtonsTemplate = Object.entries({
+    "text": () => {
+      setOpenTextPage(true);
+    },
+    "image": () => {},
+    "file": () => {},
+    "folder": () => {},
+  });
+
+  const createTextClip = (title?: string, body?: string) => {
+    setOpenTextPage(false);
+    console.log(`create text clip: ${JSON.stringify({
+      title: title, body: body
+    }, ["title", "body"], 4)}`);
+  };
+
   return <React.Fragment>
-    <Box display="inline" style={{
-        position: "absolute",
-        top: "100px",
-        background: "#eee",
-      }}>
-      <GridList cols={2}
-          cellHeight={100}
-          style={{ width: "200px" }}>
-        {["text", "image", "file", "folder"].map(text => (
-          <GridListTile>
-            <Button fullWidth style={{ height: "100%" }}>
-              {text}
-            </Button>
-          </GridListTile>
-        ))}
-      </GridList>
-    </Box>
     <Fade in={showButton}>
       <Fab className={className}
           onClick={handleClick}>
@@ -71,8 +79,26 @@ const CreateCilpMenu = ({showButton, className}: any) => {
         transformOrigin={{
           vertical: "center", horizontal: "center"
         }}>
-        <div>HELLO </div>
+      <Box display="inline" style={{
+            background: "#eee",
+          }}>
+        <GridList cols={2}
+            cellHeight={100}
+            style={{ width: "200px" }}>
+          {createClipButtonsTemplate.map(([text, onClick]) => (
+            <GridListTile key={text}>
+              <Button fullWidth onClick={onClick}
+                  className={classes.createClipButton}>
+                {text}
+              </Button>
+            </GridListTile>
+          ))}
+        </GridList>
+      </Box>
     </Menu>
+    <TextClipPage open={openTextPage}
+        onClose={() => { setOpenTextPage(false) }}
+        onDone={createTextClip} />
   </React.Fragment>;
 };
 
