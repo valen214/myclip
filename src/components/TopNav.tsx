@@ -10,7 +10,7 @@ import TextField from "@material-ui/core/TextField";
 import ToolBar from '@material-ui/core/ToolBar';
 import Typography from "@material-ui/core/Typography";
 
-import CloseIcon from "@material-ui/icons/Close";
+import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import DoneIcon from '@material-ui/icons/Done';
 import MenuIcon from "@material-ui/icons/Menu";
 import SearchIcon from "@material-ui/icons/Search";
@@ -28,13 +28,20 @@ export enum TopNavMode {
   input,
 };
 
+/*
+https://material.io/archive/guidelines/
+patterns/search.html#search-in-app-search
+
+
+*/
+
 const TopNav = ({
-      mode, onClose, onDone, onChange, doneIcon = (<DoneIcon />),
-      placeholder = "...", position
+      mode, onInputClose, onInputDone, onInputChange,
+      doneIcon = (<DoneIcon />), placeholder = ""
 }: any) => {
   const classes = useStyles({});
 
-  return <AppBar position={position}>
+  return <AppBar>
     {
       mode == TopNavMode.mobile ?
         <ToolBar>
@@ -44,21 +51,21 @@ const TopNav = ({
           <Typography variant="h6" style={{ flex: 1 }}>
             MyClip
           </Typography>
-          <IconButton edge="end" onClick={onDone}>
+          <IconButton edge="end" onClick={onInputDone}>
             <SearchIcon />
           </IconButton>
         </ToolBar> :
       mode == TopNavMode.input ?
         <ToolBar>
-          <IconButton edge="start" onClick={onClose}>
-            <CloseIcon />
+          <IconButton edge="start" onClick={onInputClose}>
+            <ArrowBackIcon />
           </IconButton>
           <TextField placeholder={placeholder}
               onChange={(e: React.FormEvent<HTMLInputElement>) => {
-                onChange(e.currentTarget.value);
+                onInputChange(e.currentTarget.value);
               }}
               style={{ flex: 1 }} margin="dense" />
-          <IconButton edge="end" onClick={onDone}>
+          <IconButton edge="end" onClick={onInputDone}>
             {doneIcon}
           </IconButton>
         </ToolBar> : <div>OH Hello!</div>

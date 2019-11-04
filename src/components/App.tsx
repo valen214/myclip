@@ -33,12 +33,18 @@ const App = (props: any) => {
   const classes = useStyles({});
 
   const [ topNavMode, setTopNavMode ] = useState(TopNavMode.mobile);
+  const [ searchInput, setSearchInput ] = useState("");
 
   return <div>
     <TopNav mode={topNavMode}
         setMode={setTopNavMode}
-        onClose={() => setTopNavMode(TopNavMode.mobile)}
-        onDone={() => setTopNavMode(TopNavMode.input)}
+        onInputClose={() => setTopNavMode(TopNavMode.mobile)}
+        onInputChange={(text?: string) => setSearchInput(text)}
+        onInputDone={() => {
+          setTopNavMode(TopNavMode.input);
+          console.log(`searching: ${searchInput}...`);
+          setSearchInput(""); // adapt to voice/lost focus
+        }}
         doneIcon={<SearchIcon />}
         placeholder="Search..." />
     <CreateClipMenu
