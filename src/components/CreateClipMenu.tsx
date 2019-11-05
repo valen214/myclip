@@ -30,7 +30,9 @@ const Transition = React.forwardRef<unknown, TransitionProps>(
 );
 
 
-const CreateCilpMenu = ({showButton, className}: any) => {
+const CreateCilpMenu = ({
+    showButton, className, createClip,
+}: any) => {
   const classes = useStyles({});
   const [ anchorEl, setAnchorEl ] = useState<null | HTMLElement>(null);
   const [ openTextPage, setOpenTextPage ] = useState(false);
@@ -52,13 +54,6 @@ const CreateCilpMenu = ({showButton, className}: any) => {
     "folder": () => {},
     "drawing": () => {},
   });
-
-  const createTextClip = (title?: string, body?: string) => {
-    setOpenTextPage(false);
-    console.log(`create text clip: ${JSON.stringify({
-      title: title, body: body
-    }, ["title", "body"], 4)}`);
-  };
 
   return <React.Fragment>
     <Fade in={showButton}>
@@ -102,7 +97,13 @@ const CreateCilpMenu = ({showButton, className}: any) => {
     </Menu>
     <TextClipPage open={openTextPage}
         onClose={() => { setOpenTextPage(false) }}
-        onDone={createTextClip} />
+        onDone={(title?: string, body?: string) => {
+          setOpenTextPage(false);
+
+          if(typeof createClip === "function"){
+            createClip("text", title, body);
+          }
+        }} />
   </React.Fragment>;
 };
 

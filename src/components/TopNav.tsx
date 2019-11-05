@@ -43,8 +43,8 @@ const TopNav = ({
 }: any) => {
   const classes = useStyles({});
 
-  return <AppBar>
-    {
+  return <React.Fragment>
+    <AppBar>{
       mode == TopNavMode.mobile ?
         <ToolBar>
           <IconButton edge="start">
@@ -78,8 +78,9 @@ const TopNav = ({
             {doneIcon}
           </IconButton>
         </ToolBar> : <div>OH Hello!</div>
-    }
-  </AppBar>;
+      }</AppBar>
+      <ToolBar />
+    </React.Fragment>;
 };
 
 export default TopNav;
