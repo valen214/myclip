@@ -50,6 +50,7 @@ const CreateCilpMenu = ({showButton, className}: any) => {
     "image": () => {},
     "file": () => {},
     "folder": () => {},
+    "drawing": () => {},
   });
 
   const createTextClip = (title?: string, body?: string) => {
@@ -87,7 +88,10 @@ const CreateCilpMenu = ({showButton, className}: any) => {
             style={{ width: "200px" }}>
           {createClipButtonsTemplate.map(([text, onClick]) => (
             <GridListTile key={text}>
-              <Button fullWidth onClick={onClick}
+              <Button fullWidth onClick={() => {
+                    setAnchorEl(null);
+                    onClick();
+                  }}
                   className={classes.createClipButton}>
                 {text}
               </Button>

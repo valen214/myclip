@@ -27,19 +27,31 @@ const TextClipPage = ({ open, onClose, onDone }: any) => {
       TransitionComponent={Transition}>
     <Box display="flex" flexDirection="column" width="100%" height="100%">
       <InputBar
-          position="static"
-          onInputClose={onClose}
+          position="sticky"
+          onInputClose={() => {
+            onClose()
+            setTitle("");
+            setValue("");
+          }}
           onInputChange={setTitle}
-          onInputDone={() => onDone(title, value)}
+          onInputDone={() => {
+            onDone(title, value);
+            setTitle("");
+            setValue("");
+          }}
           placeholder="Title (Optional)" />
-      <Box width="100%" height="100%">
-        <InputBase
+        <Box display="flex" flexGrow={1}>
+          <InputBase
             multiline fullWidth
-            onChange={(e: React.FormEvent<HTMLInputElement>) => {
+            onBlur={(e: React.FormEvent<HTMLInputElement>) => {
               setValue(e.currentTarget.value);
             }}
-            style={{ resize: "none", }} />
-      </Box>
+            style={{
+              alignItems: "start",
+              resize: "none",
+              background: "#eee",
+            }} />
+        </Box>
     </Box>
   </Dialog>;
 };

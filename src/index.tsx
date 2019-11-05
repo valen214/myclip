@@ -9,20 +9,34 @@ https://material.io/resources/
 https://material-ui.com/components/app-bar/
 https://reactjs.org/docs/hooks-effect.html
 */
+
+import { setConfig, cold } from 'react-hot-loader';
+
+setConfig({
+  reloadHooks: true,
+  onComponentCreate: (type, name) => (
+    String(type).indexOf('useState') > 0 ||
+    String(type).indexOf('useEffect') > 0) && cold(type),
+});
+
+
 import 'core-js/stable'
 import 'regenerator-runtime/runtime'
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
+/*
 import { Provider } from "react-redux";
 import store from "./store";
+*/
 
 import App from "./components/App";
 
 ReactDOM.render(
-  <Provider store={ store }>
+  // <Provider store={ store }>
     <App />
-  </Provider>,
+  // </Provider>
+  ,
   document.getElementById("app")
 );
