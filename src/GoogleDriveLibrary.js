@@ -89,9 +89,10 @@ export function listFiles(path=""){
 
 
 export async function listAppFolder(){
+    let res;
     try{
         console.log('list app folder');
-        let res = await gapi.client.drive.files.list({
+        res = await gapi.client.drive.files.list({
             spaces: "appDataFolder",
             // q: "'0AAEfTIVzjL1JUk9PVA' in parents",
             // q: "'appDataFolder' in parents",
@@ -99,7 +100,6 @@ export async function listAppFolder(){
             fields: "nextPageToken, files(id, name)",
         });
         let files = res.result.files;
-        console.log(res.result);
         if(files && files.length){
             files.forEach(file =>{
                 console.log("found file:", file.name, file.id);
@@ -109,7 +109,8 @@ export async function listAppFolder(){
         }
         return files;
     } catch(e){
-        console.error(`listAppFolder(): ${e}`);
+        console.error(`listAppFolder(): ${e}` + "\n\n" +
+          "server response:", res);
     }
 }
 
@@ -185,6 +186,9 @@ export async function uploadToAppFolder(path, data, type="text/plain"){
 }
 
 export async function getFile(id){
+    if(!id){
+      throw "empty fild id!";
+    }
     console.log(`GoogleLibrary.js: getFile(${id})`);
     const access_token = gapi.auth2.getAuthInstance().currentUser.get(
             ).getAuthResponse().access_token;
@@ -216,7 +220,19 @@ export async function getFileAsBlob(id){
     return blob;
 }
 
-export default {
+export async function deleteFileByID(id){
+    try{
+      let res = await gapi.client.drive.files.delete({
+          "fileId": id
+      })
+      console.log("deleted id:%s completed, res:", id, res);
+      console.assert(res.status === 204);
+    } catch(e){
+      console.log("delete failed:", e);
+    }
+}
+
+const GDL = {
     isSignedIn,
     addSignInListener,
     signIn,
@@ -228,4 +244,8 @@ export default {
     getFile,
     getFileAsText,
     getFileAsBlob,
+    deleteFileByID,
 };
+window.GDL = GDL;
+
+export default GDL;

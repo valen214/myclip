@@ -32,11 +32,11 @@ import store from "./store";
 */
 
 import App from "./components/App";
+import { GroupedContextProvider } from "./contexts/GroupedContextProvider";
 
 ReactDOM.render(
-  // <Provider store={ store }>
+  <GroupedContextProvider>
     <App />
-  // </Provider>
-  ,
+  </GroupedContextProvider>,
   document.getElementById("app")
 );

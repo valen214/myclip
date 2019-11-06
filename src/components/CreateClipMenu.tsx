@@ -17,7 +17,11 @@ import { TransitionProps } from '@material-ui/core/transitions';
 
 import AddIcon from "@material-ui/icons/Add";
 
+import { getVisibilityController } from "../contexts/ComponentsVisibility";
+import StaticComponents from "../constants/StaticComponents";
+
 import TextClipPage from "./TextClipPage";
+
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   createClipButton: {
@@ -34,13 +38,15 @@ const CreateCilpMenu = ({
     showButton, className, createClip,
 }: any) => {
   const classes = useStyles({});
+  const controller = getVisibilityController();
   const [ anchorEl, setAnchorEl ] = useState<null | HTMLElement>(null);
   const [ openTextPage, setOpenTextPage ] = useState(false);
 
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const create_clip_button_click = (
+      e: React.MouseEvent<HTMLButtonElement>) => {
+    controller.setVisible(StaticComponents.CREATE_CLIP_MENU, true);
     setAnchorEl(e.currentTarget);
   };
-
   const handleClose = () => {
     setAnchorEl(null);
   }
@@ -53,12 +59,12 @@ const CreateCilpMenu = ({
     "file": () => {},
     "folder": () => {},
     "drawing": () => {},
+    "webpage": () => {},
   });
 
   return <React.Fragment>
-    <Fade in={showButton}>
-      <Fab className={className}
-          onClick={handleClick}>
+    <Fade in={controller.isVisible(StaticComponents.CREATE_CLIP_BUTTON)}>
+      <Fab className={className} onClick={create_clip_button_click}>
         <AddIcon />
       </Fab>
     </Fade>
@@ -66,7 +72,8 @@ const CreateCilpMenu = ({
         keepMounted
         anchorEl={anchorEl}
         getContentAnchorEl={null}
-        open={Boolean(anchorEl) && showButton}
+        open={Boolean(anchorEl) &&
+            controller.isVisible(StaticComponents.CREATE_CLIP_MENU)}
         onClose={handleClose}
         TransitionComponent={Transition}
         anchorOrigin={{

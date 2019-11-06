@@ -22,21 +22,12 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     right: theme.spacing(5),
   },
   gridList: {
-    width: 500,
+    width: "100%",
     height: 500,
     background: "#aaf"
   }
 }));
 
-
-function signIn(){
-  console.log(`GDL.isSignedIn(): ${GDL.isSignedIn()}`);
-  if(GDL.isSignedIn()){
-    console.log("already signed in!");
-  } else{
-    GDL.signIn();
-  }
-}
 
 
 const App = (props: any) => {
@@ -47,18 +38,50 @@ const App = (props: any) => {
 
   const [ itemList, setItemList ] = useState([]);
 
-  useEffect(() => {
-    console.log("useEffect(() => {}, [])");
-    (async () => {
-      if(GDL.isSignedIn()){
-        console.log("already signed in!, initializing folder");
+  function signIn(){
+    console.log(`GDL.isSignedIn(): ${GDL.isSignedIn()}`);
+    if(GDL.isSignedIn()){
+      console.log("already signed in!");
+    } else{
+      GDL.signIn();
+      loadFilesID();
+    }
+  }
 
-        const files = await GDL.listAppFolder();
-        const l = files.map((f: any) => ({ id: f.id }));
-        setItemList([ ...itemList, ...l ])
+  async function loadFilesID(){
+    console.log("loading folder content");
+    const files = await GDL.listAppFolder();
+    const l = files.reduce((l: any, r: any) => {
+      if("id" in r){
+        l.push(r);
+        // GDL.deleteFileByID(r.id);
       }
-    })();
-  }, [])
+      return l;
+    }, []);
+    console.warn(`loadFilesID(): ${l}`);
+    setItemList(l);
+  }
+
+  useEffect(() => {
+    console.log("./components/App.tsx: useEffect(() => {}, [])");
+
+    setTimeout(() => {
+      if(GDL.isSignedIn()){
+        loadFilesID();
+      }
+    }, 2000);
+
+    const intervalID = setInterval(() => {
+      if(GDL.isSignedIn()){
+        loadFilesID();
+      }
+    }, 1000 * 60 * 10);
+
+    return () => {
+      clearInterval(intervalID);
+      console.log("./components/App.tsx: useEffect(() => {}, []) clean up");
+    };
+  }, []);
 
   return <div>
     <TopNav mode={topNavMode}
