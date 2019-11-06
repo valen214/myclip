@@ -28,7 +28,7 @@ const TextClipPage = ({ open, onClose, onDone }: any) => {
     <Box display="flex" flexDirection="column" width="100%" height="100%">
       <InputBar
           position="sticky"
-          onInputClose={() => {
+          onInputBarClose={() => {
             onClose()
             setTitle("");
             setValue("");

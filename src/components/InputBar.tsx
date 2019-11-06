@@ -10,14 +10,14 @@ import CloseIcon from "@material-ui/icons/Close";
 import DoneIcon from '@material-ui/icons/Done';
 
 const InputBar = ({
-      onInputClose, onInputChange, onInputDone,
+      onInputBarClose, onInputChange, onInputDone,
       position, doneIcon = (<DoneIcon />),
       placeholder = "",
 }: any) => {
 
   return <AppBar position={position}>
     <ToolBar>
-      <IconButton edge="start" onClick={onInputClose}>
+      <IconButton edge="start" onClick={onInputBarClose}>
         <CloseIcon />
       </IconButton>
       <TextField placeholder={placeholder}
