@@ -1,6 +1,8 @@
 
 import React, { useState, useEffect } from "react";
 
+import { connect } from "react-redux";
+
 import { makeStyles, Theme, createStyles }
     from "@material-ui/core/styles";
 import Box from "@material-ui/core/Box";
@@ -35,7 +37,7 @@ const Transition = React.forwardRef<unknown, TransitionProps>(
 
 
 const CreateCilpMenu = ({
-    showButton, className, createClip,
+    showButton, className, createClip, setOpenTextClipPage
 }: any) => {
   const classes = useStyles({});
   const controller = getVisibilityController();
@@ -53,7 +55,8 @@ const CreateCilpMenu = ({
 
   const createClipButtonsTemplate = Object.entries({
     "text": () => {
-      setOpenTextPage(true);
+      // setOpenTextPage(true);
+      setOpenTextClipPage();
     },
     "image": () => {},
     "file": () => {},
@@ -114,4 +117,11 @@ const CreateCilpMenu = ({
   </React.Fragment>;
 };
 
-export default CreateCilpMenu;
+export default connect(
+  null,
+  (dispatch: any) => ({
+    setOpenTextClipPage: (open: boolean) => dispatch({
+      type: "SHOW_TEXT_PAGE"
+    })
+  })
+)(CreateCilpMenu);

@@ -141,6 +141,7 @@ export async function uploadFile(path, data){
 
 }
 
+// check out FormData
 export async function uploadToAppFolder(path, data, type="text/plain"){
     const access_token = gapi.auth2.getAuthInstance().currentUser.get(
             ).getAuthResponse().access_token;

@@ -23,20 +23,23 @@ setConfig({
 import 'core-js/stable'
 import 'regenerator-runtime/runtime'
 
-import * as React from "react";
-import * as ReactDOM from "react-dom";
+import React from "react";
+import ReactDOM from "react-dom";
 
-/*
+import { createStore } from "redux";
 import { Provider } from "react-redux";
-import store from "./store";
-*/
 
 import App from "./components/App";
 import { GroupedContextProvider } from "./contexts/GroupedContextProvider";
+import reducer from "./reducers";
+
+const store = createStore(reducer);
 
 ReactDOM.render(
-  <GroupedContextProvider>
-    <App />
-  </GroupedContextProvider>,
+  <Provider store={store}>
+    <GroupedContextProvider>
+      <App />
+    </GroupedContextProvider>
+  </Provider>,
   document.getElementById("app")
 );

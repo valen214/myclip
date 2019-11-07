@@ -1,6 +1,8 @@
 
 import React, { useState, useEffect } from "react";
 
+import { connect } from "react-redux";
+
 import { sizing } from '@material-ui/system';
 import { makeStyles, Theme, createStyles }
     from "@material-ui/core/styles";
@@ -56,4 +58,11 @@ const TextClipPage = ({ open, onClose, onDone }: any) => {
   </Dialog>;
 };
 
-export default TextClipPage;
+export default connect(
+  (state: any) => ({
+    open: state.ui.text_clip_page.visible
+  }),
+  (dispatch: any) => {
+    return {};
+  }
+)(TextClipPage);
