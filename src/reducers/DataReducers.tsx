@@ -10,18 +10,14 @@ const initialState = {
       value: "",
     },
   },
+  text_clip_page: {
+    title: "",
+    content: "",
+  }
 };
 
 const DataReducers = (state: any = initialState, action: any) => {
   switch(action.type){
-  case "TOP_NAV_SEARCH_INPUT_CHANGE":
-    return Object.assign({}, state, {
-      top_nav: {
-        search: {
-          value: action.value,
-        }
-      }
-    });
   default:
     return state;
   }

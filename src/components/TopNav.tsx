@@ -57,7 +57,7 @@ const TopNav = ({
     <AppBar>{
       mode == TopNavMode.normal ?
         <ToolBar>
-          <IconButton edge="start">
+          <IconButton edge="start" onClick={() => {}}>
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" style={{ flex: 1 }}>

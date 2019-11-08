@@ -22,7 +22,7 @@ import AddIcon from "@material-ui/icons/Add";
 import { getVisibilityController } from "../contexts/ComponentsVisibility";
 import StaticComponents from "../constants/StaticComponents";
 
-import TextClipPage from "./TextClipPage";
+import { CreateClipMenuWrapper } from "../actions/CreateClipMenu";
 
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
@@ -37,7 +37,7 @@ const Transition = React.forwardRef<unknown, TransitionProps>(
 
 
 const CreateCilpMenu = ({
-    className, createClip, setOpenTextClipPage
+    className, createClip, onCreateTextClipButtonClick
 }: any) => {
   const classes = useStyles({});
   const controller = getVisibilityController();
@@ -54,10 +54,7 @@ const CreateCilpMenu = ({
   }
 
   const createClipButtonsTemplate = Object.entries({
-    "text": () => {
-      // setOpenTextPage(true);
-      setOpenTextClipPage();
-    },
+    "text": onCreateTextClipButtonClick,
     "image": () => {},
     "file": () => {},
     "folder": () => {},
@@ -79,15 +76,9 @@ const CreateCilpMenu = ({
             controller.isVisible(StaticComponents.CREATE_CLIP_MENU)}
         onClose={handleClose}
         TransitionComponent={Transition}
-        anchorOrigin={{
-          vertical: 'center', horizontal: 'center',
-        }}
-        transformOrigin={{
-          vertical: "center", horizontal: "center"
-        }}>
-      <Box display="inline" style={{
-            background: "#eee",
-          }}>
+        anchorOrigin={{ vertical: 'center', horizontal: 'center' }}
+        transformOrigin={{ vertical: "center", horizontal: "center" }}>
+      <Box display="inline" style={{ background: "#eee" }}>
         <GridList cols={2}
             cellHeight={100}
             style={{ width: "200px" }}>
@@ -105,23 +96,7 @@ const CreateCilpMenu = ({
         </GridList>
       </Box>
     </Menu>
-    <TextClipPage open={openTextPage}
-        onClose={() => { setOpenTextPage(false) }}
-        onDone={(title?: string, body?: string) => {
-          setOpenTextPage(false);
-
-          if(typeof createClip === "function"){
-            createClip("text", title, body);
-          }
-        }} />
   </React.Fragment>;
 };
 
-export default connect(
-  null,
-  (dispatch: any) => ({
-    setOpenTextClipPage: (open: boolean) => dispatch({
-      type: "SHOW_TEXT_PAGE"
-    })
-  })
-)(CreateCilpMenu);
+export default CreateClipMenuWrapper(CreateCilpMenu);

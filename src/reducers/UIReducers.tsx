@@ -12,26 +12,45 @@ const initialState = {
   text_clip_page: {
     visible: false,
   },
+  sign_in_button: {
+    visible: true,
+  }
 };
 
 const UIReducers = (state: any = initialState, action: any) => {
-  console.log("./src/reducers/UIReducers(): ");
   switch(action.type){
   case "SHOW_TEXT_PAGE":
-    return Object.assign({}, state, {
-      text_clip_page: { visible: true }
-    });
+    return {
+      ...state,
+      text_clip_page: {
+        visible: true
+      }
+    };
+  case "SET_TEXT_CILP_PAGE_VISIBLE":
+    return {
+      ...state,
+      text_clip_page: {
+        ...state.text_clip_page,
+        visible: action.visible
+      }
+    };
   case "SET_TOP_NAV_MODE":
-    return Object.assign({}, state,
-        Object.assign({}, state.top_nav, {
-          mode: action.mode == TopNavMode.input ?
-              TopNavMode.input : TopNavMode.normal,
-    }));
+    return {
+      ...state,
+      top_nav: {
+        ...state.top_nav,
+        mode: action.mode == TopNavMode.input ?
+            TopNavMode.input : TopNavMode.normal,
+      }
+    };
   case "SET_TOP_NAV_PLACEHOLDER":
-    return Object.assign({}, state,
-        Object.assign({}, state.top_nav, {
-          placeholder: action.placeholder,
-    }));
+    return {
+      ...state,
+      top_nav: {
+        ...state.top_nav,
+        placeholder: action.placeholder,
+      }
+    };
   default:
     return state;
   }

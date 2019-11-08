@@ -2,9 +2,12 @@
 //@ts-ignore
 import GDL from "../GoogleDriveLibrary";
 
+
+import { AppWrapper } from "../actions/App";
 import TopNav from "./TopNav";
 import CreateClipMenu from "./CreateClipMenu";
 import GoogleClipItem from "./GoogleClipItem";
+import TextClipPage from "./TextClipPage";
 
 import { hot } from 'react-hot-loader/root';
 
@@ -30,55 +33,26 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
 
 
 
-const App = (props: any) => {
+const App = ({
+  init, state,
+}: any) => {
+
+
   const classes = useStyles({});
 
   const [ itemList, setItemList ] = useState([]);
 
-  function signIn(){
-    console.log(`GDL.isSignedIn(): ${GDL.isSignedIn()}`);
-    if(GDL.isSignedIn()){
-      console.log("already signed in!");
-    } else{
-      GDL.signIn();
-      loadFilesID();
+  useEffect(init, []);
+  useEffect((function printStateOnGlobalChange(last_value?: any){
+  //@ts-ignore
+    if(("ps" in window) && window.ps && window.ps != last_value){
+      console.log("last_value:", last_value)
+  //@ts-ignore
+      window.ps = false;
+      console.log(JSON.stringify(state, null, 2));
     }
-  }
-
-  async function loadFilesID(){
-    console.log("loading folder content");
-    const files = await GDL.listAppFolder();
-    const l = files.reduce((l: any, r: any) => {
-      if("id" in r){
-        l.push(r);
-        // GDL.deleteFileByID(r.id);
-      }
-      return l;
-    }, []);
-    console.warn(`loadFilesID(): ${l}`);
-    setItemList(l);
-  }
-
-  useEffect(() => {
-    console.log("./components/App.tsx: useEffect(() => {}, [])");
-
-    setTimeout(() => {
-      if(GDL.isSignedIn()){
-        loadFilesID();
-      }
-    }, 2000);
-
-    const intervalID = setInterval(() => {
-      if(GDL.isSignedIn()){
-        loadFilesID();
-      }
-    }, 1000 * 60 * 10);
-
-    return () => {
-      clearInterval(intervalID);
-      console.log("./components/App.tsx: useEffect(() => {}, []) clean up");
-    };
-  }, []);
+    setTimeout(printStateOnGlobalChange, 200, last_value);
+  }), []);
 
   return <div>
     <TopNav />
@@ -99,7 +73,8 @@ const App = (props: any) => {
             break;
           }
         }} />
+    <TextClipPage />
   </div>;
 };
 
-export default hot(App);
+export default hot(AppWrapper(App));

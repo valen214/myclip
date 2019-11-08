@@ -72,30 +72,50 @@ export function isSignedIn(){
     }
 }
 export function addSignInListener(func){
-    gapi.auth2.getAuthInstance().isSignedIn.listen(func);
+  gapi.auth2.getAuthInstance().isSignedIn.listen(func);
 }
 
 export function signIn(){
-    gapi.auth2.getAuthInstance().signIn();
+  return gapi.auth2.getAuthInstance().signIn();
 }
 
 export function signOut(){
-    gapi.auth2.getAuthInstance().signOut();
+  return gapi.auth2.getAuthInstance().signOut();
 }
 
-export function listFiles(path=""){
-
+export async function listFiles(parent="root"){
+    let res;
+    try{
+        console.log('list app folder');
+        res = await gapi.client.drive.files.list({
+            spaces: "drive",
+            q: `'${parent}' in parents`,
+            maxResults: 100,
+            fields: "nextPageToken, files(id, name)",
+        });
+        let files = res.result.files;
+        if(files && files.length){
+            files.forEach(file =>{
+                console.log("found file:", file.name, file.id);
+            });
+        } else{
+            console.log('no file found');
+        }
+        return files;
+    } catch(e){
+        console.error(`listFiles(): ${e}` + "\n\n" +
+          "server response:", res);
+    }
 }
 
 
-export async function listAppFolder(){
+export async function listAppFolder(parent="appDataFolder"){
     let res;
     try{
         console.log('list app folder');
         res = await gapi.client.drive.files.list({
             spaces: "appDataFolder",
-            // q: "'0AAEfTIVzjL1JUk9PVA' in parents",
-            // q: "'appDataFolder' in parents",
+            q: `'${parent}' in parents`,
             maxResults: 100,
             fields: "nextPageToken, files(id, name)",
         });
@@ -142,44 +162,24 @@ export async function uploadFile(path, data){
 }
 
 // check out FormData
-export async function uploadToAppFolder(path, data, type="text/plain"){
+export async function uploadToAppFolder(filename, data){
     const access_token = gapi.auth2.getAuthInstance().currentUser.get(
             ).getAuthResponse().access_token;
-    const nl = "\r\n";
-    let [parents, name] = splitPath(path);
-    let meta = "Content-Type: application/json; charset=UTF-8" + nl + nl +
-        JSON.stringify({
-            "name": name,
-            "parents": ["appDataFolder"],
-        });
-    let body_text = await new Response(data).text();
 
-    let boundary = randomstring(32);
-    while(meta.includes(boundary) || body_text.includes(boundary)){
-        boundary = randomstring(boundary.length + 16);
-        if(boundary.length > 256){
-            console.error("something id probably wrong",
-                    "in creatation of multipart POST boundary");
-        }
-    }
-
-    let body = new Blob([
-        "--", boundary, nl, meta, nl,
-        "--", boundary, nl,
-        "Content-Type: ", type, nl,
-        nl, data, nl,
-        "--", boundary, "--"
-    ]);
+    let formData = new FormData();
+    formData.append("meta", new Blob([JSON.stringify({
+        "name": filename,
+        "parents": ["appDataFolder"],
+    })], { type: "application/json; charset=UTF-8" }));
+    formData.append("body", await new Response(data).blob(), filename);
 
     let res = await fetch("https://www.googleapis.com/" +
             "upload/drive/v3/files?uploadType=multipart&fields=id", {
             "method": "POST",
             "headers": {
                 "Authorization": "Bearer " + access_token,
-                "Content-Type": "multipart/related; boundary=" + boundary,
-                "Content-Length": body.size
             },
-            "body": body,
+            body: formData,
     });
     let obj = await res.json();
     console.log("file uploaded to app folder: res:", obj);
