@@ -1,5 +1,11 @@
 
+import { TopNavMode } from "../constants/TopNav";
+import { TopNavWrapper } from "../actions/TopNav";
+
+
 import React, { useState, useEffect } from "react";
+
+import { connect } from "react-redux";
 
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from '@material-ui/core/AppBar';
@@ -22,13 +28,6 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export enum TopNavMode {
-  mobile,
-  tablet,
-  desktop,
-  input,
-};
-
 /*
 https://material.io/archive/guidelines/
 patterns/search.html#search-in-app-search
@@ -37,15 +36,26 @@ patterns/search.html#search-in-app-search
 */
 
 const TopNav = ({
-      mode, onInputClose, onInputDone, onInputChange,
-      doneIcon = (<DoneIcon />), placeholder = "",
-      onSignInButtonClick
+      mode,
+      placeholder = "",
+      searchInput,
+
+      // normal mode
+      onMenuButtonClick,
+      onSearchButtonClick,
+      onSignInButtonClick,
+      onConfigButtonClick,
+
+      // search mode
+      onSearchCancelClick,
+      onSearchInputChange,
+      onSearchDoneClick,
 }: any) => {
   const classes = useStyles({});
 
   return <React.Fragment>
     <AppBar>{
-      mode == TopNavMode.mobile ?
+      mode == TopNavMode.normal ?
         <ToolBar>
           <IconButton edge="start">
             <MenuIcon />
@@ -53,7 +63,7 @@ const TopNav = ({
           <Typography variant="h6" style={{ flex: 1 }}>
             MyClip
           </Typography>
-          <IconButton onClick={onInputDone}>
+          <IconButton onClick={onSearchButtonClick}>
             <SearchIcon />
           </IconButton>
           <Button
@@ -66,21 +76,21 @@ const TopNav = ({
         </ToolBar> :
       mode == TopNavMode.input ?
         <ToolBar style={{ background: "#eee" }}>
-          <IconButton edge="start" onClick={onInputClose}>
+          <IconButton edge="start" onClick={onSearchCancelClick}>
             <ArrowBackIcon />
           </IconButton>
           <TextField placeholder={placeholder}
-              onChange={(e: React.FormEvent<HTMLInputElement>) => {
-                onInputChange(e.currentTarget.value);
-              }}
+              value={searchInput}
+              onChange={onSearchInputChange}
               style={{ flex: 1 }} margin="dense" />
-          <IconButton edge="end" onClick={onInputDone}>
-            {doneIcon}
+          <IconButton edge="end" onClick={onSearchDoneClick}>
+            <DoneIcon />
           </IconButton>
         </ToolBar> : <div>OH Hello!</div>
-      }</AppBar>
-      <ToolBar />
-    </React.Fragment>;
+      }
+    </AppBar>
+    <ToolBar />
+  </React.Fragment>;
 };
 
-export default TopNav;
+export default TopNavWrapper(TopNav);

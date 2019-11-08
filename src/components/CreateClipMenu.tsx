@@ -37,7 +37,7 @@ const Transition = React.forwardRef<unknown, TransitionProps>(
 
 
 const CreateCilpMenu = ({
-    showButton, className, createClip, setOpenTextClipPage
+    className, createClip, setOpenTextClipPage
 }: any) => {
   const classes = useStyles({});
   const controller = getVisibilityController();

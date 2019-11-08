@@ -2,7 +2,7 @@
 //@ts-ignore
 import GDL from "../GoogleDriveLibrary";
 
-import TopNav, { TopNavMode } from "./TopNav";
+import TopNav from "./TopNav";
 import CreateClipMenu from "./CreateClipMenu";
 import GoogleClipItem from "./GoogleClipItem";
 
@@ -32,9 +32,6 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
 
 const App = (props: any) => {
   const classes = useStyles({});
-
-  const [ topNavMode, setTopNavMode ] = useState(TopNavMode.mobile);
-  const [ searchInput, setSearchInput ] = useState("");
 
   const [ itemList, setItemList ] = useState([]);
 
@@ -84,24 +81,12 @@ const App = (props: any) => {
   }, []);
 
   return <div>
-    <TopNav mode={topNavMode}
-        setMode={setTopNavMode}
-        onInputClose={() => setTopNavMode(TopNavMode.mobile)}
-        onInputChange={(text?: string) => setSearchInput(text)}
-        onInputDone={() => {
-          setTopNavMode(TopNavMode.input);
-          console.log(`searching: ${searchInput}...`);
-          setSearchInput(""); // adapt to voice/lost focus
-        }}
-        onSignInButtonClick={signIn}
-        doneIcon={<SearchIcon />}
-        placeholder="Search..."/>
+    <TopNav />
     <GridList className={classes.gridList} cols={2.5} cellHeight={160}>
       {itemList.map(item => <GoogleClipItem key={item.id} item={item} />)}
     </GridList>
     <CreateClipMenu
         className={classes.createClipMenu}
-        showButton={topNavMode != TopNavMode.input}
         createClip={(type: string, ...args: any[]) => {
           switch(type){
           case "text":
