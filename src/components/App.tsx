@@ -2,7 +2,6 @@
 //@ts-ignore
 import GDL from "../GoogleDriveLibrary";
 
-
 import { AppWrapper } from "../actions/App";
 import TopNav from "./TopNav";
 import CreateClipMenu from "./CreateClipMenu";
@@ -10,6 +9,9 @@ import GoogleClipItem from "./GoogleClipItem";
 import TextClipPage from "./TextClipPage";
 
 import { hot } from 'react-hot-loader/root';
+
+import { useQuery } from "@apollo/react-hooks";
+import gql from 'graphql-tag';
 
 import React, { useState, useEffect } from "react";
 
@@ -32,6 +34,11 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
 }));
 
 
+const ITEMLIST_QUERY = gql`
+{
+  top_nav_visibility @client
+}
+`;
 
 const App = ({
   init, state,
@@ -41,6 +48,10 @@ const App = ({
   const classes = useStyles({});
 
   const [ itemList, setItemList ] = useState([]);
+  const { data, client } = useQuery(ITEMLIST_QUERY);
+
+
+
 
   useEffect(init, []);
   useEffect((function printStateOnGlobalChange(last_value?: any){
@@ -59,6 +70,16 @@ const App = ({
     <GridList className={classes.gridList} cols={2.5} cellHeight={160}>
       {itemList.map(item => <GoogleClipItem key={item.id} item={item} />)}
     </GridList>
+    <div onClick={() => {
+      client.writeData({ data: {
+        top_nav_visibility: Math.random(),
+      }})
+    }} style={{
+      width: 100, height: 100, background: "#"+((1<<24)*data.top_nav_visibility|0).toString(16) ,
+      position: "absolute", left: 100, top: 100
+    }}>
+    HI
+    </div>
     <CreateClipMenu
         className={classes.createClipMenu}
         createClip={(type: string, ...args: any[]) => {
