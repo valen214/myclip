@@ -1,27 +1,52 @@
 
 import { connect } from "react-redux";
 
-import { store } from "../index";
+import gql from "graphql-tag";
+
 
 //@ts-ignore
 import GDL from "../GoogleDriveLibrary";
 
-async function loadClipItemID(dispatch: any){
-  console.log("loading folder content");
-  const files = await GDL.listAppFolder();
-  const l = files.reduce((l: any, r: any) => {
-    if("id" in r){
-      l.push(r);
-      // GDL.deleteFileByID(r.id);
-    }
-    return l;
-  }, []);
-  console.warn(`loadClipItemID(): ${l}`);
-  // setItemList(l);
+async function loadClipItemID(data: any, client: any, setItemList: any){
+  try{
+    console.log("loading folder content");
+    const files = await GDL.listAppFolder();
+    const l = files.reduce((l: any, r: any) => {
+      if("id" in r){
+        r.__typename = "ClipItem";
+        l.push(r);
+        // GDL.deleteFileByID(r.id);
+      }
+      return l;
+    }, []);
+    console.warn(`loadClipItemID(): ${JSON.stringify(l)}`);
+    setItemList({
+      variables: {
+        list: l
+      }
+    });
+    /*
+    updateQuery(gql`
+      {
+        clip_items @cache {
+          id
+          name
+          __type
+        }
+      }
+      `, {
+      data: {
+        clip_items: l,
+      },
+    });
+    */
+  } catch(e){
+    console.error(e);
+  }
 }
 
 
-async function afterSignedIn(dispatch: any){
+async function afterSignedIn(data: any, client: any, setItemList: any){
 //@ts-ignore
   while(!("gapi" in window) || !("auth2" in window["gapi"])){
     await new Promise(resolve => setTimeout(resolve, 100));
@@ -29,9 +54,9 @@ async function afterSignedIn(dispatch: any){
   if(!GDL.isSignedIn()){
     await new Promise(resolve => GDL.addSignInListener(resolve));
   }
-  await loadClipItemID(dispatch);
+  await loadClipItemID(data, client, setItemList);
   const intervalID = setInterval(() => {
-    loadClipItemID(dispatch);
+    loadClipItemID(data, client, setItemList);
   }, 1000 * 60 * 10);
 
   return () => {
@@ -39,11 +64,11 @@ async function afterSignedIn(dispatch: any){
   };
 }
 
-export function init(dispatch: any){
+export function init(data: any, client: any, setItemList: any){
   console.log("/src/actions/App.tsx: init()");
   console.log("/src/components/App.tsx: useEffect(() => {}, [])");
 
-  let signOutCleanUpPromise = afterSignedIn(dispatch);
+  let signOutCleanUpPromise = afterSignedIn(data, client, setItemList);
 
   return () => {
     signOutCleanUpPromise.then(cleanup => cleanup());
@@ -59,9 +84,7 @@ export function AppWrapper(target: any){
     }),
     (dispatch: any) => {
       console.log("/src/actions/App.tsx: new dispatch instance")
-      return ({
-      init: () => init(dispatch),
-    })
+      return {}
     },
   )(target);
 };

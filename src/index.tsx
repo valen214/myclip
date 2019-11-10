@@ -41,34 +41,22 @@ import ReactDOM from "react-dom";
 import { createStore } from "redux";
 import { Provider } from "react-redux";
 
+import { ApolloProviderWrapper } from "./ApolloHelper";
+
 import App from "./components/App";
 import { GroupedContextProvider } from "./contexts/GroupedContextProvider";
 import reducer from "./reducers";
 
 export const store = createStore(reducer);
 
-import gql from 'graphql-tag';
-import ApolloClient from "apollo-client";
-import { ApolloProvider } from "@apollo/react-hooks";
-import { InMemoryCache } from 'apollo-cache-inmemory';
-
-const client = new ApolloClient({
-  // url: "https://48p1r2roz4.sse.codesandbox.io",
-  cache: new InMemoryCache(),
-});
-
-
-client.writeData({ data: {
-  top_nav_visibility: Math.random(),
-}});
-
 ReactDOM.render(
-  <Provider store={store}>
-    <GroupedContextProvider>
-      <ApolloProvider client={client}>
+  <ApolloProviderWrapper>
+    <Provider store={store}>
+      <GroupedContextProvider>
         <App />
-      </ApolloProvider>
-    </GroupedContextProvider>
-  </Provider>,
+      </GroupedContextProvider>
+    </Provider>
+  </ApolloProviderWrapper>
+  ,
   document.getElementById("app")
 );

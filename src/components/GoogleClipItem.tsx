@@ -19,6 +19,8 @@ const GoogleClipItem = ({
 }: any) => {
   const [ text, setText ] = useState("");
 
+  console.log(`create clip_item(id=${item.id})`);
+
   useEffect(() => {
     (async () => {
       const t = await GDL.getFileAsText(item.id);

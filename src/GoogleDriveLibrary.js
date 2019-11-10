@@ -39,7 +39,7 @@ function randomstring(len=8, alphabet="abcdefghijklmnopqrstuvwxyz"){
 }
 
 var gapi;
-(async () => {
+const initialized = (async () => {
     try{
         if("gapi" in window){
 
@@ -59,6 +59,7 @@ var gapi;
             "scope": SCOPE
         });
         console.log("finished initializing gapi");
+        return true;
     } catch(e){
         console.error(e);
     }
@@ -84,6 +85,7 @@ export function signOut(){
 }
 
 export async function listFiles(parent="root"){
+    await initialized;
     let res;
     try{
         console.log('list app folder');
@@ -110,6 +112,7 @@ export async function listFiles(parent="root"){
 
 
 export async function listAppFolder(parent="appDataFolder"){
+    await initialized;
     let res;
     try{
         console.log('list app folder');
@@ -135,6 +138,7 @@ export async function listAppFolder(parent="appDataFolder"){
 }
 
 export async function uploadFile(path, data){
+    await initialized;
     console.log(`GoogleLibrary.js: uploadFile(${path}, ${data})`);
     try{
         let [parents, name] = splitPath(path);
@@ -163,6 +167,7 @@ export async function uploadFile(path, data){
 
 // check out FormData
 export async function uploadToAppFolder(filename, data){
+    await initialized;
     const access_token = gapi.auth2.getAuthInstance().currentUser.get(
             ).getAuthResponse().access_token;
 
@@ -191,6 +196,7 @@ export async function getFile(id){
       throw "empty fild id!";
     }
     console.log(`GoogleLibrary.js: getFile(${id})`);
+    await initialized;
     const access_token = gapi.auth2.getAuthInstance().currentUser.get(
             ).getAuthResponse().access_token;
     try{
@@ -222,6 +228,7 @@ export async function getFileAsBlob(id){
 }
 
 export async function deleteFileByID(id){
+    await initialized;
     try{
       let res = await gapi.client.drive.files.delete({
           "fileId": id
