@@ -38,7 +38,6 @@ function randomstring(len=8, alphabet="abcdefghijklmnopqrstuvwxyz"){
     }, new Array(len)).join("");
 }
 
-var gapi;
 const initialized = (async () => {
     try{
         if("gapi" in window){
@@ -50,7 +49,6 @@ const initialized = (async () => {
             });
         }
         console.log("start initializing gapi");
-        gapi = window["gapi"];
         await new Promise(ok => gapi.load("client:auth2", ok));
         await gapi.client.init({
             "apiKey": API_KEY,
@@ -58,13 +56,19 @@ const initialized = (async () => {
             "discoveryDocs": DISCOVERY_DOCS,
             "scope": SCOPE
         });
-        console.log("finished initializing gapi");
+        console.log("%cfinished initializing gapi", "#afd");
         return true;
     } catch(e){
         console.error(e);
     }
 })();
 
+
+async function waitTillAuth2Initialized(){
+  while(!("gapi" in window) || !("auth2" in gapi)){
+    await new Promise(resolve => setTimeout(resolve, 50));
+  }
+}
 export function isSignedIn(){
     try{
         return gapi.auth2.getAuthInstance().isSignedIn.get();
@@ -72,15 +76,18 @@ export function isSignedIn(){
         return false;
     }
 }
-export function addSignInListener(func){
+export async function addSignInListener(func){
+  await waitTillAuth2Initialized();
   gapi.auth2.getAuthInstance().isSignedIn.listen(func);
 }
 
-export function signIn(){
+export async function signIn(){
+  await waitTillAuth2Initialized();
   return gapi.auth2.getAuthInstance().signIn();
 }
 
-export function signOut(){
+export async function signOut(){
+  await waitTillAuth2Initialized();
   return gapi.auth2.getAuthInstance().signOut();
 }
 

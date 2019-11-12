@@ -3,7 +3,7 @@
     "editor.fontFamily": "Consolas, 'Courier New', monospace",
     "editor.fontSize": 12,
     "editor.rulers": [80],
-    "editor.tabSize": 4,
+    "editor.tabSize": 2,
     "editor.wordWrap": "off",
     "editor.wordWrapColumn": 80,
     "editor.autoClosingBrackets": "never",

@@ -3,12 +3,12 @@
 import GDL from "../GoogleDriveLibrary";
 
 import { AppWrapper, init } from "../actions/App";
-import TopNav from "./TopNav";
+import ClipItemContainer from "./ClipItemContainer";
 import CreateClipMenu from "./CreateClipMenu";
 import GoogleClipItem from "./GoogleClipItem";
 import TextClipPage from "./TextClipPage";
+import TopNav from "./TopNav";
 import { client } from "../ApolloHelper";
-import { GET_CLIP_ITEMS } from "../constants/Query";
 import { SET_CLIP_ITEMS } from "../constants/Mutations"
 
 import { hot } from 'react-hot-loader/root';
@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     display: 'flex',
     flexWrap: 'wrap',
     justifyContent: 'space-around',
-    overflow: 'hidden',
+    // overflow: 'hidden',
   },
   createClipMenu: {
     position: "fixed",
@@ -48,30 +48,18 @@ const App = ({
 }: any) => {
   const classes = useStyles({});
 
-  const { data } = useQuery(GET_CLIP_ITEMS);
   const [ setItemList, { loading } ] = useMutation(SET_CLIP_ITEMS);
 
-  useEffect(() => init(data, client, setItemList), []);
+  useEffect(() => init(setItemList), []);
 
   return <div className={classes.root}>
     <TopNav />
     <div className={classes.offset}
-        style={{ verticalAlign: "bottom", background: "#fdd", width: "500px" }}>
+        style={{ display: "flex", flexDirection: "column",
+        justifyContent: "end", background: "#fdd", width: "500px" }}>
       I am Top nav place holder
     </div>
-    <Container>
-      <Grid container spacing={4}>
-        {data && data.clip_items.map(({ id }: any) => (
-          <Grid key={id} item xs={12} sm={6} md={4} >
-            <Card style={{ height: "300px", overflow: "hidden" }}>
-              <CardContent style={{ height: "100%" }}>
-                <GoogleClipItem id={id} />
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
-    </Container>
+    <ClipItemContainer />
     <CreateClipMenu
         className={classes.createClipMenu}
         createClip={(type: string, ...args: any[]) => {

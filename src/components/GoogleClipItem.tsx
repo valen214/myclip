@@ -18,8 +18,6 @@ const GoogleClipItem = (props: any) => {
   const { id } = props;
   const [ text, setText ] = useState("");
 
-  console.log(`create clip_item(id=${id})`);
-
   useEffect(() => {
     (async () => {
       const t = await GDL.getFileAsText(id);
@@ -29,11 +27,11 @@ const GoogleClipItem = (props: any) => {
   }, [id]);
 
   // https://material-ui.com/components/grid-list/
-  return <pre style={{ fontFamily: "Consolas",
-      wordBreak: "break-all", whiteSpace: "pre-wrap",
-      background: "#dfd", height: "auto", width: "100%" }}>
+  return <div style={{ fontFamily: "Consolas",
+      wordBreak: "break-all", whiteSpace: "pre-wrap", // important
+      background: "#dfd", width: "100%" }}>
     {text}
-  </pre>;
+  </div>;
 };
 
 export default GoogleClipItem;

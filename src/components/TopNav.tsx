@@ -1,4 +1,7 @@
 
+//@ts-ignore
+import GDL from "../GoogleDriveLibrary";
+
 import { TopNavMode } from "../constants/TopNav";
 import { TopNavWrapper } from "../actions/TopNav";
 
@@ -53,6 +56,12 @@ const TopNav = ({
 }: any) => {
   const classes = useStyles({});
 
+  const [ signedIn, setSignedIn ] = useState(GDL.isSignedIn());
+
+  useEffect(() => {
+    GDL.addSignInListener(setSignedIn);
+  }, []);
+
   return <React.Fragment>
     <AppBar position="fixed">{
       mode == TopNavMode.normal ?
@@ -71,7 +80,7 @@ const TopNav = ({
               color="primary"
               startIcon={<PersonIcon />}
               onClick={onSignInButtonClick}>
-            Sign In
+            { signedIn ? "Sign Out" : "Sign In" }
           </Button>
         </ToolBar> :
       mode == TopNavMode.input ?

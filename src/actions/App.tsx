@@ -6,7 +6,7 @@ import gql from "graphql-tag";
 //@ts-ignore
 import GDL from "../GoogleDriveLibrary";
 
-async function loadClipItemID(data: any, client: any, setItemList: any){
+async function loadClipItemID(setItemList: any){
   try{
     console.log("loading folder content");
     const files = await GDL.listAppFolder();
@@ -45,17 +45,23 @@ async function loadClipItemID(data: any, client: any, setItemList: any){
 }
 
 
-async function afterSignedIn(data: any, client: any, setItemList: any){
+async function afterSignedIn(setItemList: any){
 //@ts-ignore
   while(!("gapi" in window) || !("auth2" in window["gapi"])){
     await new Promise(resolve => setTimeout(resolve, 100));
   }
   if(!GDL.isSignedIn()){
-    await new Promise(resolve => GDL.addSignInListener(resolve));
+    await new Promise(resolve => GDL.addSignInListener(
+      (signedIn: boolean) => {
+        if(signedIn){
+          resolve();
+        }
+      }
+    ));
   }
-  await loadClipItemID(data, client, setItemList);
+  await loadClipItemID(setItemList);
   const intervalID = setInterval(() => {
-    loadClipItemID(data, client, setItemList);
+    loadClipItemID(setItemList);
   }, 1000 * 60 * 10);
 
   return () => {
@@ -63,11 +69,11 @@ async function afterSignedIn(data: any, client: any, setItemList: any){
   };
 }
 
-export function init(data: any, client: any, setItemList: any){
+export function init(setItemList: any){
   console.log("/src/actions/App.tsx: init()");
   console.log("/src/components/App.tsx: useEffect(() => {}, [])");
 
-  let signOutCleanUpPromise = afterSignedIn(data, client, setItemList);
+  let signOutCleanUpPromise = afterSignedIn(setItemList);
 
   return () => {
     signOutCleanUpPromise.then(cleanup => cleanup());
