@@ -3,7 +3,6 @@ import { connect } from "react-redux";
 
 import gql from "graphql-tag";
 
-
 //@ts-ignore
 import GDL from "../GoogleDriveLibrary";
 

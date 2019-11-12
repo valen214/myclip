@@ -32,7 +32,6 @@ function onDoneButtonClick(dispatch: any, title: string, content: string){
 }
 function onContentChange(dispatch: any, content: string){
   setTextClipPageContent(dispatch, content);
-  console.log("/src/actions/TextClipPage.tsx: onContentChange()");
 }
 function onContentBlur(dispatch: any, content: string){
 

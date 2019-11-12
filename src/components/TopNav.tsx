@@ -54,7 +54,7 @@ const TopNav = ({
   const classes = useStyles({});
 
   return <React.Fragment>
-    <AppBar>{
+    <AppBar position="fixed">{
       mode == TopNavMode.normal ?
         <ToolBar>
           <IconButton edge="start" onClick={() => {}}>
@@ -89,7 +89,6 @@ const TopNav = ({
         </ToolBar> : <div>OH Hello!</div>
       }
     </AppBar>
-    <ToolBar />
   </React.Fragment>;
 };
 

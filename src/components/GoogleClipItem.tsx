@@ -14,27 +14,26 @@ export interface ClipItem {
   id?: string;
 };
 
-const GoogleClipItem = ({
-  item
-}: any) => {
+const GoogleClipItem = (props: any) => {
+  const { id } = props;
   const [ text, setText ] = useState("");
 
-  console.log(`create clip_item(id=${item.id})`);
+  console.log(`create clip_item(id=${id})`);
 
   useEffect(() => {
     (async () => {
-      const t = await GDL.getFileAsText(item.id);
+      const t = await GDL.getFileAsText(id);
       setText(t);
     })();
 
-  });
+  }, [id]);
 
   // https://material-ui.com/components/grid-list/
-  return <GridListTile>
-    <Typography>
-      {text}
-    </Typography>
-  </GridListTile>;
+  return <pre style={{ fontFamily: "Consolas",
+      wordBreak: "break-all", whiteSpace: "pre-wrap",
+      background: "#dfd", height: "auto", width: "100%" }}>
+    {text}
+  </pre>;
 };
 
 export default GoogleClipItem;

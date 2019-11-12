@@ -7,7 +7,7 @@ import { createHttpLink } from "apollo-link-http";
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { ApolloProvider } from "react-apollo";
 
-import { ITEM_LIST_QUERY } from "./constants/Query";
+import { GET_CLIP_ITEMS } from "./constants/Query";
 
 const typeDefs = `
   type ClipItem {
@@ -32,21 +32,16 @@ export const client = new ApolloClient({
   // url: "https://48p1r2roz4.sse.codesandbox.io",
   cache,
   link: createHttpLink({ fetch: customFetch }),
-  typeDefs,
+  // typeDefs,
   resolvers: {
     Query: {
-      clip_items(){
-        const data: any = cache.readQuery({ query: ITEM_LIST_QUERY });
-        console.log("Query: data:", data);
-        return data.clip_items;
-      }
     },
     Mutation: {
-      setItemList(parent, args, context, info){
+      setClipItems(parent, args, context, info){
         try{
-          let item_list_query = cache.readQuery({ query: ITEM_LIST_QUERY });
+          let item_list_query = cache.readQuery({ query: GET_CLIP_ITEMS });
           cache.writeQuery({
-            query: ITEM_LIST_QUERY,
+            query: GET_CLIP_ITEMS,
             data: {
               clip_items: args.list
             }
@@ -69,7 +64,7 @@ const initialData: any = {
 
 
 cache.writeQuery({
-  query: ITEM_LIST_QUERY,
+  query: GET_CLIP_ITEMS,
   data: {
     clip_items: [],
   }

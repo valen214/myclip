@@ -240,6 +240,30 @@ export async function deleteFileByID(id){
     }
 }
 
+export async function getFileChanges(max=1, fields="*"){
+  if(!Object.hasOwnProperty(getFileChanges, "startPageToken")){
+    let res = await gapi.client.drive.changes.getStartPageToken();
+    getFileChanges.startPageToken = res.result.startPageToken;
+  }
+  try{
+    var pageToken = getFileChanges.startPageToken;
+    let changes_list = [];
+    for(let i = 0; i < max && pageToken; ++i){
+      let res = await gapi.client.drive.changes.list({
+        pageToken, fields
+      });
+      for(let change of res.result.changes){
+        changes_list.push(change);
+      }
+      pageToken = res.result.nextPageToken;
+    }
+    return changes_list;
+  } catch(e){
+    delete getFileChanges.startPageToken;
+    return getFileChanges(max);
+  }
+}
+
 const GDL = {
     isSignedIn,
     addSignInListener,
@@ -253,6 +277,7 @@ const GDL = {
     getFileAsText,
     getFileAsBlob,
     deleteFileByID,
+    getFileChanges,
 };
 window.GDL = GDL;
 

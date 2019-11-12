@@ -8,8 +8,8 @@ import CreateClipMenu from "./CreateClipMenu";
 import GoogleClipItem from "./GoogleClipItem";
 import TextClipPage from "./TextClipPage";
 import { client } from "../ApolloHelper";
-import { SET_ITEM_LIST } from "../constants/Mutations"
-import { ITEM_LIST_QUERY } from "../constants/Query";
+import { GET_CLIP_ITEMS } from "../constants/Query";
+import { SET_CLIP_ITEMS } from "../constants/Mutations"
 
 import { hot } from 'react-hot-loader/root';
 
@@ -20,49 +20,58 @@ import React, { useState, useEffect } from "react";
 
 import { makeStyles, Theme, createStyles }
     from "@material-ui/core/styles";
-import GridList from "@material-ui/core/GridList";
+import Card from "@material-ui/core/Card";
+import CardContent from "@material-ui/core/CardContent";
+import Container from "@material-ui/core/Container";
+import Grid from "@material-ui/core/Grid";
+import Typography from "@material-ui/core/Typography";
+
 import SearchIcon from "@material-ui/icons/Search";
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
+  root: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    justifyContent: 'space-around',
+    overflow: 'hidden',
+  },
   createClipMenu: {
-    position: "absolute",
+    position: "fixed",
     bottom: theme.spacing(5),
     right: theme.spacing(5),
   },
-  gridList: {
-    width: "100%",
-    height: 500,
-    background: "#aaf"
-  }
+  offset: theme.mixins.toolbar,
 }));
 
 const App = ({
   state,
 }: any) => {
-
-
   const classes = useStyles({});
 
-  const [ setItemList, { loading } ] = useMutation(SET_ITEM_LIST);
-  const { data } = useQuery(ITEM_LIST_QUERY);
+  const { data } = useQuery(GET_CLIP_ITEMS);
+  const [ setItemList, { loading } ] = useMutation(SET_CLIP_ITEMS);
 
   useEffect(() => init(data, client, setItemList), []);
-  useEffect((function printStateOnGlobalChange(last_value?: any){
-  //@ts-ignore
-    if(("ps" in window) && window.ps && window.ps != last_value){
-      console.log("last_value:", last_value)
-  //@ts-ignore
-      window.ps = false;
-      console.log(JSON.stringify(state, null, 2));
-    }
-    setTimeout(printStateOnGlobalChange, 200, last_value);
-  }), []);
 
-  return <div>
+  return <div className={classes.root}>
     <TopNav />
-    <GridList className={classes.gridList} cols={2.5} cellHeight={160}>
-      {data && data.clip_items.map((item: any) => <GoogleClipItem key={item.id} item={item} />)}
-    </GridList>
+    <div className={classes.offset}
+        style={{ verticalAlign: "bottom", background: "#fdd", width: "500px" }}>
+      I am Top nav place holder
+    </div>
+    <Container>
+      <Grid container spacing={4}>
+        {data && data.clip_items.map(({ id }: any) => (
+          <Grid key={id} item xs={12} sm={6} md={4} >
+            <Card style={{ height: "300px", overflow: "hidden" }}>
+              <CardContent style={{ height: "100%" }}>
+                <GoogleClipItem id={id} />
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+    </Container>
     <CreateClipMenu
         className={classes.createClipMenu}
         createClip={(type: string, ...args: any[]) => {
