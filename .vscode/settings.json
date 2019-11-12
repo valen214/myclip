@@ -1,0 +1,134 @@
+{
+    "editor.detectIndentation": false,
+    "editor.fontFamily": "Consolas, 'Courier New', monospace",
+    "editor.fontSize": 12,
+    "editor.rulers": [80],
+    "editor.tabSize": 4,
+    "editor.wordWrap": "off",
+    "editor.wordWrapColumn": 80,
+    "editor.autoClosingBrackets": "never",
+    "editor.autoClosingQuotes": "never",
+    "editor.quickSuggestions": {
+        "strings": true,
+        "other": false,
+    },
+    "editor.acceptSuggestionOnEnter": "smart",
+    "editor.suggestOnTriggerCharacters": true,
+    "editor.autoIndent": false,
+    "editor.matchBrackets": false,
+    "editor.renderIndentGuides": false,
+
+    "explorer.autoReveal": true,
+
+    "editor.scrollbar.horizontal": "show",
+    "editor.scrollbar.vertical": "hidden",
+    "editor.smoothScrolling": true,
+    "editor.mouseWheelScrollSensitivity": 2,
+    "editor.hideCursorInOverviewRuler": true,
+    "editor.glyphMargin": false,
+
+    "workbench.colorTheme": "Monokai Dimmed",
+    "workbench.colorCustomizations": {
+        "settings.numberInputForeground": "#ff8000",
+        "editorOverviewRuler.errorForeground": "#0000",
+        "editorOverviewRuler.addedForeground": "#0000",
+        "editorOverviewRuler.warningForeground": "#0000",
+        "editorOverviewRuler.infoForeground": "#0000",
+        "editorOverviewRuler.currentContentForeground": "#0000",
+        "editorOverviewRuler.modifiedForeground": "#0000",
+        "editorOverviewRuler.wordHighlightForeground": "#0000",
+        "editorOverviewRuler.rangeHighlightForeground": "#0000",
+        "editorOverviewRuler.commonContentForeground": "#0000",
+        "editorOverviewRuler.selectionHighlightForeground": "#0000",
+        "editorOverviewRuler.wordHighlightStrongForeground": "#0000",
+        "editorOverviewRuler.findMatchForeground": "#0000",
+    },
+    "editor.tokenColorCustomizations": {
+    /*
+        "numbers": "#ff8000",
+        "types": "#8b8bff",
+        "keywords": "#5a5bff",
+    */
+        "variables": "#ffa9b4",
+        "strings": "#87cee8",
+        "functions": "#ddd",
+        "keywords": "#6565ff",
+        "types": "#9add32",
+    },
+    "workbench.editor.tabCloseButton": "off",
+    "workbench.settings.editor": "json",
+    "workbench.settings.openDefaultSettings": false,
+
+    "scm.diffDecorations": "none",
+
+    "eslint.enable": true,
+    "eslint.nodePath": "E:/workspace/node_modules",
+    "eslint.options": {
+        "configFile": "E:/workspace/node_modules/.bin/.eslintrc.json",
+    },
+    "eslint.validate":[
+        "javascript",
+        "javascriptreact",
+        "html",
+        "htm",
+    ],
+
+    "window.menuBarVisibility": "default",
+
+
+    "python.pythonPath": "C:/Program Files/Python37/python.exe",
+    "python.autoComplete.addBrackets": false,
+    "python.linting.pylintEnabled": true,
+    "python.linting.enabled": true,
+
+    "explorer.confirmDelete": false,
+    "[kotlin]": {
+    },
+    "editor.renderControlCharacters": true,
+
+    "kotlin.debounceTime": 1000,
+    "kotlin.wtf": "",
+
+    "breadcrumbs.enabled": false,
+
+    "editor.minimap.enabled": true,
+    "explorer.confirmDragAndDrop": false,
+
+    /*
+
+    "remote.SSH.configFile":
+        "D:/GoogleDrive/sync/main-custom-project/app/.vscode/ssh.config",
+
+    */
+    "git.ignoreMissingGitWarning": true,
+    "git.path": "C:/Users/User/AppData/Local/GitHubDesktop/app-1.6.5/resources/app/git/cmd/git.exe",
+    "git.enabled": false,
+
+    "bracket-pair-colorizer-2" :{
+        "showBracketsInGutter": true,
+        "forceIterationColorCycle": false,
+        "forceUniqueOpeningColor": false,
+        "showHorizontalScopeLine": false,
+        "colors": [
+            /*
+            https://en.wikipedia.org/wiki/Web_colors#X11_color_names
+            */
+            "Fuchsia",
+            "Salmon",
+            "Orange",
+            "Gold",
+            "Yellow",
+            "GreenYellow",
+            "Lime",
+            "Aqua",
+        ],
+        "demo": [[[[[[[[[[[[[[[[[[[[[[ ]]]]]]]]]]]]]]]]]]]]]],
+        "highlightActiveScope": true,
+        "activeScopeCSS": [
+            "borderStyle : solid",
+            "borderWidth : 0.5px",
+            "borderColor : {color}",
+            "opacity: 0.5"
+        ],
+    },
+}
