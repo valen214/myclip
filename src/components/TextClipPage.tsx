@@ -1,6 +1,8 @@
 
 import React, { useState, useEffect } from "react";
 
+import { useQuery } from "react-apollo";
+
 import { connect } from "react-redux";
 
 import { sizing } from '@material-ui/system';
@@ -16,6 +18,7 @@ import DoneIcon from "@material-ui/icons/Done";
 
 import InputBar from "./InputBar";
 import { TextClipPageWrapper } from "../actions/TextClipPage";
+import { TEXT_CLIP_PAGE_VISIBILITY } from "../constants/Query";
 
 const Transition = React.forwardRef<unknown, TransitionProps>(
     (props: any, ref: any) => (<Slide direction="up" ref={ref} {...props} />)
@@ -29,8 +32,12 @@ const TextClipPage = ({
     onContentChange,
     onContentBlur,
 }: any) => {
+  const { data } = useQuery(TEXT_CLIP_PAGE_VISIBILITY);
+  console.log("data.components.text_clip_page.visible:",
+      data.components.text_clip_page.visible);
+
   return <Dialog fullScreen
-      open={open}
+      open={data.components.text_clip_page.visible}
       TransitionComponent={Transition}>
     <Box display="flex" flexDirection="column" width="100%" height="100%">
       <InputBar

@@ -7,7 +7,7 @@ import { createHttpLink } from "apollo-link-http";
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { ApolloProvider } from "react-apollo";
 
-import { GET_CLIP_ITEMS } from "./constants/Query";
+import { GET_CLIP_ITEMS, TEXT_CLIP_PAGE_VISIBILITY } from "./constants/Query";
 
 const typeDefs = `
   type ClipItem {
@@ -25,7 +25,7 @@ const customFetch = (uri: string, options: object) => {
 };
 
 
-const cache = new InMemoryCache();
+export const cache = new InMemoryCache();
 
 
 export const client = new ApolloClient({
@@ -56,20 +56,29 @@ export const client = new ApolloClient({
 });
 
 const initialData: any = {
-  top_nav: {
-    visible: true,
+  components:{
+    __typename: "Object",
+    top_nav: {
+      __typename: "Object",
+      visible: true,
+    },
+    text_clip_page: {
+      __typename: "Object",
+      visible: false,
+    },
   },
-  // clip_items: [],
+  clip_items: [],
 };
+client.writeData({ data: initialData });
 
-
+/*
 cache.writeQuery({
   query: GET_CLIP_ITEMS,
   data: {
     clip_items: [],
   }
 });
-
+*/
 
 export const ApolloProviderWrapper = (props: any) => {
   return <ApolloProvider client={client} {...props}>

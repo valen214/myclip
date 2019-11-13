@@ -9,3 +9,14 @@ export const GET_CLIP_ITEMS = gql`
     }
   }
 `;
+
+
+export const TEXT_CLIP_PAGE_VISIBILITY = gql`
+  query GetTextClipPageVisibility @client {
+    components @client {
+      text_clip_page {
+        visible
+      }
+    }
+  }
+`;

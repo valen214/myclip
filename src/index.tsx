@@ -60,3 +60,18 @@ ReactDOM.render(
   ,
   document.getElementById("app")
 );
+
+declare global {
+  interface Window {
+    gql: any;
+    TEXT_CLIP_PAGE_VISIBILITY: any;
+    client: any
+  }
+}
+
+import gql from "graphql-tag";
+window.gql = gql;
+import { TEXT_CLIP_PAGE_VISIBILITY } from "./constants/Query";
+window.TEXT_CLIP_PAGE_VISIBILITY = TEXT_CLIP_PAGE_VISIBILITY;
+import { client } from "./ApolloHelper";
+window.client = client;

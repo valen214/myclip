@@ -27,7 +27,7 @@
     "editor.hideCursorInOverviewRuler": true,
     "editor.glyphMargin": false,
 
-    "workbench.colorTheme": "Monokai Dimmed",
+    "workbench.colorTheme": "Atom One Dark",
     "workbench.colorCustomizations": {
         "settings.numberInputForeground": "#ff8000",
         "editorOverviewRuler.errorForeground": "#0000",
@@ -48,12 +48,12 @@
         "numbers": "#ff8000",
         "types": "#8b8bff",
         "keywords": "#5a5bff",
-    */
+        "functions": "#ddd",
         "variables": "#ffa9b4",
         "strings": "#87cee8",
-        "functions": "#ddd",
         "keywords": "#6565ff",
         "types": "#9add32",
+    */
     },
     "workbench.editor.tabCloseButton": "off",
     "workbench.settings.editor": "json",
@@ -86,7 +86,7 @@
     },
     "editor.renderControlCharacters": true,
 
-    "kotlin.debounceTime": 1000,
+    "kotlin.linting.debounceTime": 1000,
     "kotlin.wtf": "",
 
     "breadcrumbs.enabled": false,

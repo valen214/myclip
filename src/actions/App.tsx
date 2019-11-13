@@ -5,8 +5,10 @@ import gql from "graphql-tag";
 
 //@ts-ignore
 import GDL from "../GoogleDriveLibrary";
+import { client } from "../ApolloHelper";
+import { GET_CLIP_ITEMS } from "../constants/Query";
 
-async function loadClipItemID(setItemList: any){
+async function loadClipItemID(){
   try{
     console.log("loading folder content");
     const files = await GDL.listAppFolder();
@@ -19,24 +21,20 @@ async function loadClipItemID(setItemList: any){
       return l;
     }, []);
     console.warn(`loadClipItemID(): ${JSON.stringify(l)}`);
+    
+    
+
+    client.writeQuery({
+      query: GET_CLIP_ITEMS,
+      data: {
+        clip_items: l,
+      }
+    });
+    /*
     setItemList({
       variables: {
         list: l
       }
-    });
-    /*
-    updateQuery(gql`
-      {
-        clip_items @cache {
-          id
-          name
-          __type
-        }
-      }
-      `, {
-      data: {
-        clip_items: l,
-      },
     });
     */
   } catch(e){
@@ -45,7 +43,7 @@ async function loadClipItemID(setItemList: any){
 }
 
 
-async function afterSignedIn(setItemList: any){
+async function afterSignedIn(){
 //@ts-ignore
   while(!("gapi" in window) || !("auth2" in window["gapi"])){
     await new Promise(resolve => setTimeout(resolve, 100));
@@ -59,9 +57,9 @@ async function afterSignedIn(setItemList: any){
       }
     ));
   }
-  await loadClipItemID(setItemList);
+  await loadClipItemID();
   const intervalID = setInterval(() => {
-    loadClipItemID(setItemList);
+    loadClipItemID();
   }, 1000 * 60 * 10);
 
   return () => {
@@ -69,11 +67,11 @@ async function afterSignedIn(setItemList: any){
   };
 }
 
-export function init(setItemList: any){
+export function init(){
   console.log("/src/actions/App.tsx: init()");
   console.log("/src/components/App.tsx: useEffect(() => {}, [])");
 
-  let signOutCleanUpPromise = afterSignedIn(setItemList);
+  let signOutCleanUpPromise = afterSignedIn();
 
   return () => {
     signOutCleanUpPromise.then(cleanup => cleanup());

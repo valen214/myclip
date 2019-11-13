@@ -4,8 +4,23 @@ import { connect } from "react-redux";
 
 import { createAndUploadTextClipItem } from "./GoogleClipItem";
 
+import { client } from "../ApolloHelper";
+import { TEXT_CLIP_PAGE_VISIBILITY } from "../constants/Query";
+
 export function setTextClipPageVisible(dispatch: any, visible: boolean = false){
-  dispatch({ type: "SET_TEXT_CILP_PAGE_VISIBLE", visible })
+  // dispatch({ type: "SET_TEXT_CILP_PAGE_VISIBLE", visible })
+  client.writeQuery({
+    query: TEXT_CLIP_PAGE_VISIBILITY,
+    data: {
+      components: {
+        __typename: "Object",
+        text_clip_page: {
+          __typename: "Object",
+          visible
+        }
+      }
+    }
+  });
 }
 export function setTextClipPageTitle(dispatch: any, title: string){
   dispatch({ type: "SET_TEXT_CLIP_PAGE_TITLE", title })

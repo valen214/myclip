@@ -48,9 +48,7 @@ const App = ({
 }: any) => {
   const classes = useStyles({});
 
-  const [ setItemList, { loading } ] = useMutation(SET_CLIP_ITEMS);
-
-  useEffect(() => init(setItemList), []);
+  useEffect(() => init(), []);
 
   return <div className={classes.root}>
     <TopNav />
