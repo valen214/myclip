@@ -5,48 +5,47 @@ import { connect } from "react-redux";
 import { createAndUploadTextClipItem } from "./GoogleClipItem";
 
 import { client } from "../ApolloHelper";
-import { TEXT_CLIP_PAGE_VISIBILITY } from "../constants/Query";
+import { setComponentVisibility } from "./ComponentVisibility";
+import { setField } from "./GQLFlatten";
 
-export function setTextClipPageVisible(dispatch: any, visible: boolean = false){
+export function setTextClipPageTarget(target: any = "@CREATE_NEW"){
+  setField("components.text_clip_page.target", target);  
+}
+export function setTextClipPageVisible(visible: boolean = false){
   // dispatch({ type: "SET_TEXT_CILP_PAGE_VISIBLE", visible })
-  client.writeQuery({
-    query: TEXT_CLIP_PAGE_VISIBILITY,
-    data: {
-      components: {
-        __typename: "Object",
-        text_clip_page: {
-          __typename: "Object",
-          visible
-        }
-      }
-    }
-  });
+  setComponentVisibility("text_clip_page", visible);
 }
-export function setTextClipPageTitle(dispatch: any, title: string){
-  dispatch({ type: "SET_TEXT_CLIP_PAGE_TITLE", title })
+export function setTextClipPageTitle(title: string){
+  setField("components.text_clip_page.title", title);
 }
-export function setTextClipPageContent(dispatch: any, content: string){
-  dispatch({ type: "SET_TEXT_CLIP_PAGE_CONTENT", content })
+export function setTextClipPageContent(content: string){
+  setField("components.text_clip_page.content", content);
 }
 
 
 function onCloseButtonClick(dispatch: any){
-  setTextClipPageVisible(dispatch, false);
-  setTextClipPageTitle(dispatch, "");
-  setTextClipPageContent(dispatch, "");
+  setTextClipPageTarget();
+  setTextClipPageVisible(false);
+  setTextClipPageTitle("");
+  setTextClipPageContent("");
 }
 function onTitleChange(dispatch: any, title: string){
-  setTextClipPageTitle(dispatch, title);
+  setTextClipPageTitle(title);
 }
-function onDoneButtonClick(dispatch: any, title: string, content: string){
-  setTextClipPageVisible(dispatch, false);
-  setTextClipPageTitle(dispatch, "");
-  setTextClipPageContent(dispatch, "");
+export function onDoneButtonClick(target: any, title: string, content: string){
+  setTextClipPageTarget();
+  setTextClipPageVisible(false);
+  setTextClipPageTitle("");
+  setTextClipPageContent("");
 
-  createAndUploadTextClipItem(title, content);
+  if(!target || target == "@CREATE_NEW"){
+    createAndUploadTextClipItem(title, content);
+  } else{
+    
+  }
 }
 function onContentChange(dispatch: any, content: string){
-  setTextClipPageContent(dispatch, content);
+  setTextClipPageContent(content);
 }
 function onContentBlur(dispatch: any, content: string){
 
@@ -63,8 +62,6 @@ export function TextClipPageWrapper(target: any){
     (dispatch: any) => ({
       onCloseButtonClick: () => onCloseButtonClick(dispatch),
       onTitleChange: (title: string) => onTitleChange(dispatch, title),
-      onDoneButtonClick: (title: string, content: string) => (
-          onDoneButtonClick(dispatch, title, content)),
       onContentChange: (content: string) => onContentChange(dispatch, content),
       onContentBlur: (content: string) => onContentBlur(dispatch, content),
     })

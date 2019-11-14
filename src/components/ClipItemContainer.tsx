@@ -25,16 +25,7 @@ const ClipItemContainer = (props: any) => {
     <Grid container spacing={2}>
       {data && data.clip_items.map(({ id }: any) => (
         <Grid item key={id} xs={12} sm={6} md={4} >
-          <Card raised style={{
-              height: "auto",
-              overflow: "hidden",
-              maxHeight: "300px", }}>
-            <CardContent style={{
-                padding: "12px"
-                }}>
-              <GoogleClipItem id={id} />
-            </CardContent>
-          </Card>
+          <GoogleClipItem id={id} />
         </Grid>
       ))}
     </Grid>

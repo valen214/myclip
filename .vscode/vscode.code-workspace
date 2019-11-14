@@ -1,0 +1,34 @@
+{
+	"folders": [
+		{
+			"path": "C:\\Users\\Administrator\\Desktop\\myclip"
+		}
+  ],
+  "settings": {
+    "explorer.autoReveal": true,
+    "workbench.colorTheme": "Atom One Dark",
+    "workbench.colorCustomizations": {
+      "settings.numberInputForeground": "#ff8000",
+      "editorOverviewRuler.errorForeground": "#0000",
+      "editorOverviewRuler.addedForeground": "#0000",
+      "editorOverviewRuler.warningForeground": "#0000",
+      "editorOverviewRuler.infoForeground": "#0000",
+      "editorOverviewRuler.currentContentForeground": "#0000",
+      "editorOverviewRuler.modifiedForeground": "#0000",
+      "editorOverviewRuler.wordHighlightForeground": "#0000",
+      "editorOverviewRuler.rangeHighlightForeground": "#0000",
+      "editorOverviewRuler.commonContentForeground": "#0000",
+      "editorOverviewRuler.selectionHighlightForeground": "#0000",
+      "editorOverviewRuler.wordHighlightStrongForeground": "#0000",
+      "editorOverviewRuler.findMatchForeground": "#0000"
+    },
+    "editor.tokenColorCustomizations": {},
+    "workbench.editor.tabCloseButton": "off",
+    "workbench.settings.editor": "json",
+    "workbench.settings.openDefaultSettings": false,
+    "explorer.confirmDelete": false,
+    "breadcrumbs.enabled": false,
+    "explorer.confirmDragAndDrop": false,
+    "git.ignoreMissingGitWarning": true
+  }
+}

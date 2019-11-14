@@ -1,7 +1,10 @@
 
 //@ts-ignore
 import GDL from "../GoogleDriveLibrary";
-
+import { setComponentVisibility } from "./ComponentVisibility";
+import { setTextClipPageTarget,
+    setTextClipPageTitle,
+    setTextClipPageContent } from "./TextClipPage";
 
 export async function createAndUploadTextClipItem(
     title: string, content: string){
@@ -13,4 +16,12 @@ export async function createAndUploadTextClipItem(
         "discard empty text clip");
     return false
   }
+}
+
+
+export function onClipItemClick(id: string, title: string, content: string){
+  setTextClipPageTarget(id);
+  setTextClipPageTitle(title);
+  setTextClipPageContent(content);
+  setComponentVisibility("text_clip_page", true);
 }

@@ -65,13 +65,29 @@ declare global {
   interface Window {
     gql: any;
     TEXT_CLIP_PAGE_VISIBILITY: any;
-    client: any
+    client: any;
+    getField: any;
+    setField: any;
+    InMemoryCache: any;
+    createHttpLink: any;
+    ApolloClient: any;
   }
 }
 
 import gql from "graphql-tag";
 window.gql = gql;
-import { TEXT_CLIP_PAGE_VISIBILITY } from "./constants/Query";
-window.TEXT_CLIP_PAGE_VISIBILITY = TEXT_CLIP_PAGE_VISIBILITY;
 import { client } from "./ApolloHelper";
 window.client = client;
+
+import { setField, getField } from "./actions/GQLFlatten";
+window.getField = getField;
+window.setField = setField;
+
+import { InMemoryCache } from 'apollo-cache-inmemory';
+window.InMemoryCache = InMemoryCache;
+
+import { createHttpLink } from "apollo-link-http";
+window.createHttpLink = createHttpLink;
+
+import ApolloClient from "apollo-client";
+window.ApolloClient = ApolloClient;

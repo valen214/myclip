@@ -11,11 +11,14 @@ export const GET_CLIP_ITEMS = gql`
 `;
 
 
-export const TEXT_CLIP_PAGE_VISIBILITY = gql`
+export const TEXT_CLIP_PAGE_PROPERTIES = gql`
   query GetTextClipPageVisibility @client {
     components @client {
       text_clip_page {
         visible
+        target
+        title
+        content
       }
     }
   }

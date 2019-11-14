@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { setTextClipPageVisible } from "./TextClipPage";
 
 export function onCreateTextClipButtonClick(dispatch: any){
-  setTextClipPageVisible(dispatch, true);
+  setTextClipPageVisible(true);
 }
 
 
