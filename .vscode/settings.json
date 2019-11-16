@@ -61,11 +61,17 @@
 
     "scm.diffDecorations": "none",
 
+    "jshint.options": {
+      "esversion": 6,
+    },
+
     "eslint.enable": true,
+    /*
     "eslint.nodePath": "E:/workspace/node_modules",
     "eslint.options": {
         "configFile": "E:/workspace/node_modules/.bin/.eslintrc.json",
     },
+    */
     "eslint.validate":[
         "javascript",
         "javascriptreact",

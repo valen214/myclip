@@ -1,4 +1,5 @@
 
+//@ts-ignore
 import React from "react";
 
 import gql from 'graphql-tag';
@@ -116,90 +117,107 @@ console.log(content); // Hello World
 })();
 
 */
+dummy();
+function dummy(){
 
 
-/*
 
-(() => {
+(async () => { try{
 
 const client = new ApolloClient({
   cache: new InMemoryCache(),
   link: createHttpLink(),
-  typeDefs: gql`
-    type Query {
-      content: String
-      CustomQ(foo: String): String
-    }
-    type CustomQ {
-      content: String
-      foo: String
-    }
-  `,
   resolvers: {
-    CustomQ(content, foo){
-      console.log("CustomQ resolver");
-    },
-    ReadContentWithUUID(parent, args, context, info){
-      console.log(parent, args, context, info);
-      return "OUTER ReadContentWithUUID RESOLVER";
-    },
     Query: {
-      foo(parent, args, context, info){
-        console.log("INNER FOO RESOLVER");
-      },
-      customQ(parent, args, context, info){
-        console.log(parent, args, context, info);
+      /*
+      file(obj, args, context, info){
+        console.log("%cquery resolver invoked", "color: #5f5");
+        console.log("%cobj:", "color: #5d5", obj);
+        console.log("%cargs:", "color: #5d5", args);
         return {
-          foo: "INNER QUERY RESOLVER customQ"
+          __typename: "File",
+          id: args.id,
+          content: new Blob(["asfd"]),
         };
-      },
-      CustomQ(parent, args, context, info){
-        console.log(parent, args, context, info);
-        return "INNER QUERY RESOLVER CustomQ";
-      },
-      ReadContentWithUUID(parent, args, context, info){
-        console.log(parent, args, context, info);
-        return "INNER ReadContentWithUUID RESOLVER";
-      },
+      }
+      */
     },
-    Mutation: {}
+    Mutation: {
+      async file(obj, args, context, info){
+        try{
+          console.log("%cMutation resolver invoked", "color: #5f5");
+          console.log("%cobj:", "color: #5d5", obj);
+          console.log("%cargs:", "color: #5d5", args);
+
+          let { id, content } = args;
+
+          let data = {
+            __typename: "File",
+            id,
+            content,
+          };
+
+          client.writeQuery({
+            query: gql`
+              query {
+                file(id: "${id}") {
+                  content
+                }
+              }
+            `,
+            data: {
+              file: data
+            }
+          });
+        } catch(e){
+          console.error(e);
+        }
+      }
+    }
   }
 });
 
 client.writeData({
   data: {
     content: "HI",
-    customQ: [
-      {
-        foo: "HEY",
-        content: "customQ_content",
-        __typename: "CustomQ",
-      }, {
-        foo: "NOT HEY",
-        content: "customQ_content",
-        __typename: "CustomQ",
-      }
-    ]
   }
 });
 
-let res = client.readQuery({
-  query: gql`
-    query ReadContentWithUUID($foo: String) @client {
-      CustomQ(foo: $foo) {
+client.mutate({
+  mutation: gql`
+    mutation($id: String!) {
+      file(id: $id, content: $content) @client {
         content
-        foo
       }
-      content
     }
   `,
   variables: {
-    "foo": "HEY",
+    id: "a.txt",
+    content: new Blob(["alright"]),
+  },
+});
+
+
+console.log("%cstart query", "color: #5f5");
+let res = await client.query({
+  query: gql`
+    query {
+      file(id: $id) @client {
+        content
+      }
+      content @client(always: true)
+    }
+  `,
+  variables: {
+    "id": "a.txt",
   }
 });
-console.log(JSON.stringify(res, null, 4));
+console.log("%cquery response:", "color: #5f5", res, "\n");
 
-})();
+console.log("%cfinal client cache:", "color: #5d5");
+console.log(client.extract());
+
+} catch(e){ console.error(e); } })();
 
 
-*/
+}

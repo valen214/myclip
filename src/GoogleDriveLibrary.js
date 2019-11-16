@@ -15,6 +15,13 @@ const SCOPE = [
     "https://www.googleapis.com/auth/drive.appfolder"
 ].join(" ");
 
+let enableLogging = false;
+const log = (...args) => {
+  if(enableLogging){
+    console.log(...args);
+  }
+};
+
 
 function importScript(url, callback, isAsync = false){
     const script = document.createElement("script");
@@ -41,14 +48,14 @@ function randomstring(len=8, alphabet="abcdefghijklmnopqrstuvwxyz"){
 const initialized = (async () => {
     try{
         if("gapi" in window){
-
+          log("gapi is loaded");
         } else{
             console.warn("'gapi' undefined, importing gapi script");
             await new Promise(ok =>{
                 importScript("https://apis.google.com/js/api.js", ok);
             });
         }
-        console.log("start initializing gapi");
+        log("start initializing gapi");
         await new Promise(ok => gapi.load("client:auth2", ok));
         await gapi.client.init({
             "apiKey": API_KEY,
@@ -56,7 +63,7 @@ const initialized = (async () => {
             "discoveryDocs": DISCOVERY_DOCS,
             "scope": SCOPE
         });
-        console.log("%cfinished initializing gapi", "#afd");
+        log("%cfinished initializing gapi", "#afd");
         return true;
     } catch(e){
         console.error(e);
@@ -95,7 +102,7 @@ export async function listFiles(parent="root"){
     await initialized;
     let res;
     try{
-        console.log('list app folder');
+        log('list app folder');
         res = await gapi.client.drive.files.list({
             spaces: "drive",
             q: `'${parent}' in parents`,
@@ -105,10 +112,10 @@ export async function listFiles(parent="root"){
         let files = res.result.files;
         if(files && files.length){
             files.forEach(file =>{
-                console.log("found file:", file.name, file.id);
+                log("found file:", file.name, file.id);
             });
         } else{
-            console.log('no file found');
+            log('no file found');
         }
         return files;
     } catch(e){
@@ -122,7 +129,7 @@ export async function listAppFolder(parent="appDataFolder"){
     await initialized;
     let res;
     try{
-        console.log('list app folder');
+        log('list app folder');
         res = await gapi.client.drive.files.list({
             spaces: "appDataFolder",
             q: `'${parent}' in parents`,
@@ -132,10 +139,10 @@ export async function listAppFolder(parent="appDataFolder"){
         let files = res.result.files;
         if(files && files.length){
             files.forEach(file =>{
-                console.log("found file:", file.name, file.id);
+                log("found file:", file.name, file.id);
             });
         } else{
-            console.log('no file found');
+            log('no file found');
         }
         return files;
     } catch(e){
@@ -146,7 +153,7 @@ export async function listAppFolder(parent="appDataFolder"){
 
 export async function uploadFile(path, data){
     await initialized;
-    console.log(`GoogleLibrary.js: uploadFile(${path}, ${data})`);
+    log(`GoogleLibrary.js: uploadFile(${path}, ${data})`);
     try{
         let [parents, name] = splitPath(path);
         let res = await gapi.client.drive.files.create({
@@ -165,7 +172,7 @@ export async function uploadFile(path, data){
             }
         });
         res = res.result;
-        console.log("file uploaded:", res);
+        log("file uploaded:", res);
     } catch(e){
         console.error(e);
     }
@@ -194,7 +201,7 @@ export async function uploadToAppFolder(filename, data){
             body: formData,
     });
     let obj = await res.json();
-    console.log("file uploaded to app folder: res:", obj);
+    log("file uploaded to app folder: res:", obj);
     return obj;
 }
 
@@ -202,7 +209,7 @@ export async function getFile(id){
     if(!id){
       throw "empty fild id!";
     }
-    console.log(`GoogleLibrary.js: getFile(${id})`);
+    log(`GoogleLibrary.js: getFile(${id})`);
     await initialized;
     const access_token = gapi.auth2.getAuthInstance().currentUser.get(
             ).getAuthResponse().access_token;
@@ -215,7 +222,7 @@ export async function getFile(id){
                 "Accept": "text/plain,application/json;q=0.9,*/*;q=0.8",
             },
         });
-        console.log(res);
+        log(res);
         return res;
     } catch(e){
         console.error(e);
@@ -224,13 +231,13 @@ export async function getFile(id){
 export async function getFileAsText(id){
     let res = await getFile(id);
     let text = await res.text();
-    console.log(`getFileAsText(${id}): ${text}`);
+    log(`getFileAsText(${id}): ${text}`);
     return text;
 }
 export async function getFileAsBlob(id){
     let res = await getFile(id);
     let blob = await res.blob();
-    console.log(`getFileAsBlob(${id}): ${blob}`);
+    log(`getFileAsBlob(${id}): ${blob}`);
     return blob;
 }
 
@@ -240,15 +247,16 @@ export async function deleteFileByID(id){
       let res = await gapi.client.drive.files.delete({
           "fileId": id
       })
-      console.log("deleted id:%s completed, res:", id, res);
+      log("deleted id:%s completed, res:", id, res);
       console.assert(res.status === 204);
     } catch(e){
-      console.log("delete failed:", e);
+      log("delete failed:", e);
     }
 }
 
 export async function getFileChanges(max=1, fields="*"){
-  if(!Object.hasOwnProperty(getFileChanges, "startPageToken")){
+  if(!Object.prototype.hasOwnProperty.call(getFileChanges, "startPageToken")){
+    log("GDL.getFileChanges.startPageToken not found");
     let res = await gapi.client.drive.changes.getStartPageToken();
     getFileChanges.startPageToken = res.result.startPageToken;
   }
@@ -259,6 +267,7 @@ export async function getFileChanges(max=1, fields="*"){
       let res = await gapi.client.drive.changes.list({
         pageToken, fields
       });
+      log("have change:", res.result);
       for(let change of res.result.changes){
         changes_list.push(change);
       }
