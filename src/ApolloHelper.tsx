@@ -8,7 +8,9 @@ import { createHttpLink } from "apollo-link-http";
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { ApolloProvider } from "react-apollo";
 
-import { GET_CLIP_ITEMS } from "./constants/Query";
+import { CLIP_ITEM_LIST } from "./constants/Query";
+import { FileQueryResolvers, FileMutationResolvers
+    } from "./actions/GoogleDriveFileHelper";
 
 const typeDefs = `
   type ClipItem {
@@ -36,13 +38,15 @@ export const client = new ApolloClient({
   typeDefs,
   resolvers: {
     Query: {
+      ...FileQueryResolvers
     },
     Mutation: {
+      ...FileMutationResolvers,
       setClipItems(parent, args, context, info){
         try{
-          let item_list_query = cache.readQuery({ query: GET_CLIP_ITEMS });
+          let item_list_query = cache.readQuery({ query: CLIP_ITEM_LIST });
           cache.writeQuery({
-            query: GET_CLIP_ITEMS,
+            query: CLIP_ITEM_LIST,
             data: {
               clip_items: args.list
             }
@@ -117,7 +121,7 @@ console.log(content); // Hello World
 })();
 
 */
-dummy();
+// dummy();
 function dummy(){
 
 
@@ -148,6 +152,7 @@ const client = new ApolloClient({
           console.log("%cMutation resolver invoked", "color: #5f5");
           console.log("%cobj:", "color: #5d5", obj);
           console.log("%cargs:", "color: #5d5", args);
+          console.log("%ccontext:", "color: #5d5", context);
 
           let { id, content } = args;
 
@@ -180,6 +185,9 @@ const client = new ApolloClient({
 client.writeData({
   data: {
     content: "HI",
+    user: {
+      __typename: "User",
+    }
   }
 });
 
@@ -213,6 +221,19 @@ let res = await client.query({
   }
 });
 console.log("%cquery response:", "color: #5f5", res, "\n");
+
+console.log("\n%cuser query:", "color: #55f");
+res = await client.query({
+  query: gql`
+    query {
+      user @client {
+        name
+      }
+    }
+  `,
+});
+console.log("%cquery response:", "color: #55f", res, "\n");
+
 
 console.log("%cfinal client cache:", "color: #5d5");
 console.log(client.extract());

@@ -1,7 +1,7 @@
 
 import gql from "graphql-tag";
 
-export const GET_CLIP_ITEMS = gql`
+export const CLIP_ITEM_LIST = gql`
   query GetClipItems @client {
     clip_items {
       id

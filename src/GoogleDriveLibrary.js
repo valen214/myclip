@@ -1,4 +1,5 @@
 
+/*global gapi*/
 
 /**
 https://github.com/valen214/new-app/blob/master/src/system/__google_api_library.js
@@ -36,6 +37,7 @@ function splitPath(path){
     let name = path.substring(i + 1);
     return [parents, name];
 }
+// eslint-disable-next-line
 function randomstring(len=8, alphabet="abcdefghijklmnopqrstuvwxyz"){
     // https://jsperf.com/js-random-string-implementation-performance
     return crypto.getRandomValues(new Uint8Array(len)).reduce((l, r, i) => {
@@ -258,6 +260,7 @@ export async function getFileChanges(max=1, fields="*"){
   if(!Object.prototype.hasOwnProperty.call(getFileChanges, "startPageToken")){
     log("GDL.getFileChanges.startPageToken not found");
     let res = await gapi.client.drive.changes.getStartPageToken();
+    // eslint-disable-next-line
     getFileChanges.startPageToken = res.result.startPageToken;
   }
   try{

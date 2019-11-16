@@ -3,8 +3,9 @@
 import GDL from "../GoogleDriveLibrary";
 import GoogleClipItem from "./GoogleClipItem";
 
-import { GET_CLIP_ITEMS } from "../constants/Query";
+import { CLIP_ITEM_LIST } from "../constants/Query";
 
+//@ts-ignore
 import React, { useState, useEffect } from "react";
 
 import { useQuery, useMutation } from "@apollo/react-hooks";
@@ -18,7 +19,7 @@ import CloseIcon from "@material-ui/icons/Close";
 
 
 const ClipItemContainer = (props: any) => {
-  const { data } = useQuery(GET_CLIP_ITEMS);
+  const { data } = useQuery(CLIP_ITEM_LIST);
 
   // https://material-ui.com/components/grid-list/
   return <Container>

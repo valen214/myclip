@@ -8,7 +8,9 @@ import { client } from "../ApolloHelper";
 import { setComponentVisibility } from "./ComponentVisibility";
 import { setField } from "./GQLFlatten";
 
-export function setTextClipPageTarget(target: any = "@CREATE_NEW"){
+export const CREATE_NEW = "@CREATE_NEW"; // should this be inside ../constant/
+
+export function setTextClipPageTarget(target: any = ""){
   setField("components.text_clip_page.target", target);  
 }
 export function setTextClipPageVisible(visible: boolean = false){
@@ -38,7 +40,9 @@ export function onDoneButtonClick(target: any, title: string, content: string){
   setTextClipPageTitle("");
   setTextClipPageContent("");
 
-  if(!target || target == "@CREATE_NEW"){
+  if(!target){
+    console.error("text clip page done button click without target specified");
+  } else if(target === CREATE_NEW){
     createAndUploadTextClipItem(title, content);
   } else{
     

@@ -2,8 +2,9 @@
 //@ts-ignore
 import GDL from "../GoogleDriveLibrary";
 import { onClipItemClick } from "../actions/GoogleClipItem";
+import { useFileContent } from "../actions/GoogleDriveFileHelper";
 
-
+//@ts-ignore
 import React, { useState, useEffect } from "react";
 
 import Box from '@material-ui/core/Box';
@@ -18,22 +19,12 @@ export interface ClipItem {
   id?: string;
 };
 
-const GoogleClipItem = (props: any) => {
-  const { id } = props;
-  const [ title, setTitle ] = useState("");
-  const [ content, setContent ] = useState("");
-
-  useEffect(() => {
-    (async () => {
-      const t = await GDL.getFileAsText(id);
-      setContent(t);
-    })();
-
-  }, [id]);
+const GoogleClipItem = ({ id }: any) => {
+  const { name, content } = useFileContent(id);
 
   // https://material-ui.com/components/grid-list/
   return <Card raised
-      onClick={() => onClipItemClick(id, title, content)}
+      onClick={() => onClipItemClick(id, name, content)}
       style={{
         height: "auto",
         overflow: "hidden",

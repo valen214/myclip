@@ -1,7 +1,8 @@
 
+//@ts-ignore
 import React, { useState, useEffect } from "react";
 
-import { useQuery } from "react-apollo";
+import { useQuery } from "@apollo/react-hooks";
 
 import { connect } from "react-redux";
 
@@ -42,8 +43,7 @@ const TextClipPage = ({
       }
     }
   } = useQuery(TEXT_CLIP_PAGE_PROPERTIES);
-  console.log("text_clip_page:", target, visible, title, content);
-
+  
   return <Dialog fullScreen
       open={visible}
       TransitionComponent={Transition}>

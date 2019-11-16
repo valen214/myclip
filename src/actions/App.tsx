@@ -6,44 +6,9 @@ import gql from "graphql-tag";
 //@ts-ignore
 import GDL from "../GoogleDriveLibrary";
 import { client } from "../ApolloHelper";
-import { GET_CLIP_ITEMS } from "../constants/Query";
+import { startListeningToChanges } from "./GoogleDriveFileHelper";
 
-async function loadClipItemID(){
-  try{
-    console.log("loading folder content");
-    const files = await GDL.listAppFolder();
-    const l = files.reduce((l: any, r: any) => {
-      if("id" in r){
-        r.__typename = "ClipItem";
-        l.push(r);
-        // GDL.deleteFileByID(r.id);
-      }
-      return l;
-    }, []);
-    console.warn(`loadClipItemID(): ${JSON.stringify(l)}`);
-    
-    
-
-    client.writeQuery({
-      query: GET_CLIP_ITEMS,
-      data: {
-        clip_items: l,
-      }
-    });
-    /*
-    setItemList({
-      variables: {
-        list: l
-      }
-    });
-    */
-  } catch(e){
-    console.error(e);
-  }
-}
-
-
-async function afterSignedIn(){
+async function afterSignedIn(): Promise<Function> {
 //@ts-ignore
   while(!("gapi" in window) || !("auth2" in window["gapi"])){
     await new Promise(resolve => setTimeout(resolve, 100));
@@ -57,14 +22,8 @@ async function afterSignedIn(){
       }
     ));
   }
-  await loadClipItemID();
-  const intervalID = setInterval(() => {
-    loadClipItemID();
-  }, 1000 * 60 * 10);
-
-  return () => {
-    clearInterval(intervalID);
-  };
+  let cleanup_func = startListeningToChanges();
+  return cleanup_func;
 }
 
 export function init(){

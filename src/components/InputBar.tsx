@@ -1,4 +1,5 @@
 
+//@ts-ignore
 import React from "react";
 
 import AppBar from '@material-ui/core/AppBar';
@@ -12,7 +13,7 @@ import DoneIcon from '@material-ui/icons/Done';
 const InputBar = ({
       onInputBarClose, onInputChange, onInputDone,
       position, doneIcon = (<DoneIcon />),
-      placeholder = "",
+      placeholder = "", value
 }: any) => {
 
   return <AppBar position={position}>
@@ -24,7 +25,7 @@ const InputBar = ({
           onChange={(e: React.FormEvent<HTMLInputElement>) => {
             onInputChange(e.currentTarget.value);
           }}
-          style={{ flex: 1 }} margin="dense" />
+          style={{ flex: 1 }} margin="dense" value={value}/>
       <IconButton edge="end" onClick={onInputDone}>
         {doneIcon}
       </IconButton>
