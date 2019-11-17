@@ -74,6 +74,11 @@ const initialData: any = {
       title: "",
       content: "",
     },
+    clip_action_dialog: {
+      __typename: "Component",
+      visible: false,
+      target: null,
+    },
   },
   clip_items: [],
 };

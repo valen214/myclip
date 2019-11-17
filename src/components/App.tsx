@@ -3,30 +3,23 @@
 import GDL from "../GoogleDriveLibrary";
 
 import { AppWrapper, init } from "../actions/App";
+import ClipActionDialog from "./ClipActionDialog";
 import ClipItemContainer from "./ClipItemContainer";
 import CreateClipMenu from "./CreateClipMenu";
-import GoogleClipItem from "./GoogleClipItem";
 import TextClipPage from "./TextClipPage";
 import TopNav from "./TopNav";
-import { client } from "../ApolloHelper";
-import { SET_CLIP_ITEMS } from "../constants/Mutations"
 
 import { hot } from 'react-hot-loader/root';
 
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import gql from 'graphql-tag';
 
+//@ts-ignore // eslint ignore-next-line
 import React, { useState, useEffect } from "react";
 
 import { makeStyles, Theme, createStyles }
     from "@material-ui/core/styles";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import Container from "@material-ui/core/Container";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
-
-import SearchIcon from "@material-ui/icons/Search";
+import CssBaseline from "@material-ui/core/CssBaseline";
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   root: {
@@ -51,6 +44,7 @@ const App = ({
   useEffect(() => init(), []);
 
   return <div className={classes.root}>
+    <CssBaseline />
     <TopNav />
     <div className={classes.offset}
         style={{ display: "flex", flexDirection: "column",
@@ -70,6 +64,7 @@ const App = ({
           }
         }} />
     <TextClipPage />
+    <ClipActionDialog />
   </div>;
 };
 

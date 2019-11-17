@@ -25,3 +25,7 @@ export function onClipItemClick(id: string, title: string, content: string){
   setTextClipPageContent(content);
   setComponentVisibility("text_clip_page", true);
 }
+
+export function onClipActionClick(id: string){
+  setComponentVisibility("clip_action_dialog", true);
+}
