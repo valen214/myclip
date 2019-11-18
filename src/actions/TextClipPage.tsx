@@ -1,7 +1,5 @@
 
 
-import { connect } from "react-redux";
-
 import { createAndUploadTextClipItem } from "./GoogleClipItem";
 
 import { client } from "../ApolloHelper";
@@ -48,26 +46,10 @@ export function onDoneButtonClick(target: any, title: string, content: string){
     
   }
 }
-function onContentChange(dispatch: any, content: string){
-  setTextClipPageContent(content);
+
+function onContentChange(e: React.FormEvent<HTMLInputElement>){
+  setTextClipPageContent(e.currentTarget.value);
 }
-function onContentBlur(dispatch: any, content: string){
+function onContentBlur(e: React.FormEvent<HTMLInputElement>){
 
-}
-
-
-export function TextClipPageWrapper(target: any){
-  return connect(
-    (state: any) => ({
-      open: state.text_clip_page.visible,
-      title: state.text_clip_page.title,
-      content: state.text_clip_page.content,
-    }),
-    (dispatch: any) => ({
-      onCloseButtonClick: () => onCloseButtonClick(dispatch),
-      onTitleChange: (title: string) => onTitleChange(dispatch, title),
-      onContentChange: (content: string) => onContentChange(dispatch, content),
-      onContentBlur: (content: string) => onContentBlur(dispatch, content),
-    })
-  )(target);
 }

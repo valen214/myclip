@@ -89,6 +89,9 @@ export async function addSignInListener(func){
   await waitTillAuth2Initialized();
   gapi.auth2.getAuthInstance().isSignedIn.listen(func);
 }
+export async function removeSignInListener(func){
+
+}
 
 export async function signIn(){
   await waitTillAuth2Initialized();
@@ -181,7 +184,6 @@ export async function uploadFile(path, data){
 
 }
 
-// check out FormData
 export async function uploadToAppFolder(filename, data){
     await initialized;
     const access_token = gapi.auth2.getAuthInstance().currentUser.get(
@@ -197,6 +199,30 @@ export async function uploadToAppFolder(filename, data){
     let res = await fetch("https://www.googleapis.com/" +
             "upload/drive/v3/files?uploadType=multipart&fields=id", {
             "method": "POST",
+            "headers": {
+                "Authorization": "Bearer " + access_token,
+            },
+            body: formData,
+    });
+    let obj = await res.json();
+    log("file uploaded to app folder: res:", obj);
+    return obj;
+}
+export async function patchToAppFolder(id, data){
+    await initialized;
+    const access_token = gapi.auth2.getAuthInstance().currentUser.get(
+            ).getAuthResponse().access_token;
+    
+    let formData = new FormData();
+    formData.append("meta", new Blob([JSON.stringify({
+        // "name": filename,
+        // "parents": ["appDataFolder"],
+    })], { type: "application/json; charset=UTF-8" }));
+    formData.append("body", await new Response(data).blob());
+
+    let res = await fetch("https://www.googleapis.com/" +
+            "drive/v3/files/" + id + "?uploadType=multipart&fields=id", {
+            "method": "PATCH",
             "headers": {
                 "Authorization": "Bearer " + access_token,
             },
@@ -286,12 +312,14 @@ export async function getFileChanges(max=1, fields="*"){
 const GDL = {
     isSignedIn,
     addSignInListener,
+    removeSignInListener,
     signIn,
     signOut,
     listFiles,
     listAppFolder,
     uploadFile,
     uploadToAppFolder,
+    patchToAppFolder,
     getFile,
     getFileAsText,
     getFileAsBlob,

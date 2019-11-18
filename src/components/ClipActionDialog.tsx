@@ -1,72 +1,97 @@
 
-import { onClose } from "../actions/ClipActionDialog";
-
 //@ts-ignore
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 
-import gql from "graphql-tag";
+import { RootState } from "../logic/rootReducer";
+import {
+  setVisible,
+  setTarget,
+} from "../logic/clipActionDialogSlice";
+import {
+  removeDisplayedClipItem
+} from "../logic/clipItemSlice";
 
-import { useQuery } from "@apollo/react-hooks";
-
+import {
+    makeStyles, Theme, createStyles
+} from "@material-ui/core/styles";
 import { TransitionProps } from '@material-ui/core/transitions';
-import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
-import Container from '@material-ui/core/Container';
 import Dialog from "@material-ui/core/Dialog";
 import Grid from "@material-ui/core/Grid";
-import IconButton from "@material-ui/core/IconButton";
 import Slide from "@material-ui/core/Slide";
-import TextField from "@material-ui/core/TextField";
-import ToolBar from '@material-ui/core/ToolBar';
 
-import CloseIcon from "@material-ui/icons/Close";
-import DoneIcon from '@material-ui/icons/Done';
-
-const CLIP_ACTION_DIALOG_PROPERTIES = gql`
-  query {
-    components {
-      clip_action_dialog {
-        visible
-        target
-      }
-    }
-  }
-`;
 
 const Transition = React.forwardRef<unknown, TransitionProps>(
     (props: any, ref: any) => (<Slide direction="up" ref={ref} {...props} />)
+    // mountOnEnter unmountOnExit
 );
 
 
-const ClipActionDialog = ({
-      onInputBarClose, onInputChange, onInputDone,
-      position, doneIcon = (<DoneIcon />),
-      placeholder = "", value
-}: any) => {
-  const {
-    data: {
-      components: {
-        clip_action_dialog: {
-          visible,
-          target,
-        }
-      }
-    }
-  } = useQuery(CLIP_ACTION_DIALOG_PROPERTIES);
+const useStyles = makeStyles((theme: Theme) => createStyles({
+  wrapper: {
+    width: "100%",
+    height: 100,
+    position: "fixed",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    pointerEvents: "none",
+  },
+  paper: {
+    pointerEvents: "all",
+  },
+}));
 
-  return <Dialog open={visible}
-      onClose={onClose} fullWidth
-      TransitionComponent={Transition}>
-    <Container>
-      <Grid container>
-        <Grid item>
-          <Button>
-            Edit
-          </Button>
-        </Grid>
+const ClipActionDialog = ({}: any) => {
+  const classes = useStyles({});
+  const dispatch = useDispatch();
+  const {
+    visible, target
+  } = useSelector((state: RootState) => state.clipActionDialog);
+
+  const onClose = React.useCallback(() => {
+    dispatch(setVisible(false));
+    dispatch(setTarget(""));
+  }, [dispatch, visible, target]);
+
+  return <Dialog fullWidth
+      open={visible}
+      TransitionComponent={Transition}
+      onClose={onClose}
+      PaperProps={{
+        style: {
+          width: "100%",
+          maxWidth: "none",
+          margin: "0",
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          paddingBottom: 15,
+        }
+      }}>
+    <Grid container>
+      <Grid item>
+        <Button>
+          Edit
+        </Button>
       </Grid>
-    </Container>
-  </Dialog>;
+      <Grid item>
+        <Button>
+          Share
+        </Button>
+      </Grid>
+      <Grid item>
+        <Button onClick={() => {
+              dispatch(removeDisplayedClipItem(target))
+              onClose();
+            }}>
+          Delete
+        </Button>
+      </Grid>
+    </Grid>
+  </Dialog>
+  ;
 };
 
 export default ClipActionDialog;

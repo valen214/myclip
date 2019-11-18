@@ -41,25 +41,37 @@ import ReactDOM from "react-dom";
 import { createStore } from "redux";
 import { Provider } from "react-redux";
 
-import { ApolloProviderWrapper } from "./ApolloHelper";
+import store from "./logic/store";
 
 import App from "./components/App";
+
+
+import { ApolloProviderWrapper } from "./ApolloHelper";
 import { GroupedContextProvider } from "./contexts/GroupedContextProvider";
-import reducer from "./reducers";
 
-export const store = createStore(reducer);
 
-ReactDOM.render(
-  <ApolloProviderWrapper>
-    <Provider store={store}>
-      <GroupedContextProvider>
-        <App />
-      </GroupedContextProvider>
-    </Provider>
-  </ApolloProviderWrapper>
-  ,
-  document.getElementById("app")
-);
+const render = () => {
+  ReactDOM.render(
+    <ApolloProviderWrapper>
+      <Provider store={store}>
+        <GroupedContextProvider>
+          <App />
+        </GroupedContextProvider>
+      </Provider>
+    </ApolloProviderWrapper>
+    ,
+    document.getElementById("app")
+  );
+};
+
+render();
+
+if (process.env.NODE_ENV === 'development' && module.hot) {
+  module.hot.accept('./components/App', render)
+}
+
+
+
 
 declare global {
   interface Window {

@@ -7,8 +7,19 @@ import { CLIP_ITEM_LIST } from "../constants/Query";
 
 //@ts-ignore
 import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from 'react-redux'
 
-import { useQuery, useMutation } from "@apollo/react-hooks";
+import { RootState } from "../logic/rootReducer";
+
+import {
+  addDisplayedClipItem,
+  setDisplayedClipItems,
+  removeDisplayedClipItem,
+  addCachedClipItem,
+  setCachedClipItemInfo,
+  removeCachedClipItem,
+} from "../logic/clipItemSlice"
+
 
 import Card from "@material-ui/core/Card";
 import CardContent from '@material-ui/core/CardContent';
@@ -19,12 +30,14 @@ import CloseIcon from "@material-ui/icons/Close";
 
 
 const ClipItemContainer = (props: any) => {
-  const { data } = useQuery(CLIP_ITEM_LIST);
-
+  const dispatch = useDispatch();
+  const list: string[] = useSelector((state: RootState) => {
+      return state.clipItem.displayedClipItemsID
+  });
   // https://material-ui.com/components/grid-list/
   return <Container>
     <Grid container spacing={2}>
-      {data && data.clip_items.map(({ id }: any) => (
+      {list.map((id: string) => (
         <Grid item key={id} xs={12} sm={6} md={4} >
           <GoogleClipItem id={id} />
         </Grid>

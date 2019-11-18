@@ -1,16 +1,24 @@
 
 //@ts-ignore
 import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 
-import { connect } from "react-redux";
+import { RootState } from "../logic/rootReducer";
+import {
+  setButtonVisible,
+  setMenuVisible
+} from "../logic/createClipMenuSlice"
+import {
+  setVisible as setTextClipPageVisible,
+  setTarget as setTextClipPageTarget,
+} from "../logic/textClipPageSlice";
 
 import { makeStyles, Theme, createStyles }
     from "@material-ui/core/styles";
-import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
+import Box from "@material-ui/core/Box";
 import Fab from '@material-ui/core/Fab';
 import Fade from "@material-ui/core/Fade";
-import Grid from "@material-ui/core/Grid";
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 import Menu from "@material-ui/core/Menu";
@@ -19,12 +27,6 @@ import Zoom from "@material-ui/core/Zoom";
 import { TransitionProps } from '@material-ui/core/transitions';
 
 import AddIcon from "@material-ui/icons/Add";
-
-import { getVisibilityController } from "../contexts/ComponentsVisibility";
-import StaticComponents from "../constants/StaticComponents";
-
-import { CreateClipMenuWrapper } from "../actions/CreateClipMenu";
-
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   createClipButton: {
@@ -41,30 +43,37 @@ const CreateCilpMenu = ({
     className, createClip, onCreateTextClipButtonClick
 }: any) => {
   const classes = useStyles({});
-  const controller = getVisibilityController();
+  const dispatch = useDispatch();
   const [ anchorEl, setAnchorEl ] = useState<null | HTMLElement>(null);
-  const [ openTextPage, setOpenTextPage ] = useState(false);
+  const {
+    button_visible, menu_visible,
+  } = useSelector((state: RootState) => state.createClipMenu);
 
   const create_clip_button_click = (
       e: React.MouseEvent<HTMLButtonElement>) => {
-    controller.setVisible(StaticComponents.CREATE_CLIP_MENU, true);
+    dispatch(setMenuVisible(true));
     setAnchorEl(e.currentTarget);
   };
   const handleClose = () => {
+    dispatch(setMenuVisible(false));
     setAnchorEl(null);
   }
 
   const createClipButtonsTemplate = Object.entries({
-    "text": onCreateTextClipButtonClick,
+    "text": () => {
+      dispatch(setTextClipPageVisible(true));
+      dispatch(setTextClipPageTarget(""));
+    },
     "image": () => {},
     "file": () => {},
     "folder": () => {},
     "drawing": () => {},
     "webpage": () => {},
+    "from pasteboard": () => {},
   });
 
   return <React.Fragment>
-    <Fade in={controller.isVisible(StaticComponents.CREATE_CLIP_BUTTON)}>
+    <Fade in={button_visible}>
       <Fab className={className} onClick={create_clip_button_click}>
         <AddIcon />
       </Fab>
@@ -73,8 +82,7 @@ const CreateCilpMenu = ({
         keepMounted
         anchorEl={anchorEl}
         getContentAnchorEl={null}
-        open={Boolean(anchorEl) &&
-            controller.isVisible(StaticComponents.CREATE_CLIP_MENU)}
+        open={Boolean(anchorEl) && menu_visible}
         onClose={handleClose}
         TransitionComponent={Transition}
         anchorOrigin={{ vertical: 'center', horizontal: 'center' }}
@@ -100,4 +108,4 @@ const CreateCilpMenu = ({
   </React.Fragment>;
 };
 
-export default CreateClipMenuWrapper(CreateCilpMenu);
+export default CreateCilpMenu;

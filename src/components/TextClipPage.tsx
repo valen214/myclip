@@ -1,10 +1,27 @@
 
-//@ts-ignore
-import React, { useState, useEffect } from "react";
-
 import { useQuery } from "@apollo/react-hooks";
 
-import { connect } from "react-redux";
+//@ts-ignore
+import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from 'react-redux'
+
+import { RootState } from "../logic/rootReducer";
+
+import {
+  setVisible,
+  setTitle,
+  setContent,
+  setTarget,
+} from "../logic/textClipPageSlice";
+import {
+  addDisplayedClipItem,
+  setDisplayedClipItems,
+  removeDisplayedClipItem,
+  addCachedClipItem,
+  setCachedClipItemInfo,
+  removeCachedClipItem,
+  uploadClipItem,
+} from "../logic/clipItemSlice"
 
 import { sizing } from '@material-ui/system';
 import { makeStyles, Theme, createStyles }
@@ -15,34 +32,24 @@ import InputBase from "@material-ui/core/InputBase";
 import Slide from "@material-ui/core/Slide";
 import { TransitionProps } from '@material-ui/core/transitions';
 
-import DoneIcon from "@material-ui/icons/Done";
-
 import InputBar from "./InputBar";
-import { onDoneButtonClick, TextClipPageWrapper } from "../actions/TextClipPage";
-import { TEXT_CLIP_PAGE_PROPERTIES } from "../constants/Query";
 
 const Transition = React.forwardRef<unknown, TransitionProps>(
     (props: any, ref: any) => (<Slide direction="up" ref={ref} {...props} />)
 );
 
-const TextClipPage = ({
-    onCloseButtonClick,
-    onTitleChange,
-    onContentChange,
-    onContentBlur,
-}: any) => {
+const TextClipPage = (props: any) => {
+  const dispatch = useDispatch();
   const {
-    data: {
-      components: {
-        text_clip_page: {
-          visible,
-          target,
-          title,
-          content,
-        }
-      }
-    }
-  } = useQuery(TEXT_CLIP_PAGE_PROPERTIES);
+      visible, target, title = "", content = ""
+  } = useSelector((state: RootState) => state.textClipPage);
+
+  const onClose = React.useCallback(() => {
+    dispatch(setVisible(false))
+    dispatch(setTarget(""))
+    dispatch(setTitle(""))
+    dispatch(setContent(""))
+  }, [dispatch]);
   
   return <Dialog fullScreen
       open={visible}
@@ -50,9 +57,16 @@ const TextClipPage = ({
     <Box display="flex" flexDirection="column" width="100%" height="100%">
       <InputBar
           position="sticky"
-          onInputBarClose={onCloseButtonClick}
-          onInputChange={(text: string) => onTitleChange(text)}
-          onInputDone={() => onDoneButtonClick(target, title, content)}
+          onInputBarClose={onClose}
+          onInputChange={(text: string) => dispatch(setTitle(text))}
+          onInputDone={() => {
+            dispatch(uploadClipItem({
+              id: (target as string),
+              name: title,
+              content,
+            }))
+            onClose()
+          }}
           placeholder="Title (Optional)"
           value={title} />
       <Box display="flex" flexGrow={1} style={{
@@ -62,10 +76,10 @@ const TextClipPage = ({
           value={content}
           multiline fullWidth
           onChange={(e: React.FormEvent<HTMLInputElement>) => {
-            onContentChange(e.currentTarget.value);
+            dispatch(setContent(e.currentTarget.value))
           }}
           onBlur={(e: React.FormEvent<HTMLInputElement>) => {
-            onContentBlur(e.currentTarget.value);
+            dispatch(setContent(e.currentTarget.value))
           }}
           style={{
             alignItems: "start",
@@ -78,4 +92,4 @@ const TextClipPage = ({
   </Dialog>;
 };
 
-export default TextClipPageWrapper(TextClipPage);
+export default React.memo(TextClipPage);

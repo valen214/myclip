@@ -20,8 +20,8 @@ export function setField(field_chain: string, value: any){
   });
 }
 
-
-export function getField(field_chain: string, value: any){
+// single field only for now
+export function getField(field_chain: string, field_selectors?: any){
   let list = field_chain.split('.');
   
   let obj_chain = client.readQuery({

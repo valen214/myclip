@@ -2,13 +2,29 @@
 //@ts-ignore
 import GDL from "../GoogleDriveLibrary";
 
-import { TopNavMode } from "../constants/TopNav";
-import { TopNavWrapper } from "../actions/TopNav";
-
-
+//@ts-ignore
 import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from 'react-redux'
 
-import { connect } from "react-redux";
+import { RootState } from "../logic/rootReducer";
+
+import {
+  setSignedIn, signIn
+} from "../logic/appSlice"
+import {
+  addDisplayedClipItem,
+  setDisplayedClipItems,
+  removeDisplayedClipItem,
+  addCachedClipItem,
+  setCachedClipItemInfo,
+  removeCachedClipItem,
+} from "../logic/clipItemSlice"
+import {
+  TopNavMode,
+  setVisible,
+  setMode,
+  setSearchString,
+} from "../logic/topNavSlice";
 
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from '@material-ui/core/AppBar';
@@ -39,28 +55,19 @@ patterns/search.html#search-in-app-search
 */
 
 const TopNav = ({
-      mode,
       placeholder = "",
-      searchInput,
-
-      // normal mode
-      onMenuButtonClick,
-      onSearchButtonClick,
-      onSignInButtonClick,
-      onConfigButtonClick,
-
-      // search mode
-      onSearchCancelClick,
-      onSearchInputChange,
-      onSearchDoneClick,
 }: any) => {
   const classes = useStyles({});
+  
+  const dispatch = useDispatch();
+  const { visible, mode, searchString } = useSelector(
+      (state: RootState) => state.topNav);
+  const { signedIn } = useSelector((state: RootState) => state.app);
 
-  const [ signedIn, setSignedIn ] = useState(GDL.isSignedIn());
-
-  useEffect(() => {
-    GDL.addSignInListener(setSignedIn);
-  }, []);
+  const setNormalMode = React.useCallback(() => {
+    dispatch(setMode(TopNavMode.normal));
+    dispatch(setSearchString(""));
+  }, [dispatch]);
 
   return <React.Fragment>
     <AppBar position="fixed">{
@@ -72,27 +79,29 @@ const TopNav = ({
           <Typography variant="h6" style={{ flex: 1 }}>
             MyClip
           </Typography>
-          <IconButton onClick={onSearchButtonClick}>
+          <IconButton onClick={() => dispatch(setMode(TopNavMode.input))}>
             <SearchIcon />
           </IconButton>
           <Button
               variant="contained"
               color="primary"
               startIcon={<PersonIcon />}
-              onClick={onSignInButtonClick}>
+              onClick={() => dispatch(signIn())}>
             { signedIn ? "Sign Out" : "Sign In" }
           </Button>
         </ToolBar> :
       mode == TopNavMode.input ?
         <ToolBar style={{ background: "#eee" }}>
-          <IconButton edge="start" onClick={onSearchCancelClick}>
+          <IconButton edge="start" onClick={setNormalMode}>
             <ArrowBackIcon />
           </IconButton>
           <TextField placeholder={placeholder}
-              value={searchInput}
-              onChange={onSearchInputChange}
+              value={searchString}
+              onChange={(e: React.FormEvent<HTMLInputElement>) => {
+                dispatch(setSearchString(e.currentTarget.value));
+              }}
               style={{ flex: 1 }} margin="dense" />
-          <IconButton edge="end" onClick={onSearchDoneClick}>
+          <IconButton edge="end" onClick={setNormalMode}>
             <DoneIcon />
           </IconButton>
         </ToolBar> : <div>OH Hello!</div>
@@ -101,4 +110,4 @@ const TopNav = ({
   </React.Fragment>;
 };
 
-export default TopNavWrapper(TopNav);
+export default TopNav;
