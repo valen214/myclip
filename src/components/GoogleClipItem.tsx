@@ -45,14 +45,15 @@ export interface ClipItem {
 
 const GoogleClipItem = ({ id }: { id: string }) => {
   const dispatch = useDispatch();
-  const { id: _id, name, content } = useSelector((state: RootState) => {
-      if(Object.prototype.hasOwnProperty.call(
-            state.clipItem.cachedClipItems, id)){
-        return state.clipItem.cachedClipItems[id]
-      } else{
-        return { id }
-      }
-  });
+  const { id: _id, name, content, type } =
+      useSelector((state: RootState) => {
+          if(Object.prototype.hasOwnProperty.call(
+                state.clipItem.cachedClipItems, id)){
+            return state.clipItem.cachedClipItems[id]
+          } else{
+            return { id }
+          }
+      });
   console.assert(id === _id);
 
   const showTextClipPage = React.useCallback(() => {
@@ -79,11 +80,25 @@ const GoogleClipItem = ({ id }: { id: string }) => {
       <CardContent style={{
             padding: "12px",
           }}>
-        <div style={{ fontFamily: "Consolas", padding: "5px 2px",
-            wordBreak: "break-all", whiteSpace: "pre-wrap", // important
+        <div
+          style={{ // important
             background: "#dfd", width: "100%",
             maxHeight: "280px", overflow: "hidden", }}>
-          {content}
+          {
+            type ? (
+              type.startsWith("text") ? 
+                <div style={{
+                    fontFamily: "Consolas", padding: "5px 2px",
+                    wordBreak: "break-all", whiteSpace: "pre-wrap", }}>
+                  {content}
+                </div> :
+              type.startsWith("image") ?
+                <img src={content} style={{
+                  width: "100%", height: "100%",
+                }} /> :
+              "[BINARY DATA]"
+            ) : "[BINARY DATA]"
+          }
         </div>
       </CardContent>
     </CardActionArea>
@@ -97,7 +112,10 @@ const GoogleClipItem = ({ id }: { id: string }) => {
         <Typography style={{
               overflow: "hidden",
               textOverflow: "ellipsis",
-              textTransform: "none"
+              textTransform: "none",
+              fontWeight: 600,
+              lineHeight: 1.75,
+              fontSize: "0.8125rem",
             }}>
           {name}
         </Typography>
@@ -106,6 +124,18 @@ const GoogleClipItem = ({ id }: { id: string }) => {
           onClick={() => dispatch(deleteClipItem(id))}>
         Delete
       </Button>
+      { type ? (
+        type.startsWith("text") ?
+          <Button size="small" color="primary"
+              onClick={() => {}}>
+            Copy
+          </Button> :
+        type.startsWith("image") ?
+          <Button size="small" color="primary"
+              onClick={() => {}}>
+            Save
+          </Button> : undefined
+      ) : undefined}
     </CardActions>
   </Card>;
 };

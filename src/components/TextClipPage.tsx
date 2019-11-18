@@ -19,7 +19,7 @@ import {
   addCachedClipItem,
   setCachedClipItemInfo,
   removeCachedClipItem,
-  uploadClipItem,
+  uploadOrUpdateClipItem,
 } from "../logic/clipItemSlice"
 
 import { sizing } from '@material-ui/system';
@@ -62,9 +62,10 @@ const TextClipPage = (props: any) => {
             dispatch(setTitle(e.currentTarget.value))
           }}
           onInputDone={() => {
-            dispatch(uploadClipItem({
+            dispatch(uploadOrUpdateClipItem({
               id: (target as string),
               name: title,
+              type: "text/plain",
               content,
             }))
             onClose()

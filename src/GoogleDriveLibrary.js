@@ -19,7 +19,7 @@ const SCOPE = [
 let enableLogging = false;
 const log = (...args) => {
   if(enableLogging){
-    console.log(...args);
+    console["log"](...args);
   }
 };
 
@@ -130,7 +130,10 @@ export async function listFiles(parent="root"){
 }
 
 
-export async function listAppFolder(parent="appDataFolder"){
+export async function listAppFolder({
+  parent = "appDataFolder",
+  fields = "nextPageToken, files(id, name, mimeType)"
+} = {}){
     await initialized;
     let res;
     try{
@@ -139,7 +142,7 @@ export async function listAppFolder(parent="appDataFolder"){
             spaces: "appDataFolder",
             q: `'${parent}' in parents`,
             maxResults: 100,
-            fields: "nextPageToken, files(id, name)",
+            fields,
         });
         let files = res.result.files;
         if(files && files.length){
@@ -197,7 +200,7 @@ export async function uploadToAppFolder(filename, data){
     formData.append("body", await new Response(data).blob(), filename);
 
     let res = await fetch("https://www.googleapis.com/" +
-            "upload/drive/v3/files?uploadType=multipart&fields=id", {
+            "upload/drive/v3/files?uploadType=multipart&fields=id,mimeType", {
             "method": "POST",
             "headers": {
                 "Authorization": "Bearer " + access_token,
@@ -208,20 +211,21 @@ export async function uploadToAppFolder(filename, data){
     log("file uploaded to app folder: res:", obj);
     return obj;
 }
-export async function patchToAppFolder(id, data){
+export async function patchToAppFolder(id, data, filename){
     await initialized;
     const access_token = gapi.auth2.getAuthInstance().currentUser.get(
             ).getAuthResponse().access_token;
     
     let formData = new FormData();
     formData.append("meta", new Blob([JSON.stringify({
-        // "name": filename,
+        "name": filename,
         // "parents": ["appDataFolder"],
     })], { type: "application/json; charset=UTF-8" }));
     formData.append("body", await new Response(data).blob());
 
     let res = await fetch("https://www.googleapis.com/" +
-            "upload/drive/v3/files/" + id + "?uploadType=multipart&fields=id", {
+            "upload/drive/v3/files/" + id +
+            "?uploadType=multipart&fields=id,mimeType", {
             "method": "PATCH",
             "headers": {
                 "Authorization": "Bearer " + access_token,

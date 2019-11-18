@@ -22,9 +22,7 @@ const InputBar = ({
         <CloseIcon />
       </IconButton>
       <TextField {...{ position, value, onBlur, defaultValue }}
-          onChange={(e: React.FormEvent<HTMLInputElement>) => {
-            onInputChange(e.currentTarget.value);
-          }}
+          onChange={onInputChange}
           style={{ flex: 1 }} margin="dense"/>
       <IconButton edge="end" onClick={onInputDone}>
         {doneIcon}

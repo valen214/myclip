@@ -7,7 +7,7 @@ import GDL from "../GoogleDriveLibrary"
 import {
   ClipItem,
   addDisplayedClipItem,
-  addCachedClipItem,
+  downloadClipItemToCache,
 } from './clipItemSlice'
 
 interface AppState {
@@ -64,19 +64,12 @@ export const init = (): AppThunk => async dispatch => {
   try{
     console.log("loading folder content");
     const files = await GDL.listAppFolder();
-    files.forEach(({ id = undefined, name }: Partial<ClipItem>) => {
-      if(typeof id === "string"){
-        dispatch(addDisplayedClipItem({ id, name }));
-        GDL.getFileAsText(id).then(text => {
-          dispatch(addCachedClipItem({
-            id,
-            name,
-            content: text
-          }));
-        });
-      } else{
-        console.error("file retrieved from server missing id");
-      }
+    files.forEach(({
+      id, name, mimeType
+    }: { id: string, name: string, mimeType: string}) => {
+      let obj: ClipItem = { id, name, type: mimeType };
+      dispatch(addDisplayedClipItem(obj));
+      dispatch(downloadClipItemToCache(obj));
     })
 
   } catch(e){

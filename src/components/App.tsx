@@ -7,6 +7,7 @@ import ClipItemContainer from "./ClipItemContainer";
 import CreateClipMenu from "./CreateClipMenu";
 import TextClipPage from "./TextClipPage";
 import TopNav from "./TopNav";
+import FunctionalOverlay from "./FunctionalOverlay";
 import { init } from "../logic/appSlice";
 
 import { hot } from 'react-hot-loader/root';
@@ -56,7 +57,31 @@ const App = ({}: any) => {
     <CreateClipMenu className={classes.createClipMenu} />
     <TextClipPage />
     <ClipActionDialog />
+    <FunctionalOverlay />
   </div>;
 };
 
 export default hot(App);
+
+/*
+
+https://reactjs.org/docs/hooks-faq.html#how-can-i-measure-a-dom-node
+https://nextjs-starter.now.sh/
+https://codelabs.developers.google.com/
+https://medium.com/@bryanmanuele/
+how-i-implemented-my-own-spa-routing-system-in-vanilla-js-49942e3c4573
+
+https://www.youtube.com/watch?v=IxRJ8vplzAo
+
+
+https://pripri-anime.jp/tv/onair.php
+
+
+
+
+
+
+
+
+https://mostly-adequate.gitbooks.io/mostly-adequate-guide/
+*/
