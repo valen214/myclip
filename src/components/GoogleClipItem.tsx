@@ -15,6 +15,7 @@ import {
   addCachedClipItem,
   setCachedClipItemInfo,
   removeCachedClipItem,
+  deleteClipItem,
 } from "../logic/clipItemSlice"
 import {
   setVisible as setClipActionDialogVisible,
@@ -54,11 +55,6 @@ const GoogleClipItem = ({ id }: { id: string }) => {
   });
   console.assert(id === _id);
 
-  const deleteButtonClick = React.useCallback(() => {
-    dispatch(removeCachedClipItem(id));
-    dispatch(removeDisplayedClipItem(id));
-  }, [id]);
-
   const showTextClipPage = React.useCallback(() => {
     dispatch(setVisible(true))
     dispatch(setTarget(id))
@@ -92,11 +88,22 @@ const GoogleClipItem = ({ id }: { id: string }) => {
       </CardContent>
     </CardActionArea>
     <CardActions>
-      <IconButton onClick={showActionDialog}
-          size="small" color="primary">
-        <MoreVertIcon />
-      </IconButton>
-      <Button size="small" color="primary" onClick={deleteButtonClick}>
+      <Button onClick={showActionDialog}
+          size="small" color="primary"
+          startIcon={<MoreVertIcon />}
+          style={{
+            maxWidth: "50%",
+          }}>
+        <Typography style={{
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              textTransform: "none"
+            }}>
+          {name}
+        </Typography>
+      </Button>
+      <Button size="small" color="primary"
+          onClick={() => dispatch(deleteClipItem(id))}>
         Delete
       </Button>
     </CardActions>

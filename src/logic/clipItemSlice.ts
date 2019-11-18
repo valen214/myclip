@@ -89,15 +89,26 @@ export const uploadClipItem = (
 ): AppThunk => async dispatch => {
   try{
     if(Object.prototype.hasOwnProperty.call(obj, "id") && obj.id){
+      dispatch(setCachedClipItemInfo(<ClipItem>obj));
       let res = await GDL.patchToAppFolder(obj.id, obj.content);
       console.assert(res.id === obj.id);
     } else{
       let res = await GDL.uploadToAppFolder(obj.name, obj.content);
       obj.id = res.id;
+      dispatch(addCachedClipItem(<ClipItem>obj))
+      if(displayed) dispatch(addDisplayedClipItem(obj.id))
     }
-    dispatch(addCachedClipItem(<ClipItem>obj))
-    if(displayed) dispatch(addDisplayedClipItem(obj.id))
   } catch(e){
     console.error(e);
   }
 }
+
+export const deleteClipItem = (id: string): AppThunk => async dispatch => {
+  try{
+    dispatch(removeCachedClipItem(id))
+    dispatch(removeDisplayedClipItem(id))
+    await GDL.deleteFileByID(id);
+  } catch(e){
+    console.error(e);
+  }
+};

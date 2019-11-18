@@ -13,7 +13,7 @@ import DoneIcon from '@material-ui/icons/Done';
 const InputBar = ({
       onInputBarClose, onInputChange, onInputDone,
       position, doneIcon = (<DoneIcon />),
-      placeholder = "", value
+      placeholder = "", value, onBlur, defaultValue
 }: any) => {
 
   return <AppBar position={position}>
@@ -21,11 +21,11 @@ const InputBar = ({
       <IconButton edge="start" onClick={onInputBarClose}>
         <CloseIcon />
       </IconButton>
-      <TextField placeholder={placeholder}
+      <TextField {...{ position, value, onBlur, defaultValue }}
           onChange={(e: React.FormEvent<HTMLInputElement>) => {
             onInputChange(e.currentTarget.value);
           }}
-          style={{ flex: 1 }} margin="dense" value={value}/>
+          style={{ flex: 1 }} margin="dense"/>
       <IconButton edge="end" onClick={onInputDone}>
         {doneIcon}
       </IconButton>

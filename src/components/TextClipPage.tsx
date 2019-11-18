@@ -57,7 +57,10 @@ const TextClipPage = (props: any) => {
       <InputBar
           position="sticky"
           onInputBarClose={onClose}
-          onInputChange={(text: string) => dispatch(setTitle(text))}
+          // onInputChange={(text: string) => dispatch(setTitle(text))}
+          onBlur={(e: React.FormEven<HTMLInputElement>) => {
+            dispatch(setTitle(e.currentTarget.value))
+          }}
           onInputDone={() => {
             dispatch(uploadClipItem({
               id: (target as string),
@@ -67,15 +70,15 @@ const TextClipPage = (props: any) => {
             onClose()
           }}
           placeholder="Title (Optional)"
-          value={title} />
+          defaultValue={title} />
       <Box display="flex" flexGrow={1} style={{
             padding: 15,
           }}>
         <InputBase
-          value={content}
+          defaultValue={content}
           multiline fullWidth
           onChange={(e: React.FormEvent<HTMLInputElement>) => {
-            dispatch(setContent(e.currentTarget.value))
+            // dispatch(setContent(e.currentTarget.value))
           }}
           onBlur={(e: React.FormEvent<HTMLInputElement>) => {
             dispatch(setContent(e.currentTarget.value))

@@ -25,6 +25,9 @@ import {
   setMode,
   setSearchString,
 } from "../logic/topNavSlice";
+import {
+  setButtonVisible as setCreateClipButtonVisible
+} from "../logic/createClipMenuSlice";
 
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from '@material-ui/core/AppBar';
@@ -67,6 +70,11 @@ const TopNav = ({
   const setNormalMode = React.useCallback(() => {
     dispatch(setMode(TopNavMode.normal));
     dispatch(setSearchString(""));
+    dispatch(setCreateClipButtonVisible(true))
+  }, [dispatch]);
+  const setInputMode = React.useCallback(() => {
+    dispatch(setMode(TopNavMode.input))
+    dispatch(setCreateClipButtonVisible(false))
   }, [dispatch]);
 
   return <React.Fragment>
@@ -79,7 +87,7 @@ const TopNav = ({
           <Typography variant="h6" style={{ flex: 1 }}>
             MyClip
           </Typography>
-          <IconButton onClick={() => dispatch(setMode(TopNavMode.input))}>
+          <IconButton onClick={setInputMode}>
             <SearchIcon />
           </IconButton>
           <Button

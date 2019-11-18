@@ -45,15 +45,11 @@ import store from "./logic/store";
 
 import App from "./components/App";
 
-import { GroupedContextProvider } from "./contexts/GroupedContextProvider";
-
 
 const render = () => {
   ReactDOM.render(
     <Provider store={store}>
-      <GroupedContextProvider>
-        <App />
-      </GroupedContextProvider>
+      <App />
     </Provider>
     ,
     document.getElementById("app")

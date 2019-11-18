@@ -25,6 +25,7 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     flexWrap: 'wrap',
     justifyContent: 'space-around',
     // overflow: 'hidden',
+    alignContent: "start",
   },
   createClipMenu: {
     position: "fixed",
@@ -47,7 +48,8 @@ const App = ({}: any) => {
     <TopNav />
     <div className={classes.offset}
         style={{ display: "flex", flexDirection: "column",
-        justifyContent: "end", background: "#fdd", width: "500px" }}>
+        justifyContent: "end", background: "#fdd",
+        width: "500px", height: "100px", }}>
       I am Top nav place holder
     </div>
     <ClipItemContainer />

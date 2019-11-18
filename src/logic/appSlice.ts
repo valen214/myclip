@@ -22,8 +22,8 @@ const appSlice = createSlice({
   name: 'app',
   initialState,
   reducers: {
-    setSignedIn(state, action: PayloadAction<boolean | undefined>){
-      state.signedIn = !!action.payload
+    setSignedIn(state, { payload }: PayloadAction<boolean | undefined>){
+      state.signedIn = !!payload
     },
   }
 })
@@ -52,12 +52,15 @@ export const init = (): AppThunk => async dispatch => {
     await new Promise(resolve => setTimeout(resolve, 100));
   }
 
+
   if(!GDL.isSignedIn()){
     await new Promise(resolve => GDL.addSignInListener(
-      (signedIn: boolean) => signedIn && resolve()
+      (signedIn: boolean) => (signedIn && resolve())
     ));
   }
   
+  dispatch(setSignedIn(true));
+
   try{
     console.log("loading folder content");
     const files = await GDL.listAppFolder();

@@ -9,7 +9,7 @@ import {
   setTarget,
 } from "../logic/clipActionDialogSlice";
 import {
-  removeDisplayedClipItem
+  deleteClipItem
 } from "../logic/clipItemSlice";
 
 import {
@@ -83,7 +83,7 @@ const ClipActionDialog = ({}: any) => {
       </Grid>
       <Grid item>
         <Button onClick={() => {
-              dispatch(removeDisplayedClipItem(target))
+              dispatch(deleteClipItem(target))
               onClose();
             }}>
           Delete

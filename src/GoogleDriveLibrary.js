@@ -221,7 +221,7 @@ export async function patchToAppFolder(id, data){
     formData.append("body", await new Response(data).blob());
 
     let res = await fetch("https://www.googleapis.com/" +
-            "drive/v3/files/" + id + "?uploadType=multipart&fields=id", {
+            "upload/drive/v3/files/" + id + "?uploadType=multipart&fields=id", {
             "method": "PATCH",
             "headers": {
                 "Authorization": "Bearer " + access_token,
@@ -276,7 +276,8 @@ export async function deleteFileByID(id){
           "fileId": id
       })
       log("deleted id:%s completed, res:", id, res);
-      console.assert(res.status === 204);
+      console.assert(res.status === 204); // No-Content
+      return res
     } catch(e){
       log("delete failed:", e);
     }
