@@ -19,6 +19,10 @@ setConfig({
     String(type).indexOf('useEffect') > 0) && cold(type),
 });
 
+
+import 'core-js/stable'
+import 'regenerator-runtime/runtime'
+
 /*
 
 client.query({ query: gql`
@@ -32,13 +36,12 @@ client.query({ query: gql`
 */
 
 
-import 'core-js/stable'
-import 'regenerator-runtime/runtime'
+// import 'core-js/stable'
+// import 'regenerator-runtime/runtime'
 
 import React from "react";
 import ReactDOM from "react-dom";
 
-import { createStore } from "redux";
 import { Provider } from "react-redux";
 
 import store from "./logic/store";
@@ -77,15 +80,3 @@ declare global {
     ApolloClient: any;
   }
 }
-
-import gql from "graphql-tag";
-window.gql = gql;
-
-import { InMemoryCache } from 'apollo-cache-inmemory';
-window.InMemoryCache = InMemoryCache;
-
-import { createHttpLink } from "apollo-link-http";
-window.createHttpLink = createHttpLink;
-
-import ApolloClient from "apollo-client";
-window.ApolloClient = ApolloClient;
