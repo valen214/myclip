@@ -45,20 +45,16 @@ import store from "./logic/store";
 
 import App from "./components/App";
 
-
-import { ApolloProviderWrapper } from "./ApolloHelper";
 import { GroupedContextProvider } from "./contexts/GroupedContextProvider";
 
 
 const render = () => {
   ReactDOM.render(
-    <ApolloProviderWrapper>
-      <Provider store={store}>
-        <GroupedContextProvider>
-          <App />
-        </GroupedContextProvider>
-      </Provider>
-    </ApolloProviderWrapper>
+    <Provider store={store}>
+      <GroupedContextProvider>
+        <App />
+      </GroupedContextProvider>
+    </Provider>
     ,
     document.getElementById("app")
   );
@@ -88,12 +84,6 @@ declare global {
 
 import gql from "graphql-tag";
 window.gql = gql;
-import { client } from "./ApolloHelper";
-window.client = client;
-
-import { setField, getField } from "./actions/GQLFlatten";
-window.getField = getField;
-window.setField = setField;
 
 import { InMemoryCache } from 'apollo-cache-inmemory';
 window.InMemoryCache = InMemoryCache;

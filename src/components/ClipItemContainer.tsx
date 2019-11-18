@@ -3,8 +3,6 @@
 import GDL from "../GoogleDriveLibrary";
 import GoogleClipItem from "./GoogleClipItem";
 
-import { CLIP_ITEM_LIST } from "../constants/Query";
-
 //@ts-ignore
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from 'react-redux'

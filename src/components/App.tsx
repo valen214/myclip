@@ -2,20 +2,18 @@
 //@ts-ignore
 import GDL from "../GoogleDriveLibrary";
 
-import { AppWrapper, init } from "../actions/App";
 import ClipActionDialog from "./ClipActionDialog";
 import ClipItemContainer from "./ClipItemContainer";
 import CreateClipMenu from "./CreateClipMenu";
 import TextClipPage from "./TextClipPage";
 import TopNav from "./TopNav";
+import { init } from "../logic/appSlice";
 
 import { hot } from 'react-hot-loader/root';
 
-import { useQuery, useMutation } from "@apollo/react-hooks";
-import gql from 'graphql-tag';
-
 //@ts-ignore // eslint ignore-next-line
 import React, { useState, useEffect } from "react";
+import { useDispatch } from "react-redux"
 
 import { makeStyles, Theme, createStyles }
     from "@material-ui/core/styles";
@@ -36,12 +34,13 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   offset: theme.mixins.toolbar,
 }));
 
-const App = ({
-  state,
-}: any) => {
+const App = ({}: any) => {
   const classes = useStyles({});
+  const dispatch = useDispatch();
 
-  useEffect(() => init(), []);
+  useEffect(() => {
+    dispatch(init())
+  }, []);
 
   return <div className={classes.root}>
     <CssBaseline />
@@ -52,20 +51,10 @@ const App = ({
       I am Top nav place holder
     </div>
     <ClipItemContainer />
-    <CreateClipMenu
-        className={classes.createClipMenu}
-        createClip={(type: string, ...args: any[]) => {
-          switch(type){
-          case "text":
-            const [ title, body ] = args;
-            GDL.uploadToAppFolder("", `${title}: ${body}`).then((obj: any) => {
-            });
-            break;
-          }
-        }} />
+    <CreateClipMenu className={classes.createClipMenu} />
     <TextClipPage />
     <ClipActionDialog />
   </div>;
 };
 
-export default hot(AppWrapper(App));
+export default hot(App);

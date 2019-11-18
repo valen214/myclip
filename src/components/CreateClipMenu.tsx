@@ -40,7 +40,7 @@ const Transition = React.forwardRef<unknown, TransitionProps>(
 
 
 const CreateCilpMenu = ({
-    className, createClip, onCreateTextClipButtonClick
+    className
 }: any) => {
   const classes = useStyles({});
   const dispatch = useDispatch();

@@ -1,12 +1,6 @@
 
 //@ts-ignore
 import GDL from "../GoogleDriveLibrary";
-import {
-    onClipItemClick, onClipActionClick, deleteClipItem
-} from "../actions/GoogleClipItem";
-import { useFileContent } from "../actions/GoogleDriveFileHelper";
-
-
 
 //@ts-ignore
 import React, { useState, useEffect } from "react";
@@ -22,6 +16,13 @@ import {
   setCachedClipItemInfo,
   removeCachedClipItem,
 } from "../logic/clipItemSlice"
+import {
+  setVisible as setClipActionDialogVisible,
+  setTarget as setClipActionDialogTarget,
+} from "../logic/clipActionDialogSlice";
+import {
+  setVisible, setTarget, setTitle, setContent
+} from "../logic/textClipPageSlice";
 
 
 import Button from '@material-ui/core/Button';
@@ -35,9 +36,6 @@ import Typography from "@material-ui/core/Typography";
 
 import CloseIcon from "@material-ui/icons/Close";
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import {
-  setVisible, setTarget, setTitle, setContent
-} from "../logic/textClipPageSlice";
 
 
 export interface ClipItem {
@@ -48,7 +46,7 @@ const GoogleClipItem = ({ id }: { id: string }) => {
   const dispatch = useDispatch();
   const { id: _id, name, content } = useSelector((state: RootState) => {
       if(Object.prototype.hasOwnProperty.call(
-            state.clipItem.cachedClipItems, "id")){
+            state.clipItem.cachedClipItems, id)){
         return state.clipItem.cachedClipItems[id]
       } else{
         return { id }
@@ -67,6 +65,11 @@ const GoogleClipItem = ({ id }: { id: string }) => {
     dispatch(setTitle(name))
     dispatch(setContent((content as string) || ""))
   }, [dispatch, id, name, content]);
+
+  const showActionDialog = React.useCallback(() => {
+    dispatch(setClipActionDialogVisible(true))
+    dispatch(setClipActionDialogTarget(id))
+  }, [dispatch, id]);
 
   // https://material-ui.com/components/grid-list/
   return <Card raised
@@ -89,7 +92,7 @@ const GoogleClipItem = ({ id }: { id: string }) => {
       </CardContent>
     </CardActionArea>
     <CardActions>
-      <IconButton onClick={() => onClipActionClick(id)}
+      <IconButton onClick={showActionDialog}
           size="small" color="primary">
         <MoreVertIcon />
       </IconButton>

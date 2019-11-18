@@ -5,7 +5,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { AppThunk } from './store'
 import GDL from "../GoogleDriveLibrary"
 
-interface ClipItem {
+export interface ClipItem {
   id: string
   name?: string
   type?: string
