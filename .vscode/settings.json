@@ -107,8 +107,8 @@
 
     */
     "git.ignoreMissingGitWarning": true,
-    "git.path": "C:/Users/User/AppData/Local/GitHubDesktop/app-1.6.5/resources/app/git/cmd/git.exe",
-    "git.enabled": false,
+    "git.path": "C:\Program Files\Git\cmd\git.exe",
+    "git.enabled": true,
 
     "bracket-pair-colorizer-2" :{
         "showBracketsInGutter": true,

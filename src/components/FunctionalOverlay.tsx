@@ -2,7 +2,12 @@
 //@ts-ignore
 import React from "react";
 
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
+
+import { RootState } from "../logic/rootReducer";
+import {
+  setVisible, setContent
+} from "../logic/functionalOverlaySlice";
 
 import { makeStyles, Theme, createStyles }
     from "@material-ui/core/styles";
@@ -26,9 +31,35 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
 
 const FunctionalOverlay = () => {
   const classes = useStyles({});
+  const dispatch = useDispatch();
+  const {
+    visible, background = "rgba(0, 0, 0, 0.2)",
+    content, type
+  } = useSelector((state: RootState) => state.functionalOverlay);
   
   return <React.Fragment>
-    <div className={classes.fullscreenOverlay}></div>
+    <div className={classes.fullscreenOverlay}
+        onClick={() => {
+          dispatch(setVisible(false))
+          dispatch(setContent({ type: "", content: "" }))
+          console.log("HI");
+        }} style={{
+          display: visible ? "block" : "none",
+          background: "rgba(0, 0, 0, 0.2)", 
+          pointerEvents: visible ? "all" : "none",
+          zIndex: visible ? 0 : 1200,
+        }}>
+      {
+        type && (
+          type.startsWith("image") ? <img src={content} style={{
+            objectFit: "contain",
+            padding: 15,
+            width: "100%", height: "100%",
+          }}></img>
+          : ""
+        )
+      }
+    </div>
   </React.Fragment>
 };
 

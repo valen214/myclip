@@ -13,16 +13,9 @@ import {
   setTarget,
 } from "../logic/textClipPageSlice";
 import {
-  addDisplayedClipItem,
-  setDisplayedClipItems,
-  removeDisplayedClipItem,
-  addCachedClipItem,
-  setCachedClipItemInfo,
-  removeCachedClipItem,
   uploadOrUpdateClipItem,
 } from "../logic/clipItemSlice"
 
-import { sizing } from '@material-ui/system';
 import { makeStyles, Theme, createStyles }
     from "@material-ui/core/styles";
 import Box from '@material-ui/core/Box';
@@ -33,9 +26,6 @@ import { TransitionProps } from '@material-ui/core/transitions';
 
 import InputBar from "./InputBar";
 
-const Transition = React.forwardRef<unknown, TransitionProps>(
-    (props: any, ref: any) => (<Slide direction="up" ref={ref} {...props} />)
-);
 
 const TextClipPage = (props: any) => {
   const dispatch = useDispatch();
@@ -50,10 +40,13 @@ const TextClipPage = (props: any) => {
     dispatch(setContent(""))
   }, [dispatch]);
   
-  return <Dialog fullScreen
-      open={visible}
-      TransitionComponent={Transition}>
-    <Box display="flex" flexDirection="column" width="100%" height="100%">
+  return <Slide in={visible} direction="up">
+    <div style={{
+          pointerEvents: visible ? "all" : "none",
+          display: "flex", flexDirection: "column",
+          width: "100%", height: "100%", position: "fixed",
+          zIndex: 1200, background: "white",
+        }}>
       <InputBar
           position="sticky"
           onInputBarClose={onClose}
@@ -91,8 +84,8 @@ const TextClipPage = (props: any) => {
             fontFamily: "Consolas",
           }} />
       </Box>
-    </Box>
-  </Dialog>;
+    </div>
+  </Slide>;
 };
 
 export default React.memo(TextClipPage);

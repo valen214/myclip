@@ -11,6 +11,7 @@ import topNavReducers from "./topNavSlice"
 import textClipPageReducers from "./textClipPageSlice";
 import clipActionDialogReducers from "./clipActionDialogSlice";
 import createClipMenuReducers from "./createClipMenuSlice";
+import functionalOverlay from "./functionalOverlaySlice" // yes I am lazy
 
 const rootReducer = combineReducers({
   app: appReducers,
@@ -19,6 +20,7 @@ const rootReducer = combineReducers({
   topNav: topNavReducers,
   textClipPage: textClipPageReducers,
   createClipMenu: createClipMenuReducers,
+  functionalOverlay,
 })
 
 export type RootState = ReturnType<typeof rootReducer>

@@ -16,7 +16,6 @@ import {
   setTarget as setTextClipPageTarget,
 } from "../logic/textClipPageSlice";
 
-import { askFile } from "./FunctionalOverlay";
 
 import { makeStyles, Theme, createStyles }
     from "@material-ui/core/styles";
@@ -68,13 +67,6 @@ const CreateCilpMenu = ({
   }
 
   const createClipButtonsTemplate = Object.entries({
-    "text": () => {
-    },
-    "image": async (e: React.MouseEvent<HTMLButtonElement>) => {
-      console.log("e:", e);
-      console.log(typeof e.nativeEvent);
-      let f = await askFile({ type: "image", event: e.nativeEvent });
-    },
     "file": () => {},
     "folder": () => {},
     "drawing": () => {},

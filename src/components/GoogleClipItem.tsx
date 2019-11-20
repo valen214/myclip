@@ -24,6 +24,9 @@ import {
 import {
   setVisible, setTarget, setTitle, setContent
 } from "../logic/textClipPageSlice";
+import {
+  setVisible as setOverlayVisible, setContent as setOverlayContent
+} from "../logic/functionalOverlaySlice"
 
 
 import Button from '@material-ui/core/Button';
@@ -88,7 +91,13 @@ const GoogleClipItem = ({
         background: "#ffd",
       }}>
     <CardActionArea
-        onClick={( type.startsWith("text") ? showTextClipPage : () => {} )} >
+        onClick={() => {
+          if(type.startsWith("text")) return showTextClipPage()
+          if(type.startsWith("image")){
+            dispatch(setOverlayContent({ type, content }))
+            dispatch(setOverlayVisible(true))
+          }
+        }}>
       <CardContent style={{
             padding: "12px",
           }}>
