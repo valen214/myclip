@@ -115,23 +115,24 @@ const Masonry = React.forwardRef(({
     })
 
 
+    if(typeof hgap === "number"){
+      // hgap = String(hgap) + "px"
+    } else if(typeof hgap === "string"){
+
+    }
     let config = {
       mode: "columns",
       cols,
       vgap,
-      hgap,
+      hgap, // algo will fail if hgap is not number
     }
     let col_y = masonryAlgo({
         rects,
         config
     });
 
-    if(typeof hgap === "number"){
-      hgap = String(hgap) + "px"
-    } else if(typeof hgap === "string"){
-
-    }
-    let colWidth = `(100% - ${hgap} * ${cols + 1}) / ${cols}`
+    let _hgap = String(hgap)
+    let colWidth = `(100% - ${_hgap} * ${cols + 1}) / ${cols}`
 
     let len = allChild.length;
     while(--len >= 0){
@@ -141,9 +142,8 @@ const Masonry = React.forwardRef(({
         // consider using css 'attr' and dataset in the future
         position: "absolute",
         width: `calc(${colWidth})`,
-        left: `calc(${col} * (${colWidth} + ${hgap}))`,
+        left: `calc(${col} * (${colWidth} + ${_hgap}))`,
         top: height + "px",
-        // marginLeft: "1%",
       });
     }
   });
