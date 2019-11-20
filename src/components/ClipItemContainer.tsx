@@ -17,6 +17,7 @@ import {
   setCachedClipItemInfo,
   removeCachedClipItem,
 } from "../logic/clipItemSlice"
+import Masonry from "./Masonry";
 
 
 import Card from "@material-ui/core/Card";
@@ -34,13 +35,11 @@ const ClipItemContainer = (props: any) => {
   });
   // https://material-ui.com/components/grid-list/
   return <Container>
-    <Grid container spacing={2}>
+    <Masonry colMinWidth="100px" balanceColumns={true}>
       {list.map((id: string) => (
-        <Grid item key={id} xs={12} sm={6} md={4} >
-          <GoogleClipItem id={id} />
-        </Grid>
+        <GoogleClipItem key={id} id={id} />
       ))}
-    </Grid>
+    </Masonry>
   </Container>;
 };
 

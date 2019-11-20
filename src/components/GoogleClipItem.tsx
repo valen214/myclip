@@ -45,7 +45,7 @@ export interface ClipItem {
 
 const GoogleClipItem = ({ id }: { id: string }) => {
   const dispatch = useDispatch();
-  const { id: _id, name, content, type } =
+  const { id: _id, name, content, type = "" } =
       useSelector((state: RootState) => {
           if(Object.prototype.hasOwnProperty.call(
                 state.clipItem.cachedClipItems, id)){
@@ -76,7 +76,7 @@ const GoogleClipItem = ({ id }: { id: string }) => {
         background: "#ffd",
       }}>
     <CardActionArea
-        onClick={showTextClipPage} >
+        onClick={( type.startsWith("text") ? showTextClipPage : () => {} )} >
       <CardContent style={{
             padding: "12px",
           }}>
@@ -85,19 +85,17 @@ const GoogleClipItem = ({ id }: { id: string }) => {
             background: "#dfd", width: "100%",
             maxHeight: "280px", overflow: "hidden", }}>
           {
-            type ? (
-              type.startsWith("text") ? 
-                <div style={{
-                    fontFamily: "Consolas", padding: "5px 2px",
-                    wordBreak: "break-all", whiteSpace: "pre-wrap", }}>
-                  {content}
-                </div> :
-              type.startsWith("image") ?
-                <img src={content} style={{
-                  width: "100%", height: "100%",
-                }} /> :
-              "[BINARY DATA]"
-            ) : "[BINARY DATA]"
+            type.startsWith("text") ? 
+              <div style={{
+                  fontFamily: "Consolas", padding: "5px 2px",
+                  wordBreak: "break-all", whiteSpace: "pre-wrap", }}>
+                {content}
+              </div> :
+            type.startsWith("image") ?
+              <img src={content} style={{
+                width: "100%", height: "100%",
+              }} /> :
+            "[Loading ...]"
           }
         </div>
       </CardContent>

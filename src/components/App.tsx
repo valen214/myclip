@@ -20,6 +20,7 @@ import { makeStyles, Theme, createStyles }
     from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 
+
 const useStyles = makeStyles((theme: Theme) => createStyles({
   root: {
     display: 'flex',
@@ -30,7 +31,7 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   },
   createClipMenu: {
     position: "fixed",
-    bottom: theme.spacing(5),
+    bottom: theme.spacing(8),
     right: theme.spacing(5),
   },
   offset: theme.mixins.toolbar,
@@ -76,7 +77,7 @@ https://www.youtube.com/watch?v=IxRJ8vplzAo
 
 https://pripri-anime.jp/tv/onair.php
 
-
+https://brunoarizio.com/
 
 
 

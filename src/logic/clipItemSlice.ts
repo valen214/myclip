@@ -4,6 +4,9 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 import { AppThunk } from './store'
 import GDL from "../GoogleDriveLibrary"
+import {
+  blobToUrl, urlToBlob, revokeBlob
+} from "./BlobStore"
 
 enum LoadingState {
 
@@ -68,7 +71,7 @@ const clipItemSlice = createSlice({
         if(type && type.startsWith("text")){
 
         } else if(content){
-          URL.revokeObjectURL(content);
+          revokeBlob(content);
         }
       });
       delete state.cachedClipItems[id];
@@ -106,7 +109,7 @@ export const downloadClipItemToCache = (
   if(obj.type && obj.type.startsWith("text")){
     content = await res.text();
   } else{
-    content = URL.createObjectURL(await res.blob());
+    content = blobToUrl(await res.blob());
   }
   dispatch(setCachedClipItemInfo({
     ...obj, id, content
@@ -117,12 +120,20 @@ export const uploadOrUpdateClipItem = (
   obj: Partial<ClipItem>, displayed: boolean = true
 ): AppThunk => async dispatch => {
   try{
+    let content: Blob | string = obj.content;
+    if(obj.type && obj.type.startsWith("text")){
+      
+    } else if(content && content.includes("blob:")){
+      content = urlToBlob(content);
+    } else{
+      console.warn("clipItemSlice.ts: undetermined clip item mine type");
+    }
     if(Object.prototype.hasOwnProperty.call(obj, "id") && obj.id){
       dispatch(setCachedClipItemInfo(<ClipItem>obj));
-      let res = await GDL.patchToAppFolder(obj.id, obj.content, obj.name);
+      let res = await GDL.patchToAppFolder(obj.id, content, obj.name);
       console.assert(res.id === obj.id);
     } else{
-      let res = await GDL.uploadToAppFolder(obj.name, obj.content);
+      let res = await GDL.uploadToAppFolder(obj.name, content);
       obj.id = res.id;
       console.log("uploaded to app folder: res:", res, "I want type");
       dispatch(addCachedClipItem(<ClipItem>obj))
@@ -152,7 +163,7 @@ export const uploadClipItemFiles = (
   let f = files[0];
   let obj: Partial<ClipItem> = {
     name: f.name, type: f.type,
-    content: URL.createObjectURL(f),
+    content: blobToUrl(f),
   };
   dispatch(uploadOrUpdateClipItem(obj));
 }
