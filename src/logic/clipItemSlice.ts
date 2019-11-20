@@ -135,7 +135,6 @@ export const uploadOrUpdateClipItem = (
     } else{
       let res = await GDL.uploadToAppFolder(obj.name, content);
       obj.id = res.id;
-      console.log("uploaded to app folder: res:", res, "I want type");
       dispatch(addCachedClipItem(<ClipItem>obj))
       if(displayed) dispatch(addDisplayedClipItem(obj.id))
     }

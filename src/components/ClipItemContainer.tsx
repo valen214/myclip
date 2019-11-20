@@ -17,7 +17,7 @@ import {
   setCachedClipItemInfo,
   removeCachedClipItem,
 } from "../logic/clipItemSlice"
-import Masonry from "./Masonry";
+import Masonry from "../lib/masonry";
 
 
 import Card from "@material-ui/core/Card";
@@ -33,11 +33,14 @@ const ClipItemContainer = (props: any) => {
   const list: string[] = useSelector((state: RootState) => {
       return state.clipItem.displayedClipItemsID
   });
+  const ref = React.useRef(null);
   // https://material-ui.com/components/grid-list/
   return <Container>
-    <Masonry colMinWidth="100px" balanceColumns={true}>
+    <Masonry ref={ref} colMinWidth="100px" balanceColumns={true}>
       {list.map((id: string) => (
-        <GoogleClipItem key={id} id={id} />
+        <GoogleClipItem key={id} id={id} onLoad={() => {
+          ref.current.refreshLayout();
+        }}/>
       ))}
     </Masonry>
   </Container>;

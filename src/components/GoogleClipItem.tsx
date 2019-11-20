@@ -43,7 +43,12 @@ export interface ClipItem {
   id?: string;
 };
 
-const GoogleClipItem = ({ id }: { id: string }) => {
+const GoogleClipItem = ({
+  id, onLoad = () => {}
+}: {
+  id: string
+  onLoad?: () => void
+}) => {
   const dispatch = useDispatch();
   const { id: _id, name, content, type = "" } =
       useSelector((state: RootState) => {
@@ -55,18 +60,25 @@ const GoogleClipItem = ({ id }: { id: string }) => {
           }
       });
   console.assert(id === _id);
+  const [ loaded, setLoaded ] = useState(false);
 
   const showTextClipPage = React.useCallback(() => {
     dispatch(setVisible(true))
     dispatch(setTarget(id))
     dispatch(setTitle(name))
     dispatch(setContent((content as string) || ""))
+    setLoaded(false)
   }, [dispatch, id, name, content]);
 
   const showActionDialog = React.useCallback(() => {
     dispatch(setClipActionDialogVisible(true))
     dispatch(setClipActionDialogTarget(id))
   }, [dispatch, id]);
+
+  if(!loaded && type.startsWith("text")){
+    setLoaded(true)
+    onLoad()
+  }
 
   // https://material-ui.com/components/grid-list/
   return <Card raised
@@ -83,7 +95,8 @@ const GoogleClipItem = ({ id }: { id: string }) => {
         <div
           style={{ // important
             background: "#dfd", width: "100%",
-            maxHeight: "280px", overflow: "hidden", }}>
+            maxHeight: "280px", overflow: "hidden",
+          }}>
           {
             type.startsWith("text") ? 
               <div style={{
@@ -92,7 +105,12 @@ const GoogleClipItem = ({ id }: { id: string }) => {
                 {content}
               </div> :
             type.startsWith("image") ?
-              <img src={content} style={{
+              <img src={content} onLoad={() => {
+                if(!loaded){
+                  setLoaded(true);
+                  onLoad()
+                }
+              }} style={{
                 width: "100%", height: "100%",
               }} /> :
             "[Loading ...]"

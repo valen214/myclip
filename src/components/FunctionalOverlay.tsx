@@ -7,7 +7,6 @@ import { useDispatch } from "react-redux"
 import { makeStyles, Theme, createStyles }
     from "@material-ui/core/styles";
 
-const FILE_SELECT = "FILE_SELECT"
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   fullscreenOverlay: {
@@ -25,27 +24,11 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   }
 }));
 
-export const askFile = async ({
-  type = null, accept = null, event = null
-}: {
-  type?: string, accept?: string,
-  event?: React.SyntheticEvent
-} = {}) => {
-  const elem: Partial<HTMLInputElement> = document.getElementById(FILE_SELECT);
-  if(type) elem.type = type;
-  if(accept) elem.accept = accept;
-  if(event){
-    elem.dispatchEvent(event);
-  }
-};
-
 const FunctionalOverlay = () => {
   const classes = useStyles({});
   
   return <React.Fragment>
     <div className={classes.fullscreenOverlay}></div>
-    <input id={FILE_SELECT} className={classes.invisible}
-        type="file" accept=".jpg,.png,.webm" />
   </React.Fragment>
 };
 

@@ -1,9 +1,6 @@
 
 //@ts-ignore
 import React from "react"
-//@ts-ignore
-import ReactDOM from "react-dom"
-
 
 const useCallbackRef = () => {
   const [ref, setRef] = React.useState(null);
@@ -71,7 +68,9 @@ const Masonry = React.forwardRef(({
     position: "relative"
   }
 
-  const refresh_layout = React.useCallback(() => {
+  const refreshLayout = React.useCallback(() => {
+    ref.current.refreshLayout = refreshLayout;
+
     let max_indexed = 0, unindexed = 0;
     let allChild: HTMLCollection = ref.current.children;
     for(let child of allChild){
@@ -121,25 +120,23 @@ const Masonry = React.forwardRef(({
       let child: Partial<HTMLElement> = allChild[len];
       let [ col, height ] = col_y[len];
       Object.assign(child.style, {
+        // consider using css 'attr' and dataset in the future
         width: "48%", position: "absolute",
         left: `calc(${col} * 50%)`,
         top: height + "px",
         marginLeft: "1%",
       });
-      console.log(col, height);
     }
   });
 
   React.useEffect(() => {
-    refresh_layout();
+    refreshLayout();
   }, [children]);
 
   return <div ref={ref} {...props} style={parentStyle as React.CSSProperties}>
     {(
       (colMinWidth && balanceColumns) ?
-      <React.Fragment>
-        { children }
-      </React.Fragment>
+        children
       :
       (console.warn("Masonry: not implemented"), "")
     )}
