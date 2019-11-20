@@ -42,12 +42,11 @@ const FunctionalOverlay = () => {
         onClick={() => {
           dispatch(setVisible(false))
           dispatch(setContent({ type: "", content: "" }))
-          console.log("HI");
         }} style={{
           display: visible ? "block" : "none",
           background: "rgba(0, 0, 0, 0.2)", 
           pointerEvents: visible ? "all" : "none",
-          zIndex: visible ? 0 : 1200,
+          zIndex: visible ? 1200 : 0,
         }}>
       {
         type && (

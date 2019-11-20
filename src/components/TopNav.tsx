@@ -29,6 +29,8 @@ import {
   setButtonVisible as setCreateClipButtonVisible
 } from "../logic/createClipMenuSlice";
 
+import { default as MyButton } from "./Button"
+
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from '@material-ui/core/AppBar';
 import Button from "@material-ui/core/Button";
@@ -80,9 +82,9 @@ const TopNav = ({
     <AppBar position="fixed">{
       mode == TopNavMode.normal ?
         <ToolBar>
-          <IconButton edge="start" onClick={() => {}}>
+          <MyButton edge="left">
             <MenuIcon />
-          </IconButton>
+          </MyButton>
           <Typography variant="h6" style={{ flex: 1 }}>
             MyClip
           </Typography>

@@ -105,6 +105,7 @@ const GoogleClipItem = ({
           style={{ // important
             background: "#dfd", width: "100%",
             maxHeight: "280px", overflow: "hidden",
+            display: "inline-block",
           }}>
           {
             type.startsWith("text") ? 
@@ -114,13 +115,25 @@ const GoogleClipItem = ({
                 {content}
               </div> :
             type.startsWith("image") ?
+              <div onLoad={() => {
+                if(!loaded){
+                  setLoaded(true);
+                  onLoad()
+                }
+              }} style={{
+                display: "inline-block",
+                width: "100%", height: "280px",
+                background: `center / contain no-repeat url(${content})`
+              }} /> : false ?
               <img src={content} onLoad={() => {
                 if(!loaded){
                   setLoaded(true);
                   onLoad()
                 }
               }} style={{
+                display: "inline-block",
                 width: "100%", height: "100%",
+                objectFit: "contain",
               }} /> :
             "[Loading ...]"
           }

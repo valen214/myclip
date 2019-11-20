@@ -21,10 +21,13 @@ const useCallbackRef = () => {
  * little reusable components, optimization is unnecessary and improbable
  **/
 const masonryAlgo = ({
-  rects, config: { mode, cols, vgap }
+  rects, config: { mode, cols, vgap, hgap }
 }: {
   rects?: Array<Partial<DOMRect>>
-  config?: { mode: string, cols?: number, vgap?: number }
+  config?: {
+    mode: string, cols?: number,
+    vgap?: number, hgap?: number | string
+  }
 } = {}) => {
   switch(mode){
   case "columns":
@@ -48,7 +51,9 @@ const masonryAlgo = ({
 }
 
 const Masonry = React.forwardRef(({
-  cols,
+  cols = 2,
+  hgap = 15,
+  vgap = 15,
   colMaxWidth,
   colMinWidth,
   balanceColumns,
@@ -56,6 +61,8 @@ const Masonry = React.forwardRef(({
   ...props
 }: {
   cols?: number
+  hgap?: number
+  vgap?: number
   colMinWidth?: number | string
   colMaxWidth?: number | string
   balanceColumns?: boolean
@@ -106,14 +113,25 @@ const Masonry = React.forwardRef(({
             elem.dataset.masonry_index = String(i)
             return elem.getBoundingClientRect();
     })
+
+
+    let config = {
+      mode: "columns",
+      cols,
+      vgap,
+      hgap,
+    }
     let col_y = masonryAlgo({
         rects,
-        config: {
-          mode: "columns",
-          cols: 2,
-          vgap: 10,
-        }
+        config
     });
+
+    if(typeof hgap === "number"){
+      hgap = String(hgap) + "px"
+    } else if(typeof hgap === "string"){
+
+    }
+    let colWidth = `(100% - ${hgap} * ${cols + 1}) / ${cols}`
 
     let len = allChild.length;
     while(--len >= 0){
@@ -121,10 +139,11 @@ const Masonry = React.forwardRef(({
       let [ col, height ] = col_y[len];
       Object.assign(child.style, {
         // consider using css 'attr' and dataset in the future
-        width: "48%", position: "absolute",
-        left: `calc(${col} * 50%)`,
+        position: "absolute",
+        width: `calc(${colWidth})`,
+        left: `calc(${col} * (${colWidth} + ${hgap}))`,
         top: height + "px",
-        marginLeft: "1%",
+        // marginLeft: "1%",
       });
     }
   });

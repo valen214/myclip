@@ -36,7 +36,7 @@ const ClipItemContainer = (props: any) => {
   const ref = React.useRef(null);
   // https://material-ui.com/components/grid-list/
   return <Container>
-    <Masonry ref={ref} colMinWidth="100px" balanceColumns={true}>
+    <Masonry ref={ref} colMinWidth="100px" balanceColumns={true} hgap={15}>
       {list.map((id: string) => (
         <GoogleClipItem key={id} id={id} onLoad={() => {
           ref.current.refreshLayout();

@@ -15,15 +15,19 @@ const InputBar = ({
       position, doneIcon = (<DoneIcon />),
       placeholder = "", value, onBlur, defaultValue
 }: any) => {
+  console.log("InputBar defaultValue:", defaultValue, value);
 
   return <AppBar position={position}>
     <ToolBar>
       <IconButton edge="start" onClick={onInputBarClose}>
         <CloseIcon />
       </IconButton>
-      <TextField {...{ position, value, onBlur, defaultValue }}
+      <TextField
+          key={defaultValue}
+          onBlur={onBlur}
+          {...( value ? { value } : { defaultValue })}
           onChange={onInputChange}
-          style={{ flex: 1 }} margin="dense"/>
+          style={{ flex: 1 }} margin="dense" />
       <IconButton edge="end" onClick={onInputDone}>
         {doneIcon}
       </IconButton>

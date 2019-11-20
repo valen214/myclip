@@ -40,6 +40,8 @@ const TextClipPage = (props: any) => {
     dispatch(setContent(""))
   }, [dispatch]);
   
+  console.log("TextClipPage title:", title);
+
   return <Slide in={visible} direction="up">
     <div style={{
           pointerEvents: visible ? "all" : "none",
@@ -78,6 +80,7 @@ const TextClipPage = (props: any) => {
             dispatch(setContent(e.currentTarget.value))
           }}
           style={{
+            padding: 2,
             alignItems: "start",
             resize: "none",
             background: "#eee",

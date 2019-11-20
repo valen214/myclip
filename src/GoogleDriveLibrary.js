@@ -90,7 +90,7 @@ export async function addSignInListener(func){
   gapi.auth2.getAuthInstance().isSignedIn.listen(func);
 }
 export async function removeSignInListener(func){
-
+  func
 }
 
 export async function signIn(){
