@@ -16,15 +16,16 @@ import {
   uploadOrUpdateClipItem,
 } from "../logic/clipItemSlice"
 
-import { makeStyles, Theme, createStyles }
-    from "@material-ui/core/styles";
 import Box from '@material-ui/core/Box';
-import Dialog from "@material-ui/core/Dialog";
 import InputBase from "@material-ui/core/InputBase";
 import Slide from "@material-ui/core/Slide";
-import { TransitionProps } from '@material-ui/core/transitions';
+import AppBar from '@material-ui/core/AppBar';
+import IconButton from "@material-ui/core/IconButton";
+import TextField from "@material-ui/core/TextField";
+import ToolBar from '@material-ui/core/ToolBar';
 
-import InputBar from "./InputBar";
+import CloseIcon from "@material-ui/icons/Close";
+import DoneIcon from '@material-ui/icons/Done';
 
 
 const TextClipPage = (props: any) => {
@@ -49,25 +50,35 @@ const TextClipPage = (props: any) => {
           width: "100%", height: "100%", position: "fixed",
           zIndex: 1200, background: "white",
         }}>
-      <InputBar
-          position="sticky"
-          onInputBarClose={onClose}
-          onInputChange={(text: string) => dispatch(setTitle(text))}
-          onBlur={(e: React.FormEven<HTMLInputElement>) => {
-            // dispatch(setTitle(e.currentTarget.value))
-          }}
-          onInputDone={() => {
-            dispatch(uploadOrUpdateClipItem({
-              id: (target as string),
-              name: title,
-              type: "text/plain",
-              content,
-            }))
-            onClose()
-          }}
-          placeholder="Title (Optional)"
+      <AppBar position="sticky">
+        <ToolBar>
+          <IconButton edge="start" onClick={onClose}>
+            <CloseIcon />
+          </IconButton>
+          <TextField
+              key={title}
           value={title}
-          />
+              placeholder="Title (Optional)"
+              onChange={(e: React.FormEven<HTMLInputElement>) => {
+                dispatch(setTitle(e.currentTarget.value))
+              }}
+              onBlur={(e: React.FormEven<HTMLInputElement>) => {
+                // dispatch(setTitle(e.currentTarget.value))
+              }}
+              style={{ flex: 1 }} margin="dense" />
+          <IconButton edge="end" onClick={() => {
+                dispatch(uploadOrUpdateClipItem({
+                  id: (target as string),
+                  name: title,
+                  type: "text/plain",
+                  content,
+                }))
+                onClose()
+              }}>
+            <DoneIcon />
+          </IconButton>
+        </ToolBar>
+      </AppBar>
       <Box display="flex" flexGrow={1} style={{
             padding: 15,
           }}>

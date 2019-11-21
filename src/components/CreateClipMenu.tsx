@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import { RootState } from "../logic/rootReducer";
+import { signIn } from "../logic/appSlice"
 import {
   uploadClipItemFiles
 } from "../logic/clipItemSlice";
@@ -52,6 +53,7 @@ const CreateCilpMenu = ({
   const {
     button_visible, menu_visible,
   } = useSelector((state: RootState) => state.createClipMenu);
+  const signedIn = useSelector((state: RootState) => state.app.signedIn);
 
   const imageInputRef = React.useRef(null);
 
@@ -93,6 +95,16 @@ const CreateCilpMenu = ({
         <GridList cols={2}
             cellHeight={100}
             style={{ width: "200px" }}>
+          <GridListTile>
+            <Button fullWidth onClick={
+                (e: React.MouseEvent<HTMLButtonElement>) => {
+                  dispatch(signIn())
+                  setAnchorEl(null)
+                }}
+                className={classes.createClipButton}>
+              Sign In to Continue
+            </Button>
+          </GridListTile>
           <GridListTile>
             <Button fullWidth onClick={
                 (e: React.MouseEvent<HTMLButtonElement>) => {

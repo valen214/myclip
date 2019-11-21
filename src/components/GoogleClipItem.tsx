@@ -53,6 +53,7 @@ const GoogleClipItem = ({
   onLoad?: () => void
 }) => {
   const dispatch = useDispatch();
+  const [ loaded, setLoaded ] = useState(false);
   const { id: _id, name, content, type = "" } =
       useSelector((state: RootState) => {
           if(Object.prototype.hasOwnProperty.call(
@@ -63,7 +64,6 @@ const GoogleClipItem = ({
           }
       });
   console.assert(id === _id);
-  const [ loaded, setLoaded ] = useState(false);
 
   const showTextClipPage = React.useCallback(() => {
     dispatch(setVisible(true))

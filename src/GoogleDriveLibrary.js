@@ -59,14 +59,23 @@ const initialized = (async () => {
         }
         log("start initializing gapi");
         await new Promise(ok => gapi.load("client:auth2", ok));
+        log("allow redirect url:", String(window.location));
         await gapi.client.init({
             "apiKey": API_KEY,
             "clientId": CLIENT_ID,
             "discoveryDocs": DISCOVERY_DOCS,
             "scope": SCOPE,
+            "cookiepolicy": "single_host_origin",
             "ux_mode": "redirect",
+            "redirect_uri": String(window.location),
+            /*
+            remember to set 'Authorized redirect URIs' in
+https://console.developers.google.com/apis/credentials/oauthclient/
+948862535396-9ficl2trtv77ekjn3k2p1sg04kofmj67.apps.googleusercontent.com?
+project=main-custom-project&folder&organizationId
+            */
         });
-        log("%cfinished initializing gapi", "#afd");
+        log("%cfinished initializing gapi", "color: #afd");
         return true;
     } catch(e){
         console.error(e);
