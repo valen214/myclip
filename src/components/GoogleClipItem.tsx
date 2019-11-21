@@ -78,7 +78,7 @@ const GoogleClipItem = ({
     dispatch(setClipActionDialogTarget(id))
   }, [dispatch, id]);
 
-  if(!loaded && type.startsWith("text")){
+  if(!loaded && type.startsWith("text") && content){
     setLoaded(true)
     onLoad()
   }

@@ -63,7 +63,8 @@ const initialized = (async () => {
             "apiKey": API_KEY,
             "clientId": CLIENT_ID,
             "discoveryDocs": DISCOVERY_DOCS,
-            "scope": SCOPE
+            "scope": SCOPE,
+            "ux_mode": "redirect",
         });
         log("%cfinished initializing gapi", "#afd");
         return true;
