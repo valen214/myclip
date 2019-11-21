@@ -131,7 +131,7 @@ const Masonry = React.forwardRef(({
         config
     });
 
-    let _hgap = String(hgap)
+    let _hgap = String(hgap) + "px"
     let colWidth = `(100% - ${_hgap} * ${cols + 1}) / ${cols}`
 
     let len = allChild.length;
@@ -144,6 +144,7 @@ const Masonry = React.forwardRef(({
         width: `calc(${colWidth})`,
         left: `calc(${col} * (${colWidth} + ${_hgap}))`,
         top: height + "px",
+        transition: "top 0.5s, left 0.5s",
       });
     }
   });

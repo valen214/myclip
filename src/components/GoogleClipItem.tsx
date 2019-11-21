@@ -82,6 +82,7 @@ const GoogleClipItem = ({
     setLoaded(true)
     onLoad()
   }
+  console.log("content isEmpty:", !content, "type:", type, "loaded:", loaded);
 
   // https://material-ui.com/components/grid-list/
   return <Card raised

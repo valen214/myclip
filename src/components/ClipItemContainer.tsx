@@ -39,7 +39,7 @@ const ClipItemContainer = (props: any) => {
     <Masonry ref={ref} colMinWidth="100px" balanceColumns={true} hgap={15}>
       {list.map((id: string) => (
         <GoogleClipItem key={id} id={id} onLoad={() => {
-          ref.current.refreshLayout();
+            setTimeout(() => ref.current.refreshLayout(), 16);
         }}/>
       ))}
     </Masonry>
