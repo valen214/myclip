@@ -247,6 +247,10 @@ export async function patchToAppFolder(id, data, filename){
     return obj;
 }
 
+export async function createFolder(name){
+  
+}
+
 export async function getFile(id){
     if(!id){
       throw "empty fild id!";

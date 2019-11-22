@@ -19,6 +19,8 @@ import {
 
 interface AppState {
   signedIn: boolean
+  authLoaded: boolean
+  showTutorial: boolean
 }
 type DispatchType = ThunkDispatch<{}, {}, AnyAction>
 type PasteEvent = React.SyntheticEvent<HTMLElement, ClipboardEvent> & {
@@ -27,20 +29,30 @@ type PasteEvent = React.SyntheticEvent<HTMLElement, ClipboardEvent> & {
 
 let initialState: AppState = {
   signedIn: false,
+  authLoaded: false,
+  showTutorial: false,
 }
 
 const appSlice = createSlice({
   name: 'app',
   initialState,
   reducers: {
+    setAuthLoaded(state, { payload }: PayloadAction<boolean>){
+      state.authLoaded = !!payload
+    },
     setSignedIn(state, { payload }: PayloadAction<boolean | undefined>){
       state.signedIn = !!payload
+    },
+    setShowTutorial(state, { payload }: PayloadAction<boolean>){
+      state.showTutorial = !!payload
     },
   }
 })
 
 export const {
+  setAuthLoaded,
   setSignedIn,
+  setShowTutorial,
 } = appSlice.actions
 
 export default appSlice.reducer
@@ -66,11 +78,9 @@ async function initLoadClipItems(dispatch: DispatchType){
       dispatch(addDisplayedClipItem(obj));
       dispatch(downloadClipItemToCache(obj));
     })
-
   } catch(e){
     console.error(e);
   }
-
 }
 
 async function loadAndAuthen(dispatch: DispatchType){
@@ -90,8 +100,10 @@ async function loadAndAuthen(dispatch: DispatchType){
 }
 
 
-export const onPaste = (e: PasteEvent): AppThunk => async dispatch => {
-  console.log("pasting:", e);
+export const onPaste = (e: PasteEvent): AppThunk =>
+    async (dispatch, getState) => {
+  if(!getState().app.signedIn) return;
+
   let {
     target,
     nativeEvent,
@@ -115,8 +127,8 @@ https://www.w3.org/TR/html51/editing.html#the-datatransferitemlist-interface
     let length = items.length;
     if(length > 1){
       console.log(
-          "multiple kinds found in DataTransferItemList,",
-          "prioritise file instead of string");
+          "multiple item variations %d found in DataTransferItemList,",
+          items.length, "prioritise file instead of string");
     }
     for(let i = 0; i < length; ++i){
       let item = items[i]
@@ -144,40 +156,10 @@ https://www.w3.org/TR/html51/editing.html#the-datatransferitemlist-interface
   }
 };
 
-async function initPasteListener(dispatch: DispatchType){
-  /*
-  async function onPaste(e){
-      
-    var items = data && data.items;
-    let text = data.getData("text");
-    if(text){
-        printInfo(-1, "string", text);
-        PasteBoard.add("text/plain", text);
-        return;
-    }
-    if(!items || !items.length){
-        console.warn("paste event triggered but no items received");
-        return;
-    }
-    console.log("data trasnsfer list:", items);
-    for(const [i, item] of Array.prototype.entries.call(items)){
-        if(item.kind === "string" && item.type.match(/^text/)){
-            text = await new Promise(resolve => item.getAsString(resolve));
-            // text = await item.getAsString(txt => ({ then(){ return txt; } }));
-            printInfo(i, "string", text);
-        } else if(item.kind == "file"){
-            var f = item.getAsFile();
-            printInfo(i, "file<buffer>", f);
-            PasteBoard.add(f.type, f, f.name);
-        }
-    }
-  window.addEventListener("paste", onPaste);
-  */
-}
-
 export const init = (): AppThunk => async dispatch => {
   console.log("/src/logic/appSlice.tsx: init()");
 
   await loadAndAuthen(dispatch)
+  dispatch(setAuthLoaded(true))
   initLoadClipItems(dispatch)
 };

@@ -6,7 +6,6 @@ import GoogleClipItem from "./GoogleClipItem";
 //@ts-ignore
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from 'react-redux'
-import { useAsync } from 'react-async-hook';
 
 import { RootState } from "../logic/rootReducer";
 
@@ -50,6 +49,7 @@ function getCols(){
   }
 }
 
+const refreshDelay = 100;
 
 const ClipItemContainer = (props: any) => {
   const dispatch = useDispatch();
@@ -59,15 +59,16 @@ const ClipItemContainer = (props: any) => {
   });
   const [ cols, setCols ] = useState(getCols());
   const resizeListener = debounce((e: React.SyntheticEvent) => {
+    if(!ref.current) return;
     let newCol = getCols();
     if(cols != newCol){
       setCols(newCol)
-      setTimeout(ref.current.refreshLayout, 200)
+      setTimeout(ref.current.refreshLayout, refreshDelay)
       // 200 is an arbitrary number, large enough to wait afte setCols
     } else{
       ref.current.refreshLayout();
     }
-  }, 200)
+  }, refreshDelay)
 
   React.useEffect(() => {
     resizeListener()
@@ -85,15 +86,18 @@ const ClipItemContainer = (props: any) => {
     <Masonry ref={ref} colMinWidth="100px"
         balanceColumns={true} hgap={15} cols={cols}>
       {
-        list.length ?
-
         list.map((id: string) => (
           <GoogleClipItem key={id} id={id} onLoad={() => {
-              setTimeout(ref.current.refreshLayout, 200);
+              const refresh = () => {
+                if(ref.current){
+                  ref.current.refreshLayout()
+                } else{
+                  setTimeout(refresh, refreshDelay);
+                }
+              };
+              setTimeout(refresh, refreshDelay);
           }} />
-        )) :
-
-        <NewUserButton />
+        ))
       }
     </Masonry>
   </Container>;

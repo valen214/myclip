@@ -82,20 +82,16 @@ const Masonry = React.forwardRef(({
 
     let max_indexed = 0, unindexed = 0;
     let allChild: HTMLCollection = selfRef.current.children;
-    for(let child of allChild){
-      if(child instanceof HTMLElement){
-        let j = child.dataset.masonry_index
-        if(j){
-          let k = parseInt(j);
-          if(k > max_indexed) max_indexed = k;
-          delete child.dataset.masonry_unordered;
-        } else{
-          child.dataset.masonry_unordered = String(++unindexed);
-        }
+    Array.prototype.forEach.call(allChild, (child: HTMLElement) => {
+      let j = child.dataset.masonry_index
+      if(j){
+        let k = parseInt(j);
+        if(k > max_indexed) max_indexed = k;
+        delete child.dataset.masonry_unordered;
       } else{
-        console.warn("Masonry:", child, "is not an instance of HTMLElement");
+        child.dataset.masonry_unordered = String(++unindexed);
       }
-    }
+    })
 
     const calibratedMasonryIndex = (elem: Partial<HTMLElement>) => {
       let i = elem.dataset.masonry_index

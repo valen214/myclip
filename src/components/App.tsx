@@ -8,16 +8,20 @@ import CreateClipMenu from "./CreateClipMenu";
 import TextClipPage from "./TextClipPage";
 import TopNav from "./TopNav";
 import FunctionalOverlay from "./FunctionalOverlay";
-import { init, onPaste } from "../logic/appSlice";
+import {
+  init, onPaste, signIn
+} from "../logic/appSlice";
+import { RootState } from "../logic/rootReducer";
 
 import { hot } from 'react-hot-loader/root';
 
 //@ts-ignore // eslint ignore-next-line
 import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 
 import CssBaseline from "@material-ui/core/CssBaseline";
 
+import Button from "./Button";
 
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 const useStyles = makeStyles((theme: Theme) => createStyles({
@@ -27,6 +31,7 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     justifyContent: 'space-around',
     // overflow: 'hidden',
     alignContent: "start",
+    width: "100%", height: "100%",
   },
   createClipMenu: {
     position: "fixed",
@@ -39,6 +44,11 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
 const App = ({}: any) => {
   const classes = useStyles({});
   const dispatch = useDispatch();
+  const {
+    signedIn, authLoaded, showTutorial
+  } = useSelector((state: RootState) => {
+      return state.app
+  });
 
   useEffect(() => {
     dispatch(init())
@@ -54,11 +64,31 @@ const App = ({}: any) => {
         width: "500px", height: "100px", }}>
       I am Top nav place holder
     </div>
-    <ClipItemContainer />
-    <CreateClipMenu className={classes.createClipMenu} />
-    <TextClipPage />
-    <ClipActionDialog />
-    <FunctionalOverlay />
+    {
+      !authLoaded ? (
+        "[ Loading... ]"
+      ) : !signedIn ? (
+          <Button onClick={() => { dispatch(signIn()) }}
+              style={{
+                position: "absolute",
+                margin: "0", top: "20vh",
+                width: "50vmin", height: "50vmin",
+                background: "#ada", display: "flex",
+                alignItems: "center", justifyContent: "center",
+                fontSize: "2em", userSelect: "none",
+              }}>
+            Sign In First!
+          </Button>
+      ): (
+        <React.Fragment>
+          <ClipItemContainer />
+          <CreateClipMenu className={classes.createClipMenu} />
+          <TextClipPage />
+          <ClipActionDialog />
+          <FunctionalOverlay />
+        </React.Fragment>
+      )
+    }
   </div>;
 };
 

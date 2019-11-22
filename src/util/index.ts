@@ -21,3 +21,14 @@ export function debounce(func: F, delay: number): F{
     }, delay);
   };
 };
+
+
+// eslint-disable-next-line
+export function randomstring(len=8, alphabet="abcdefghijklmnopqrstuvwxyz"){
+    // https://jsperf.com/js-random-string-implementation-performance
+    return crypto.getRandomValues(new Uint8Array(len)).reduce((l, r, i) => {
+        // alphabet.chatAt(i / 255 * alphabet.length)
+        l[i] = alphabet[Math.floor(r / 256 * alphabet.length)];
+        return l;
+    }, new Array(len)).join("");
+}

@@ -105,7 +105,9 @@ const GoogleClipItem = ({
         cursor: "pointer",
         background: "#ffd",
       }}>
-    <CardActionArea
+    <CardActionArea style={{
+            padding: "12px",
+          }}
         onClick={() => {
           if(type.startsWith("text")) return showTextClipPage()
           if(type.startsWith("image")){
@@ -114,45 +116,34 @@ const GoogleClipItem = ({
           }
         }}>
       <CardContent style={{
-            padding: "12px",
-          }}>
-        <div
-          style={{ // important
+            padding: "0 5px 0 5px",
             background: "#dfd", width: "100%",
             maxHeight: "280px", overflow: "hidden",
             display: "inline-block",
           }}>
-          {
-            type.startsWith("text") ? 
-              <div style={{
-                  fontFamily: "Consolas", padding: "5px 2px",
-                  wordBreak: "break-all", whiteSpace: "pre-wrap", }}>
-                {content}
-              </div> :
-            type.startsWith("image") ?
-              <div onLoad={() => {
-                if(!loaded){
-                  setLoaded(true);
-                  onLoad()
-                }
-              }} style={{
-                display: "inline-block",
-                width: "100%", height: "280px",
-                background: `center / contain no-repeat url(${content})`
-              }} /> : false ?
-              <img src={content} onLoad={() => {
-                if(!loaded){
-                  setLoaded(true);
-                  onLoad()
-                }
-              }} style={{
-                display: "inline-block",
-                width: "100%", height: "100%",
-                objectFit: "contain",
-              }} /> :
+        {
+          type.startsWith("text") ? (
+            <div style={{
+                fontFamily: "Consolas", padding: "5px 2px",
+                wordBreak: "break-all", whiteSpace: "pre-wrap", }}>
+              {content}
+            </div>
+          ): type.startsWith("image") ? (
+            <object data={content} type={type} onLoad={() => {
+              if(!loaded){
+                setLoaded(true);
+                onLoad()
+              }
+            }} style={{
+              display: "inline-block",
+              width: "100%", height: "100%",
+              maxHeight: "280px",
+              objectFit: "contain",
+            }} />
+          ) : (
             "[Loading ...]"
-          }
-        </div>
+          )
+        }
       </CardContent>
     </CardActionArea>
     <CardActions>

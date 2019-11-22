@@ -1,7 +1,6 @@
 
 //@ts-ignore
 import React from 'react';
-import CSS from 'csstype';
 
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 
@@ -9,7 +8,9 @@ type PropsType = {
   onClick: (e: React.MouseEvent<HTMLElement>) => void
   children?: React.ReactNode
   edge?: string
-} & Partial<CSS.Properties>
+  style?: { [k: string]: any }
+  overlayStyle?: { [k: string]: any }
+}
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   button: {
@@ -36,10 +37,10 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   overlay: {
     display: "inline-block",
     position: "absolute", width: "100%", height: "100%",
-    pointerEvents: "none", zIndex: -1,
+    pointerEvents: "none", zIndex: 1,
     borderRadius: "50%",
     // https://jsfiddle.net/xvalen214x/7rLmu9oq/41/show
-    background: "radial-gradient(rgba(0, 0, 0, 0) 20%, rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0.4) 100%)",
+    background: "radial-gradient(rgba(0, 0, 0, 0) 20%, rgba(255, 255, 255, 0.3) 35%, rgba(255, 255, 255, 0.2) 100%)",
     // background: "repeating-radial-gradient(rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0.3) 80% 82%, rgba(255, 255, 255, 0.8) 82% 84%)",
     opacity: 0,
   },
@@ -52,7 +53,8 @@ const Button = React.forwardRef(({
   onClick,
   children,
   edge,
-  borderRadius,
+  style,
+  overlayStyle,
   ...props
 }: PropsType, ref?: React.Ref) => {
   const classes = useStyles({})
@@ -61,15 +63,6 @@ const Button = React.forwardRef(({
 
   const overlayRef = React.useRef(null);
 
-  // no Object.fromEntries
-  let style: { [k: string]: any } = {}
-  Object.entries(props
-      ).filter(([k, v]) => k in CSS.Properties
-      ).forEach(([k, v]: [string, any]) => {
-        style[k] = v;
-  });
-
-  console.log(style);
 
   return <div ref={ref} className={classes.button} {...props}
       style={{
@@ -81,7 +74,7 @@ const Button = React.forwardRef(({
         Object.assign(overlayRef.current.style, {
           left: (e.clientX - rect.left - rect.width/2) + "px",
           top: (e.clientY - rect.top - rect.height/2) + "px",
-          transform: "scale(0.5)",
+          transform: "scale(0.25)",
           transition: "none",
           opacity: 1,
         });
@@ -89,17 +82,16 @@ const Button = React.forwardRef(({
           Object.assign(overlayRef.current.style, {
             transform: "scale(3.0)",
             opacity: 0,
-            transition: "transform 0.5s, opacity 1s",
+            transition: "transform 1s, opacity 1s",
           })
         }, 16);
       }}
       onClick={(e: React.MouseEvent<HTMLElement>) => {
         if(typeof onClick === "function") onClick(e);
       }}>
-    <span ref={overlayRef} className={classes.overlay}
-        style={{
-          borderRadius,
-        }}>
+    <span ref={overlayRef}
+        className={classes.overlay}
+        style={overlayStyle}>
       </span>
     { children }
   </div>

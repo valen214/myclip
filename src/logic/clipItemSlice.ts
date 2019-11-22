@@ -4,6 +4,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 import { AppThunk } from './store'
 import GDL from "../GoogleDriveLibrary"
+import { randomstring } from "../util"
 import {
   blobToUrl, urlToBlob, revokeBlob
 } from "./BlobStore"
@@ -76,6 +77,19 @@ const clipItemSlice = createSlice({
       });
       delete state.cachedClipItems[id];
     },
+    replaceClipItemID(state, {
+      payload: [ oldId, newId ]
+    }: PayloadAction<[string, string]>){
+      if(oldId in state.cachedClipItems){
+        state.cachedClipItems[newId] = state.cachedClipItems[oldId];
+        state.cachedClipItems[newId].id = newId;
+        delete state.cachedClipItems[oldId]
+      }
+      let i = Array.prototype.indexOf.call(state.displayedClipItemsID, oldId)
+      if(i >= 0){
+        state.displayedClipItemsID[i] = newId;
+      }
+    },
   }
 })
 
@@ -86,6 +100,7 @@ export const {
   addCachedClipItem,
   setCachedClipItemInfo,
   removeCachedClipItem,
+  replaceClipItemID,
 } = clipItemSlice.actions
 
 export default clipItemSlice.reducer
@@ -133,10 +148,11 @@ export const uploadOrUpdateClipItem = (
       let res = await GDL.patchToAppFolder(obj.id, content, obj.name);
       console.assert(res.id === obj.id);
     } else{
-      let res = await GDL.uploadToAppFolder(obj.name, content);
-      obj.id = res.id;
+      obj.id = randomstring(16)
       dispatch(addCachedClipItem(<ClipItem>obj))
       if(displayed) dispatch(addDisplayedClipItem(obj.id))
+      let res = await GDL.uploadToAppFolder(obj.name, content);
+      dispatch(replaceClipItemID([obj.id, res.id]));
     }
   } catch(e){
     console.error(e);
