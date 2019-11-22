@@ -156,7 +156,7 @@ const Masonry = React.forwardRef(({
     };
     refreshLayout();
   }, [ cols ]);
-  console.log("Masonry: cols:", cols);
+  // console.log("Masonry: cols:", cols);
 
   return <div ref={ref} {...props} style={parentStyle as React.CSSProperties}>
     {(

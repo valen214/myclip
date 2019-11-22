@@ -43,9 +43,9 @@ const ClipItemContainer = (props: any) => {
     let width = window.innerWidth || document.body.clientWidth;
     switch(true){
     case width < SM:
+    case width < MD:
       newCol = 2;
       break;
-    case width < MD:
     case width < LG:
       newCol = 3;
       break;
@@ -60,7 +60,7 @@ const ClipItemContainer = (props: any) => {
 
     if(cols != newCol){
       setCols(newCol)
-      setTimeout(ref.current.refreshLayout, 200)
+      setTimeout(ref.current.refreshLayout, 16)
       // 200 is an arbitrary number, large enough to wait afte setCols
     } else{
       ref.current.refreshLayout();
