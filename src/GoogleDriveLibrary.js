@@ -229,13 +229,14 @@ export async function patchToAppFolder(id, data, filename){
     let formData = new FormData();
     formData.append("meta", new Blob([JSON.stringify({
         "name": filename,
+        "mimeType": "application/vnd.google-apps.folder",
         // "parents": ["appDataFolder"],
     })], { type: "application/json; charset=UTF-8" }));
     formData.append("body", await new Response(data).blob());
 
     let res = await fetch("https://www.googleapis.com/" +
             "upload/drive/v3/files/" + id +
-            "?uploadType=multipart&fields=id,mimeType", {
+            "?uploadType=multipart&fields=id", {
             "method": "PATCH",
             "headers": {
                 "Authorization": "Bearer " + access_token,
@@ -248,7 +249,30 @@ export async function patchToAppFolder(id, data, filename){
 }
 
 export async function createFolder(name){
-  
+    await initialized;
+    const access_token = gapi.auth2.getAuthInstance().currentUser.get(
+          ).getAuthResponse().access_token;
+    
+    let formData = new FormData();
+    formData.append("meta", new Blob([JSON.stringify({
+        "name": filename,
+        "mimeType": "application/vnd.google-apps.folder",
+        // "parents": ["appDataFolder"],
+    })], { type: "application/json; charset=UTF-8" }));
+    formData.append("body", await new Response(data).blob());
+
+    let res = await fetch("https://www.googleapis.com/" +
+            "upload/drive/v3/files/" + id +
+            "?uploadType=multipart&fields=id", {
+            "method": "PATCH",
+            "headers": {
+                "Authorization": "Bearer " + access_token,
+            },
+            body: formData,
+    });
+    let obj = await res.json();
+    log("file uploaded to app folder: res:", obj);
+    return obj;
 }
 
 export async function getFile(id){
