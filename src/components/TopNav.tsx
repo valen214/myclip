@@ -85,7 +85,7 @@ const TopNav = ({
           <MyButton edge="left">
             <MenuIcon />
           </MyButton>
-          <Typography variant="h6" style={{ flex: 1 }}>
+          <Typography variant="h6" style={{ flex: 1, userSelect: "none" }}>
             MyClip
           </Typography>
           <IconButton onClick={setInputMode}>

@@ -57,13 +57,13 @@ const TextClipPage = (props: any) => {
           </IconButton>
           <TextField
               key={title}
-          value={title}
+              defaultValue={title}
               placeholder="Title (Optional)"
               onChange={(e: React.FormEven<HTMLInputElement>) => {
-                dispatch(setTitle(e.currentTarget.value))
+                // dispatch(setTitle(e.currentTarget.value))
               }}
               onBlur={(e: React.FormEven<HTMLInputElement>) => {
-                // dispatch(setTitle(e.currentTarget.value))
+                dispatch(setTitle(e.currentTarget.value))
               }}
               style={{ flex: 1 }} margin="dense" />
           <IconButton edge="end" onClick={() => {
@@ -83,13 +83,14 @@ const TextClipPage = (props: any) => {
             padding: 15,
           }}>
         <InputBase
-          value={content}
+          key={content}
+          defaultValue={content}
           multiline fullWidth
           onChange={(e: React.FormEvent<HTMLInputElement>) => {
-            dispatch(setContent(e.currentTarget.value))
+            // dispatch(setContent(e.currentTarget.value))
           }}
           onBlur={(e: React.FormEvent<HTMLInputElement>) => {
-            // dispatch(setContent(e.currentTarget.value))
+            dispatch(setContent(e.currentTarget.value))
           }}
           style={{
             padding: 2,

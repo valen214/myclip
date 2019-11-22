@@ -95,42 +95,46 @@ const CreateCilpMenu = ({
         <GridList cols={2}
             cellHeight={100}
             style={{ width: "200px" }}>
-          <GridListTile>
-            <Button fullWidth onClick={
-                (e: React.MouseEvent<HTMLButtonElement>) => {
-                  dispatch(signIn())
-                  setAnchorEl(null)
-                }}
-                className={classes.createClipButton}>
-              Sign In to Continue
-            </Button>
-          </GridListTile>
-          <GridListTile>
-            <Button fullWidth onClick={
-                (e: React.MouseEvent<HTMLButtonElement>) => {
-                  setAnchorEl(null);
-                  dispatch(setTextClipPageVisible(true));
-                  dispatch(setTextClipPageTarget(""));
-                }}
-                className={classes.createClipButton}>
-              Text
-            </Button>
-          </GridListTile>
-          <GridListTile>
-            <Button fullWidth onClick={
-                (e: React.MouseEvent<HTMLButtonElement>) => {
-                  setAnchorEl(null);
-                  imageInputRef.current.click()
-                }}
-                className={classes.createClipButton}>
-              Image
-            </Button>
-            <input ref={imageInputRef} hidden type="file"
-                accept=".png, .jpg, .webm, image/*"
-                onChange={(e: React.FormEvent<HTMLInputElement>) => {
-                  dispatch(uploadClipItemFiles(e.target.files));
-                }} />
-          </GridListTile>
+          { !signedIn ?
+            <GridListTile cols={2}>
+              <Button fullWidth onClick={
+                  (e: React.MouseEvent<HTMLButtonElement>) => {
+                    dispatch(signIn())
+                    setAnchorEl(null)
+                  }}
+                  className={classes.createClipButton}>
+                Sign In to Continue
+              </Button>
+            </GridListTile>
+          : "" }{ signedIn ?
+            <GridListTile>
+              <Button fullWidth onClick={
+                  (e: React.MouseEvent<HTMLButtonElement>) => {
+                    setAnchorEl(null);
+                    dispatch(setTextClipPageVisible(true));
+                    dispatch(setTextClipPageTarget(""));
+                  }}
+                  className={classes.createClipButton}>
+                Text
+              </Button>
+            </GridListTile>
+          : "" }{ signedIn ?
+            <GridListTile>
+              <Button fullWidth onClick={
+                  (e: React.MouseEvent<HTMLButtonElement>) => {
+                    setAnchorEl(null);
+                    imageInputRef.current.click()
+                  }}
+                  className={classes.createClipButton}>
+                Image
+              </Button>
+              <input ref={imageInputRef} hidden type="file"
+                  accept=".png, .jpg, .webm, image/*"
+                  onChange={(e: React.FormEvent<HTMLInputElement>) => {
+                    dispatch(uploadClipItemFiles(e.target.files));
+                  }} />
+            </GridListTile>
+          : "" }
         </GridList>
       </Box>
     </Menu>

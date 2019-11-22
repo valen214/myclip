@@ -21,9 +21,15 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     justifyContent: "center",
     borderRadius: "50%",
     background: "transparent",
+    overflow: "hidden",
     "&:hover": {
       // "&>span": {
         background: "rgba(0, 0, 0, 0.1)"
+      // }
+    },
+    "&:active": {
+      // "&>span": {
+        background: "rgba(0, 0, 0, 0.2)"
       // }
     }
   },
@@ -32,7 +38,10 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     position: "absolute", width: "100%", height: "100%",
     pointerEvents: "none", zIndex: -1,
     borderRadius: "50%",
-    transition: "background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+    // https://jsfiddle.net/xvalen214x/7rLmu9oq/41/show
+    background: "radial-gradient(rgba(0, 0, 0, 0) 20%, rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0.4) 100%)",
+    // background: "repeating-radial-gradient(rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0.3) 80% 82%, rgba(255, 255, 255, 0.8) 82% 84%)",
+    opacity: 0,
   },
 }));
 
@@ -51,10 +60,24 @@ const Button = React.forwardRef((props: PropsType, ref?: React.Ref) => {
         ...(props.edge == "left" ? { marginLeft: -12 } : {})
       }}
       onPointerDown={(e: React.PointerEvent<HTMLElement>) => {
-
+        let rect = ref.current.getBoundingClientRect(); // parent
+        Object.assign(overlayRef.current.style, {
+          left: (e.clientX - rect.left - rect.width/2) + "px",
+          top: (e.clientY - rect.top - rect.height/2) + "px",
+          transform: "scale(0.5)",
+          transition: "none",
+          opacity: 1,
+        });
+        setTimeout(() => {
+          Object.assign(overlayRef.current.style, {
+            transform: "scale(3.0)",
+            opacity: 0,
+            transition: "transform 0.5s, opacity 1s",
+          })
+        }, 16);
       }}
       onClick={(e: React.MouseEvent<HTMLElement>) => {
-        props.onClick(e);
+        if(typeof props.onClick === "function") props.onClick(e);
       }}>
     <span ref={overlayRef} className={classes.overlay}></span>
     { props.children }
