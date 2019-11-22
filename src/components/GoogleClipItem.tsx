@@ -41,6 +41,18 @@ import Typography from "@material-ui/core/Typography";
 import CloseIcon from "@material-ui/icons/Close";
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 
+import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
+const useStyles = makeStyles((theme: Theme) => createStyles({
+  GCI: {
+    boxShadow: "0px 5px 5px -3px rgba(0,0,0,0.2)," +
+               "0px 8px 10px 1px rgba(0,0,0,0.14)," +
+               "0px 3px 14px 2px rgba(0,0,0,0.12)",
+    "&:hover": {
+      border: "1px solid rgba(0, 0, 0, 0.35)",
+      boxShadow: "none",
+    }
+  },
+}));
 
 export interface ClipItem {
   id?: string;
@@ -52,6 +64,7 @@ const GoogleClipItem = ({
   id: string
   onLoad?: () => void
 }) => {
+  const classes = useStyles({});
   const dispatch = useDispatch();
   const [ loaded, setLoaded ] = useState(false);
   const { id: _id, name, content, type = "" } =
@@ -82,10 +95,10 @@ const GoogleClipItem = ({
     setLoaded(true)
     onLoad()
   }
-  console.log("content isEmpty:", !content, "type:", type, "loaded:", loaded);
+  // console.log("content isEmpty:", !content, "type:", type, "loaded:", loaded);
 
   // https://material-ui.com/components/grid-list/
-  return <Card raised
+  return <Card className={classes.GCI}
       style={{
         height: "auto",
         cursor: "pointer",

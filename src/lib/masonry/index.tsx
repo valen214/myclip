@@ -144,14 +144,14 @@ const Masonry = React.forwardRef(({
         width: `calc(${colWidth})`,
         left: `calc(${col} * (${colWidth} + ${_hgap}))`,
         top: height + "px",
-        transition: "top 0.5s, left 0.5s",
+        transition: "top 0.3s, left 0.3s",
       });
     }
-  });
+  }, [ children, cols ]);
 
   React.useEffect(() => {
     refreshLayout();
-  }, [children]);
+  }, [children, cols]);
 
   return <div ref={ref} {...props} style={parentStyle as React.CSSProperties}>
     {(
