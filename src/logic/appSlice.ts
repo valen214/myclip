@@ -93,11 +93,17 @@ async function loadAndAuthen(dispatch: DispatchType){
 export const onPaste = (e: PasteEvent): AppThunk => async dispatch => {
   console.log("pasting:", e);
   let {
-    currentTarget,
+    target,
     nativeEvent,
     clipboardData: data
   } = e
 
+  if(( target instanceof HTMLInputElement )
+  || ( target instanceof HTMLTextAreaElement )){
+    console.log("pasting on input element, skip global paste handler");
+    return;
+  }
+  
   /*
 https://www.w3.org/TR/html51/editing.html#the-datatransferitemlist-interface
   */
