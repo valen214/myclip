@@ -72,7 +72,7 @@ const ClipItemContainer = (props: any) => {
 
   React.useEffect(() => {
     resizeListener()
-  }, [ ...list ])
+  }, [ list ])
 
   React.useLayoutEffect(() => {
     window.addEventListener("resize", resizeListener);

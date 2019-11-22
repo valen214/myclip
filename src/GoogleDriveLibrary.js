@@ -197,7 +197,7 @@ export async function uploadFile(path, data){
 
 }
 
-export async function uploadToAppFolder(filename, data){
+export async function uploadToAppFolder(filename, data, parent){
     await initialized;
     const access_token = gapi.auth2.getAuthInstance().currentUser.get(
             ).getAuthResponse().access_token;
@@ -205,7 +205,7 @@ export async function uploadToAppFolder(filename, data){
     let formData = new FormData();
     formData.append("meta", new Blob([JSON.stringify({
         "name": filename,
-        "parents": ["appDataFolder"],
+        "parents": [parent || "appDataFolder"],
     })], { type: "application/json; charset=UTF-8" }));
     formData.append("body", await new Response(data).blob(), filename);
 
@@ -248,23 +248,21 @@ export async function patchToAppFolder(id, data, filename){
     return obj;
 }
 
-export async function createFolder(name){
+export async function createFolder(name, parent){
     await initialized;
     const access_token = gapi.auth2.getAuthInstance().currentUser.get(
-          ).getAuthResponse().access_token;
-    
+            ).getAuthResponse().access_token;
+
     let formData = new FormData();
     formData.append("meta", new Blob([JSON.stringify({
-        "name": filename,
-        "mimeType": "application/vnd.google-apps.folder",
-        // "parents": ["appDataFolder"],
+        "name": name,
+        'mimeType': 'application/vnd.google-apps.folder',
+        "parents": [parent || "appDataFolder"],
     })], { type: "application/json; charset=UTF-8" }));
-    formData.append("body", await new Response(data).blob());
 
     let res = await fetch("https://www.googleapis.com/" +
-            "upload/drive/v3/files/" + id +
-            "?uploadType=multipart&fields=id", {
-            "method": "PATCH",
+            "upload/drive/v3/files?uploadType=multipart&fields=id,mimeType", {
+            "method": "POST",
             "headers": {
                 "Authorization": "Bearer " + access_token,
             },
@@ -363,6 +361,7 @@ const GDL = {
     uploadFile,
     uploadToAppFolder,
     patchToAppFolder,
+    createFolder,
     getFile,
     getFileAsText,
     getFileAsBlob,
