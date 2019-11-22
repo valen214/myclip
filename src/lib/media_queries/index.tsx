@@ -2,12 +2,14 @@
 //@ts-ignore
 import React, { useState, useMemo, useEffect } from "react"
 
+export const [ XS, SM, MD, LG, XL ] = [ 0, 600, 960, 1280, 1920 ];
+
 export enum breakpoints {
-  xs = 0,
-  sm = 600,
-  md = 960,
-  lg = 1280,
-  xl = 1920,
+  xs = XS,
+  sm = SM,
+  md = MD,
+  lg = LG,
+  xl = XL,
 };
 
 export const [ xs, sm, md, lg, xl ] = [
@@ -31,6 +33,7 @@ matchMedia_breakpoints.forEach((mediaQ, i) => {
           (b: boolean, j: number) => (
               i == j ? e.matches : b))
       setBpsToggle([...l])
+      console.log("??");
     }
   })
 });

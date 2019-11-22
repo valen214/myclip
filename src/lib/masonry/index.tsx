@@ -50,6 +50,7 @@ const masonryAlgo = ({
   }
 }
 
+
 const Masonry = React.forwardRef(({
   cols = 2,
   hgap = 15,
@@ -68,90 +69,94 @@ const Masonry = React.forwardRef(({
   balanceColumns?: boolean
   children?: React.ReactNode
 } = {}, ref?: React.Ref) => {
-  const _ref = React.useRef();
-  ref = ref || _ref;
 
   const parentStyle = {
     position: "relative"
   }
 
-  const refreshLayout = React.useCallback(() => {
-    ref.current.refreshLayout = refreshLayout;
 
-    let max_indexed = 0, unindexed = 0;
-    let allChild: HTMLCollection = ref.current.children;
-    for(let child of allChild){
-      if(child instanceof HTMLElement){
-        let j = child.dataset.masonry_index
-        if(j){
-          let k = parseInt(j);
-          if(k > max_indexed) max_indexed = k;
-          delete child.dataset.masonry_unordered;
+  React.useLayoutEffect(() => {
+    const refreshLayout = () => {
+      let begin = performance.now();
+      // console.log("Masonry.refreshLayout() invoked");
+      ref.current.refreshLayout = refreshLayout;
+
+      let max_indexed = 0, unindexed = 0;
+      let allChild: HTMLCollection = ref.current.children;
+      for(let child of allChild){
+        if(child instanceof HTMLElement){
+          let j = child.dataset.masonry_index
+          if(j){
+            let k = parseInt(j);
+            if(k > max_indexed) max_indexed = k;
+            delete child.dataset.masonry_unordered;
+          } else{
+            child.dataset.masonry_unordered = String(++unindexed);
+          }
         } else{
-          child.dataset.masonry_unordered = String(++unindexed);
+          console.warn("Masonry:", child, "is not an instance of HTMLElement");
         }
-      } else{
-        console.warn("Masonry:", child, "is not an instance of HTMLElement");
       }
-    }
 
-    const calibratedMasonryIndex = (elem: Partial<HTMLElement>) => {
-      let i = elem.dataset.masonry_index
-      if(i){
-        return parseInt(i);
-      } else{
-        return max_indexed + parseInt(elem.dataset.masonry_unordered);
+      const calibratedMasonryIndex = (elem: Partial<HTMLElement>) => {
+        let i = elem.dataset.masonry_index
+        if(i){
+          return parseInt(i);
+        } else{
+          return max_indexed + parseInt(elem.dataset.masonry_unordered);
+        }
       }
-    }
-    Array.from(allChild).sort((a, b) => (
-        calibratedMasonryIndex(a) - calibratedMasonryIndex(b)
-    )).forEach(elem => ref.current.appendChild(elem))
+      Array.from(allChild).sort((a, b) => (
+          calibratedMasonryIndex(a) - calibratedMasonryIndex(b)
+      )).forEach(elem => ref.current.appendChild(elem))
 
-    // children.length
-    let rects = Array.prototype.map.call(allChild,
-        (elem: HTMLElement, i: number) => {
-            elem.dataset.masonry_index = String(i)
-            return elem.getBoundingClientRect();
-    })
+      // children.length
+      let rects = Array.prototype.map.call(allChild,
+          (elem: HTMLElement, i: number) => {
+              elem.dataset.masonry_index = String(i)
+              return elem.getBoundingClientRect();
+      })
 
 
-    if(typeof hgap === "number"){
-      // hgap = String(hgap) + "px"
-    } else if(typeof hgap === "string"){
+      if(typeof hgap === "number"){
+        // hgap = String(hgap) + "px"
+      } else if(typeof hgap === "string"){
 
-    }
-    let config = {
-      mode: "columns",
-      cols,
-      vgap,
-      hgap, // algo will fail if hgap is not number
-    }
-    let col_y = masonryAlgo({
-        rects,
-        config
-    });
-
-    let _hgap = String(hgap) + "px"
-    let colWidth = `(100% - ${_hgap} * ${cols + 1}) / ${cols}`
-
-    let len = allChild.length;
-    while(--len >= 0){
-      let child: Partial<HTMLElement> = allChild[len];
-      let [ col, height ] = col_y[len];
-      Object.assign(child.style, {
-        // consider using css 'attr' and dataset in the future
-        position: "absolute",
-        width: `calc(${colWidth})`,
-        left: `calc(${col} * (${colWidth} + ${_hgap}))`,
-        top: height + "px",
-        transition: "top 0.3s, left 0.3s",
+      }
+      let config = {
+        mode: "columns",
+        cols,
+        vgap,
+        hgap, // algo will fail if hgap is not number
+      }
+      let col_y = masonryAlgo({
+          rects,
+          config
       });
-    }
-  }, [ children, cols ]);
 
-  React.useEffect(() => {
+      let _hgap = String(hgap) + "px"
+      let colWidth = `(100% - ${_hgap} * ${cols + 1}) / ${cols}`
+
+      let len = allChild.length;
+      while(--len >= 0){
+        let child: Partial<HTMLElement> = allChild[len];
+        let [ col, height ] = col_y[len];
+        Object.assign(child.style, {
+          // consider using css 'attr' and dataset in the future
+          position: "absolute",
+          width: `calc(${colWidth})`,
+          left: `calc(${col} * (${colWidth} + ${_hgap}))`,
+          top: height + "px",
+          transition: "top 0.3s, left 0.3s",
+        });
+      }
+
+      let spent = performance.now() - begin
+      // console.log("Masonry.refreshLayout() exiting, used:", spent, "ms");
+    };
     refreshLayout();
-  }, [children]);
+  }, [ cols ]);
+  console.log("Masonry: cols:", cols);
 
   return <div ref={ref} {...props} style={parentStyle as React.CSSProperties}>
     {(
