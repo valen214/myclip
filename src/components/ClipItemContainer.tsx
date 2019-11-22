@@ -39,10 +39,13 @@ const ClipItemContainer = (props: any) => {
   });
   const [ cols, setCols ] = useState(2);
   const resizeListener = debounce((e: React.SyntheticEvent) => {
+    console.log("WINDOW RESIZE");
     let newCol;
     let width = window.innerWidth || document.body.clientWidth;
     switch(true){
     case width < SM:
+      newCol = 1;
+      break;
     case width < MD:
       newCol = 2;
       break;
@@ -60,7 +63,7 @@ const ClipItemContainer = (props: any) => {
 
     if(cols != newCol){
       setCols(newCol)
-      setTimeout(ref.current.refreshLayout, 16)
+      setTimeout(ref.current.refreshLayout, 200)
       // 200 is an arbitrary number, large enough to wait afte setCols
     } else{
       ref.current.refreshLayout();
@@ -68,20 +71,20 @@ const ClipItemContainer = (props: any) => {
   }, 200)
 
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     window.addEventListener("resize", resizeListener);
     return () => {
       console.log("%cuseEffect cleanup", "color: #ada");
       window.removeEventListener("resize", resizeListener);
     };
-  }, []);
+  });
 
   return <Container>
     <Masonry ref={ref} colMinWidth="100px"
         balanceColumns={true} hgap={15} cols={cols}>
       {list.map((id: string) => (
         <GoogleClipItem key={id} id={id} onLoad={() => {
-            ref.current.refreshLayout();
+            setTimeout(ref.current.refreshLayout, 200);
         }}/>
       ))}
     </Masonry>
