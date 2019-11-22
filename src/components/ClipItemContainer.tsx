@@ -29,6 +29,7 @@ import Grid from "@material-ui/core/Grid";
 import CloseIcon from "@material-ui/icons/Close";
 import { XS, SM, MD, LG, XL } from "../lib/media_queries";
 import { debounce } from "../util";
+import NewUserButton from "./NewUserButton";
 
 
 function getCols(){
@@ -83,11 +84,17 @@ const ClipItemContainer = (props: any) => {
   return <Container>
     <Masonry ref={ref} colMinWidth="100px"
         balanceColumns={true} hgap={15} cols={cols}>
-      {list.map((id: string) => (
-        <GoogleClipItem key={id} id={id} onLoad={() => {
-            setTimeout(ref.current.refreshLayout, 200);
-        }}/>
-      ))}
+      {
+        list.length ?
+
+        list.map((id: string) => (
+          <GoogleClipItem key={id} id={id} onLoad={() => {
+              setTimeout(ref.current.refreshLayout, 200);
+          }} />
+        )) :
+
+        <NewUserButton />
+      }
     </Masonry>
   </Container>;
 };

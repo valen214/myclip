@@ -6,8 +6,10 @@
     "module": "commonjs",
     "target": "es6",
     "jsx": "react",
+    "lib": ["es6", "dom"],
     "typeRoots": ["./types", "./node_modules/@types"],
     "allowJs": true,
+    "moduleResolution": "Node"
   },
   "include": ["./src/**/*"],
 }

@@ -1,15 +1,15 @@
 
 //@ts-ignore
 import React from 'react';
-
+import CSS from 'csstype';
 
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 
 type PropsType = {
-  onClick: (e: React.MouseEvent<HTMLElement>) => any
+  onClick: (e: React.MouseEvent<HTMLElement>) => void
   children?: React.ReactNode
   edge?: string
-}
+} & Partial<CSS.Properties>
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   button: {
@@ -48,16 +48,33 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
 
 
 
-const Button = React.forwardRef((props: PropsType, ref?: React.Ref) => {
+const Button = React.forwardRef(({
+  onClick,
+  children,
+  edge,
+  borderRadius,
+  ...props
+}: PropsType, ref?: React.Ref) => {
   const classes = useStyles({})
   const _ref = React.useRef(null)
   ref = ref || _ref;
 
   const overlayRef = React.useRef(null);
 
+  // no Object.fromEntries
+  let style: { [k: string]: any } = {}
+  Object.entries(props
+      ).filter(([k, v]) => k in CSS.Properties
+      ).forEach(([k, v]: [string, any]) => {
+        style[k] = v;
+  });
+
+  console.log(style);
+
   return <div ref={ref} className={classes.button} {...props}
       style={{
-        ...(props.edge == "left" ? { marginLeft: -12 } : {})
+        ...(edge == "left" ? { marginLeft: -12 } : {}),
+        ...style
       }}
       onPointerDown={(e: React.PointerEvent<HTMLElement>) => {
         let rect = ref.current.getBoundingClientRect(); // parent
@@ -77,10 +94,14 @@ const Button = React.forwardRef((props: PropsType, ref?: React.Ref) => {
         }, 16);
       }}
       onClick={(e: React.MouseEvent<HTMLElement>) => {
-        if(typeof props.onClick === "function") props.onClick(e);
+        if(typeof onClick === "function") onClick(e);
       }}>
-    <span ref={overlayRef} className={classes.overlay}></span>
-    { props.children }
+    <span ref={overlayRef} className={classes.overlay}
+        style={{
+          borderRadius,
+        }}>
+      </span>
+    { children }
   </div>
 });
 
