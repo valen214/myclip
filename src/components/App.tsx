@@ -8,7 +8,7 @@ import CreateClipMenu from "./CreateClipMenu";
 import TextClipPage from "./TextClipPage";
 import TopNav from "./TopNav";
 import FunctionalOverlay from "./FunctionalOverlay";
-import { init } from "../logic/appSlice";
+import { init, onPaste } from "../logic/appSlice";
 
 import { hot } from 'react-hot-loader/root';
 
@@ -44,7 +44,8 @@ const App = ({}: any) => {
     dispatch(init())
   }, []);
 
-  return <div className={classes.root}>
+  return <div className={classes.root}
+      onPaste={(e: React.SyntheticEvent) => dispatch(onPaste(e))}>
     <CssBaseline />
     <TopNav />
     <div className={classes.offset}

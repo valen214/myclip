@@ -25,6 +25,9 @@ const textClipPageSlice = createSlice({
   name: 'textClipPage',
   initialState,
   reducers: {
+    setAll(state, { payload }: PayloadAction<TextClipPageState>){
+      Object.assign(state, payload);
+    },
     setVisible(state, { payload }: PayloadAction<boolean>){
       state.visible = payload
     },
@@ -41,6 +44,7 @@ const textClipPageSlice = createSlice({
 })
 
 export const {
+  setAll,
   setVisible,
   setTarget,
   setTitle,
@@ -49,9 +53,4 @@ export const {
 
 export default textClipPageSlice.reducer
 
-export const downloadClipItemToCache = (
-  id: string
-): AppThunk => async dispatch => {
-  let text = await GDL.getFileAsText(id);
-  
-}
+

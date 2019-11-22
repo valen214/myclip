@@ -31,36 +31,34 @@ import { XS, SM, MD, LG, XL } from "../lib/media_queries";
 import { debounce } from "../util";
 
 
+function getCols(){
+  let width = window.innerWidth || document.body.clientWidth;
+  switch(true){
+  case width < SM:
+    return 1;
+  case width < MD:
+    return 2;
+  case width < LG:
+    return 3;
+  case width < XL:
+    return 4;
+  case width >= XL:
+    return 5;
+  default:
+    return 2;
+  }
+}
+
+
 const ClipItemContainer = (props: any) => {
   const dispatch = useDispatch();
   const ref = React.useRef(null);
   const list: string[] = useSelector((state: RootState) => {
       return state.clipItem.displayedClipItemsID
   });
-  const [ cols, setCols ] = useState(2);
+  const [ cols, setCols ] = useState(getCols());
   const resizeListener = debounce((e: React.SyntheticEvent) => {
-    console.log("WINDOW RESIZE");
-    let newCol;
-    let width = window.innerWidth || document.body.clientWidth;
-    switch(true){
-    case width < SM:
-      newCol = 1;
-      break;
-    case width < MD:
-      newCol = 2;
-      break;
-    case width < LG:
-      newCol = 3;
-      break;
-    case width < XL:
-      newCol = 4;
-      break;
-    case width >= XL:
-      newCol = 5;
-      break;
-    default:
-    }
-
+    let newCol = getCols();
     if(cols != newCol){
       setCols(newCol)
       setTimeout(ref.current.refreshLayout, 200)
@@ -70,6 +68,9 @@ const ClipItemContainer = (props: any) => {
     }
   }, 200)
 
+  React.useEffect(() => {
+    resizeListener()
+  }, [ list ])
 
   React.useLayoutEffect(() => {
     window.addEventListener("resize", resizeListener);
