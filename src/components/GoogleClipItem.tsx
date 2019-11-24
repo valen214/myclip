@@ -44,14 +44,31 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 const useStyles = makeStyles((theme: Theme) => createStyles({
   GCI: {
-    border: "1px solid rgba(0, 0, 0, 0.0)",
-    boxShadow: "0px 5px 5px -3px rgba(0,0,0,0.2)," +
-               "0px 8px 10px 1px rgba(0,0,0,0.14)," +
-               "0px 3px 14px 2px rgba(0,0,0,0.12)",
+    border: "1px solid rgba(0, 0, 0, 0.1)",
+    overflow: "show",
+    boxShadow: "none",
+    "&::after": {
+      // https://tobiasahlin.com/blog/how-to-animate-box-shadow/
+      content: '""',
+      display: "block",
+      position: "absolute",
+      left: 0, top: 0,
+      width: "100%", height: "100%",
+      background: "#afa",
+      zIndex: -1,
+      opacity: 0,
+      // boxShadow: "0px 5px 5px -3px rgba(0,0,0,0.2)," +
+      //           "0px 8px 10px 1px rgba(0,0,0,0.14)," +
+      //           "0px 3px 14px 2px rgba(0,0,0,0.12)",
+      boxShadow: "0 5px 12px rgba(0, 0, 0, 0.3)",
+      transition: "opacity 0.1s ease-in-out",
+    },
     "&:hover": {
       border: "1px solid rgba(0, 0, 0, 0.35)",
-      boxShadow: "none",
-    }
+      "&::after": {
+        opacity: 1,
+      },
+    },
   },
 }));
 

@@ -1,7 +1,7 @@
 {
 	"folders": [
 		{
-			"path": "C:\\Users\\Administrator\\Desktop\\myclip"
+			"path": "D:\\workspace\\myclip"
 		}
   ],
   "settings": {
@@ -27,6 +27,7 @@
     "workbench.settings.editor": "json",
     "workbench.settings.openDefaultSettings": false,
     "explorer.confirmDelete": false,
+    "kotlin.linting.debounceTime": 1000,
     "breadcrumbs.enabled": false,
     "explorer.confirmDragAndDrop": false,
     "git.ignoreMissingGitWarning": true

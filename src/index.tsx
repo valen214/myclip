@@ -66,17 +66,13 @@ if (process.env.NODE_ENV === 'development' && module.hot) {
 }
 
 
-
+import DriveFileManager from "./lib/google/DriveFileManager";
 
 declare global {
   interface Window {
-    gql: any;
-    TEXT_CLIP_PAGE_VISIBILITY: any;
-    client: any;
-    getField: any;
-    setField: any;
-    InMemoryCache: any;
-    createHttpLink: any;
-    ApolloClient: any;
+    gapi: any
+    DFM: any
   }
 }
+
+window.DFM = DriveFileManager
