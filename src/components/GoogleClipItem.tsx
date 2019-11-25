@@ -41,8 +41,11 @@ import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 const useStyles = makeStyles((theme: Theme) => createStyles({
   GCI: {
     border: "1px solid rgba(0, 0, 0, 0.1)",
-    overflow: "show",
     boxShadow: "none",
+    cursor: "pointer",
+    height: "auto",
+    background: "#ffd",
+    overflow: "visible",
     "&::after": {
       // https://tobiasahlin.com/blog/how-to-animate-box-shadow/
       content: '""',
@@ -56,7 +59,7 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
       // boxShadow: "0px 5px 5px -3px rgba(0,0,0,0.2)," +
       //           "0px 8px 10px 1px rgba(0,0,0,0.14)," +
       //           "0px 3px 14px 2px rgba(0,0,0,0.12)",
-      boxShadow: "0 5px 12px rgba(0, 0, 0, 0.3)",
+      boxShadow: "0 5px 12px rgba(0, 0, 0, 0.5)",
       transition: "opacity 0.1s ease-in-out",
     },
     "&:hover": {
@@ -123,9 +126,6 @@ const GoogleClipItem = ({
   // https://material-ui.com/components/grid-list/
   return <Card className={classes.GCI}
       style={{
-        height: "auto",
-        cursor: "pointer",
-        background: "#ffd",
       }}>
     <CardActionArea style={{
             padding: "12px",
@@ -164,13 +164,16 @@ const GoogleClipItem = ({
               objectFit: "contain",
             }} />
           ): type === "application/vnd.google-apps.folder" ? (
-            <React.Fragment>
+            <div style={{
+              display: "flex",
+              alignItems: "center"
+            }}>
               <FolderIcon />
               <span className={classes.displayed_text}
                   style={{
                     fontSize: "2em"
                   }}>{name}</span>
-            </React.Fragment>
+            </div>
           ): (
             "[Loading ...]"
           )
