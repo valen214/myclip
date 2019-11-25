@@ -10,6 +10,7 @@ type PropsType = {
   edge?: string
   style?: { [k: string]: any }
   overlayStyle?: { [k: string]: any }
+  square?: boolean
 }
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
@@ -55,6 +56,7 @@ const Button = React.forwardRef(({
   edge,
   style,
   overlayStyle,
+  square = false,
   ...props
 }: PropsType, ref?: React.Ref) => {
   const classes = useStyles({})
@@ -63,11 +65,12 @@ const Button = React.forwardRef(({
 
   const overlayRef = React.useRef(null);
 
-
+  console.log(children)
   return <div ref={ref} className={classes.button} {...props}
       style={{
         ...(edge == "left" ? { marginLeft: -12 } : {}),
-        ...style
+        ...style,
+        ...(square && { borderRadius: "0" }),
       }}
       onPointerDown={(e: React.PointerEvent<HTMLElement>) => {
         let rect = ref.current.getBoundingClientRect(); // parent
@@ -91,7 +94,10 @@ const Button = React.forwardRef(({
       }}>
     <span ref={overlayRef}
         className={classes.overlay}
-        style={overlayStyle}>
+        style={{
+          ...overlayStyle,
+          ...(square && { borderRadius: "0" }),
+        }}>
       </span>
     { children }
   </div>

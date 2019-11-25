@@ -6,7 +6,6 @@ import { AnyAction } from "redux";
 
 import { AppThunk } from './store'
 import GDL from "../GoogleDriveLibrary"
-import { default as DFL } from "../lib/google/DriveFileManager"
 import {
   ClipItem,
   addDisplayedClipItem,
@@ -159,8 +158,6 @@ https://www.w3.org/TR/html51/editing.html#the-datatransferitemlist-interface
 
 export const init = (): AppThunk => async dispatch => {
   console.log("/src/logic/appSlice.tsx: init()");
-
-  DFL.init()
 
   await loadAndAuthen(dispatch)
   dispatch(setAuthLoaded(true))

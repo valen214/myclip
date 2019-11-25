@@ -8,6 +8,9 @@ import { randomstring } from "../util"
 import {
   blobToUrl, urlToBlob, revokeBlob
 } from "./BlobStore"
+import {
+  saveName, getChildren, saveChildren, addChild
+} from "./CachedInfo"
 
 enum LoadingState {
 
@@ -21,7 +24,8 @@ export interface ClipItem {
   state?: LoadingState
 }
 
-interface DisplayedClipItemsID {
+interface DisplayedClipItems {
+  parents: Array<string>
   displayedClipItemsID: [] | string[]
 }
 
@@ -29,9 +33,10 @@ interface CachedClipItems {
   cachedClipItems: { [key: string]: ClipItem }
 }
 
-type ClipItemState = CachedClipItems & DisplayedClipItemsID;
+type ClipItemState = CachedClipItems & DisplayedClipItems;
 
 let initialState: ClipItemState = {
+  parents: ["appDataFolder"],
   displayedClipItemsID: [],
   cachedClipItems: {},
 }
@@ -90,6 +95,9 @@ const clipItemSlice = createSlice({
         state.displayedClipItemsID[i] = newId;
       }
     },
+    setParents(state, { payload }: PayloadAction<string[]>){
+      state.parents = payload
+    }
   }
 })
 
@@ -101,6 +109,7 @@ export const {
   setCachedClipItemInfo,
   removeCachedClipItem,
   replaceClipItemID,
+  setParents,
 } = clipItemSlice.actions
 
 export default clipItemSlice.reducer
@@ -133,7 +142,7 @@ export const downloadClipItemToCache = (
 
 export const uploadOrUpdateClipItem = (
   obj: Partial<ClipItem>, displayed: boolean = true
-): AppThunk => async dispatch => {
+): AppThunk => async (dispatch, getState) => {
   try{
     let content: Blob | string = obj.content;
     if(obj.type && obj.type.startsWith("text")){
@@ -148,11 +157,13 @@ export const uploadOrUpdateClipItem = (
       let res = await GDL.patchToAppFolder(obj.id, content, obj.name);
       console.assert(res.id === obj.id);
     } else{
+      let parent = getState().clipItem.parents.slice(-1)[0]
       obj.id = randomstring(16)
       dispatch(addCachedClipItem(<ClipItem>obj))
       if(displayed) dispatch(addDisplayedClipItem(obj.id))
-      let res = await GDL.uploadToAppFolder(obj.name, content);
+      let res = await GDL.uploadToAppFolder(obj.name, content, parent);
       dispatch(replaceClipItemID([obj.id, res.id]));
+      addChild(parent, obj.id)
     }
   } catch(e){
     console.error(e);
@@ -181,4 +192,50 @@ export const uploadClipItemFiles = (
     content: blobToUrl(f),
   };
   dispatch(uploadOrUpdateClipItem(obj));
+}
+
+export const loadFolder = (
+  parent: string
+): AppThunk => async (dispatch, getState) => {
+  try{
+    console.log("loading folder content");
+    if(getChildren(parent)){
+      console.log("HI");
+      dispatch(setDisplayedClipItems([]))
+      getChildren(parent).forEach(id => dispatch(addDisplayedClipItem(id)))
+      return
+    }
+    const files: Array<{
+      id: string, name: string, mimeType: string
+    }> = await GDL.listAppFolder({ parent });
+    dispatch(setDisplayedClipItems([]))
+    files.forEach(({
+      id, name, mimeType
+    }) => {
+      let obj: ClipItem = { id, name, type: mimeType };
+      dispatch(addDisplayedClipItem(obj));
+      dispatch(downloadClipItemToCache(obj));
+    })
+    saveChildren(parent, files.map(({ id }) => id))
+  } catch(e){
+    console.error(e);
+  }
+}
+
+export const createFolder = (
+  name: string
+): AppThunk => async (dispatch, getState) => {
+  let parent = getState().clipItem.parents.slice(-1)[0]
+  let { id, mimeType } = await GDL.createFolder(name, parent)
+  let obj = { id, name, type: mimeType }
+  dispatch(addDisplayedClipItem(obj))
+  dispatch(addCachedClipItem(obj))
+}
+
+export const changeParents = (
+  parents: string[]
+): AppThunk => async (dispatch, getState) => {
+  let last_parent = parents[parents.length - 1]
+  dispatch(loadFolder(last_parent))
+  dispatch(setParents(parents))
 }

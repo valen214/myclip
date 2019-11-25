@@ -9,13 +9,8 @@ import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from "../logic/rootReducer";
 
 import {
-  addDisplayedClipItem,
-  setDisplayedClipItems,
-  removeDisplayedClipItem,
-  addCachedClipItem,
-  setCachedClipItemInfo,
-  removeCachedClipItem,
   deleteClipItem,
+  changeParents,
 } from "../logic/clipItemSlice"
 import {
   setVisible as setClipActionDialogVisible,
@@ -39,6 +34,7 @@ import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 
 import CloseIcon from "@material-ui/icons/Close";
+import FolderIcon from '@material-ui/icons/Folder';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
@@ -70,6 +66,13 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
       },
     },
   },
+
+  displayed_text: {
+    fontFamily: "Consolas",
+    padding: "5px 2px",
+    wordBreak: "break-all",
+    whiteSpace: "pre-wrap",
+  }
 }));
 
 export interface ClipItem {
@@ -85,6 +88,9 @@ const GoogleClipItem = ({
   const classes = useStyles({});
   const dispatch = useDispatch();
   const [ loaded, setLoaded ] = useState(false);
+  const parents = useSelector(
+    (state: RootState) => state.clipItem.parents
+  )
   const { id: _id, name, content, type = "" } =
       useSelector((state: RootState) => {
           if(Object.prototype.hasOwnProperty.call(
@@ -113,7 +119,6 @@ const GoogleClipItem = ({
     setLoaded(true)
     onLoad()
   }
-  // console.log("content isEmpty:", !content, "type:", type, "loaded:", loaded);
 
   // https://material-ui.com/components/grid-list/
   return <Card className={classes.GCI}
@@ -131,6 +136,9 @@ const GoogleClipItem = ({
             dispatch(setOverlayContent({ type, content }))
             dispatch(setOverlayVisible(true))
           }
+          if(type === "application/vnd.google-apps.folder"){
+            dispatch(changeParents([ ...parents, id ]))
+          }
         }}>
       <CardContent style={{
             padding: "0 5px 0 5px",
@@ -140,9 +148,7 @@ const GoogleClipItem = ({
           }}>
         {
           type.startsWith("text") ? (
-            <div style={{
-                fontFamily: "Consolas", padding: "5px 2px",
-                wordBreak: "break-all", whiteSpace: "pre-wrap", }}>
+            <div className={classes.displayed_text}>
               {content}
             </div>
           ): type.startsWith("image") ? (
@@ -157,7 +163,15 @@ const GoogleClipItem = ({
               maxHeight: "280px",
               objectFit: "contain",
             }} />
-          ) : (
+          ): type === "application/vnd.google-apps.folder" ? (
+            <React.Fragment>
+              <FolderIcon />
+              <span className={classes.displayed_text}
+                  style={{
+                    fontSize: "2em"
+                  }}>{name}</span>
+            </React.Fragment>
+          ): (
             "[Loading ...]"
           )
         }

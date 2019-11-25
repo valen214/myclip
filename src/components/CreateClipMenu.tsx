@@ -16,7 +16,9 @@ import {
   setVisible as setTextClipPageVisible,
   setTarget as setTextClipPageTarget,
 } from "../logic/textClipPageSlice";
-
+import {
+  setVisible as setOverlayVisible, setContent as setOverlayContent
+} from "../logic/functionalOverlaySlice"
 
 import { makeStyles, Theme, createStyles }
     from "@material-ui/core/styles";
@@ -133,6 +135,20 @@ const CreateCilpMenu = ({
                   onChange={(e: React.FormEvent<HTMLInputElement>) => {
                     dispatch(uploadClipItemFiles(e.target.files));
                   }} />
+            </GridListTile>
+          : "" }{ signedIn ?
+            <GridListTile>
+              <Button fullWidth
+                  onClick={(e: React.FormEvent<HTMLButtonElement>) => {
+                    setAnchorEl(null);
+                    dispatch(setOverlayContent({
+                      type: "create_folder"
+                    }))
+                    dispatch(setOverlayVisible(true))
+                  }}
+                  className={classes.createClipButton}>
+                folder
+              </Button>
             </GridListTile>
           : "" }
         </GridList>

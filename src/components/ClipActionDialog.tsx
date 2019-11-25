@@ -82,6 +82,11 @@ const ClipActionDialog = ({}: any) => {
         </Button>
       </Grid>
       <Grid item>
+        <Button>
+          Rename
+        </Button>
+      </Grid>
+      <Grid item>
         <Button onClick={() => {
               dispatch(deleteClipItem(target))
               onClose();

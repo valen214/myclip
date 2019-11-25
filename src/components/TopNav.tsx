@@ -12,12 +12,7 @@ import {
   setSignedIn, signIn
 } from "../logic/appSlice"
 import {
-  addDisplayedClipItem,
-  setDisplayedClipItems,
-  removeDisplayedClipItem,
-  addCachedClipItem,
-  setCachedClipItemInfo,
-  removeCachedClipItem,
+  changeParents,
 } from "../logic/clipItemSlice"
 import {
   TopNavMode,
@@ -28,6 +23,7 @@ import {
 import {
   setButtonVisible as setCreateClipButtonVisible
 } from "../logic/createClipMenuSlice";
+import { getNameByID } from "../logic/CachedInfo"
 
 import { default as MyButton } from "./Button"
 
@@ -40,6 +36,8 @@ import ToolBar from '@material-ui/core/ToolBar';
 import Typography from "@material-ui/core/Typography";
 
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
+import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import DoneIcon from '@material-ui/icons/Done';
 import MenuIcon from "@material-ui/icons/Menu";
 import PersonIcon from "@material-ui/icons/Person";
@@ -49,6 +47,7 @@ const useStyles = makeStyles(theme => ({
   margin: {
     margin: theme.spacing(1),
   },
+  offset: theme.mixins.toolbar,
 }));
 
 /*
@@ -67,6 +66,9 @@ const TopNav = ({
   const { visible, mode, searchString } = useSelector(
       (state: RootState) => state.topNav);
   const { signedIn } = useSelector((state: RootState) => state.app);
+  const {
+    parents, cachedClipItems
+  } = useSelector((state: RootState) => state.clipItem);
 
   const setNormalMode = React.useCallback(() => {
     dispatch(setMode(TopNavMode.normal));
@@ -78,27 +80,81 @@ const TopNav = ({
     dispatch(setCreateClipButtonVisible(false))
   }, [dispatch]);
 
+  console.assert(parents[0] === "appDataFolder")
+
+  const showBreadcrumbs = parents.length > 1;
+
   return <React.Fragment>
+    <div className={classes.offset}
+        style={{ display: "flex", flexDirection: "column",
+        justifyContent: "end", background: "#fdd",
+        width: "500px", height: showBreadcrumbs ? 112 : 56, }}>
+      I am Top nav place holder
+    </div>
     <AppBar position="fixed">{
       mode == TopNavMode.normal ?
-        <ToolBar>
-          <MyButton edge="left">
-            <MenuIcon />
-          </MyButton>
-          <Typography variant="h6" style={{ flex: 1, userSelect: "none" }}>
-            MyClip
-          </Typography>
-          <IconButton onClick={setInputMode}>
-            <SearchIcon />
-          </IconButton>
-          <Button
-              variant="contained"
-              color="primary"
-              startIcon={<PersonIcon />}
-              onClick={() => dispatch(signIn())}>
-            { signedIn ? "Sign Out" : "Sign In" }
-          </Button>
-        </ToolBar> :
+        <React.Fragment>
+          <ToolBar>
+            <MyButton edge="left">
+              <MenuIcon />
+            </MyButton>
+            <Typography variant="h6" style={{ flex: 1, userSelect: "none" }}>
+              MyClip
+            </Typography>
+            <IconButton onClick={setInputMode}>
+              <SearchIcon />
+            </IconButton>
+            <Button
+                variant="contained"
+                color="primary"
+                startIcon={<PersonIcon />}
+                onClick={() => dispatch(signIn())}>
+              { signedIn ? "Sign Out" : "Sign In" }
+            </Button>
+          </ToolBar>
+          <div style={{
+            display: "flex",
+            borderTop: showBreadcrumbs ? "1px solid rgba(0, 0, 0, 1.0)" : "",
+            height: showBreadcrumbs ? 56 : 0, width: "100%",
+            transition: "transform 0.5s ease-in-out",
+            alignItems: "center",
+          }}>
+            { showBreadcrumbs ?
+              <React.Fragment>
+                <IconButton style={{
+                  marginLeft: 12, color: "white",
+                }}
+                onClick={() => {
+                  dispatch(changeParents(parents.slice(0, -1)))
+                }}>
+                  <ArrowUpwardIcon />
+                </IconButton>
+                {parents.map((e, i) => 
+                  <React.Fragment key={i}>
+                    { i == 0 ?
+                      <span style={{
+                        height: "80%",
+                        width: 20,
+                        borderLeft: "1px solid rgba(0, 0, 0, 0.8)",
+                        background: "transparent",
+                      }}></span> :
+                      <NavigateNextIcon style={{ margin: "0 -2px" }}/>
+                    }
+                    <MyButton square onClick={() => {
+                      dispatch(changeParents(parents.slice(0, i+1)))
+                    }}>{ i == 0 ?
+                      <span style={{
+                        fontSize: "1.2em"
+                      }}>/</span> :
+                      cachedClipItems[e].name
+                    }</MyButton>
+                  </React.Fragment>
+                )}
+              </React.Fragment>
+              : ""
+            }
+          </div>
+        </React.Fragment> :
       mode == TopNavMode.input ?
         <ToolBar style={{ background: "#eee" }}>
           <IconButton edge="start" onClick={setNormalMode}>

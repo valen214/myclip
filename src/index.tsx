@@ -39,7 +39,9 @@ client.query({ query: gql`
 // import 'core-js/stable'
 // import 'regenerator-runtime/runtime'
 
+//@ts-ignore
 import React from "react";
+//@ts-ignore
 import ReactDOM from "react-dom";
 
 import { Provider } from "react-redux";
@@ -66,13 +68,13 @@ if (process.env.NODE_ENV === 'development' && module.hot) {
 }
 
 
-import DriveFileManager from "./lib/google/DriveFileManager";
+import GDL from "./GoogleDriveLibrary"
 
 declare global {
   interface Window {
     gapi: any
-    DFM: any
+    GDL: any
   }
 }
 
-window.DFM = DriveFileManager
+window.GDL = GDL

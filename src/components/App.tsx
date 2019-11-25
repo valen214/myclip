@@ -38,7 +38,6 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     bottom: theme.spacing(8),
     right: theme.spacing(5),
   },
-  offset: theme.mixins.toolbar,
 }));
 
 const App = ({}: any) => {
@@ -58,12 +57,6 @@ const App = ({}: any) => {
       onPaste={(e: React.SyntheticEvent) => dispatch(onPaste(e))}>
     <CssBaseline />
     <TopNav />
-    <div className={classes.offset}
-        style={{ display: "flex", flexDirection: "column",
-        justifyContent: "end", background: "#fdd",
-        width: "500px", height: "100px", }}>
-      I am Top nav place holder
-    </div>
     {
       !authLoaded ? (
         "[ Loading... ]"
@@ -81,6 +74,7 @@ const App = ({}: any) => {
           </Button>
       ): (
         <React.Fragment>
+          <div style={{ width: "100%", height: 30 }}></div>
           <ClipItemContainer />
           <CreateClipMenu className={classes.createClipMenu} />
           <TextClipPage />

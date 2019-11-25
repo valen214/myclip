@@ -24,7 +24,7 @@ const functionalOverlaySlice = createSlice({
     },
     setContent(state, {
             payload: { content, type }
-        }: PayloadAction<{ content: string, type: string}>){
+        }: PayloadAction<{ content?: string, type: string }>){
       state.type = type
       state.content = content
     },
