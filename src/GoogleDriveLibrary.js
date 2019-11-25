@@ -23,6 +23,7 @@ const log = (...args) => {
   }
 };
 
+const UPLOAD_URL = "https://www.googleapis.com/upload/drive/v3/files"
 
 function importScript(url, callback, isAsync = false){
     const script = document.createElement("script");
@@ -36,15 +37,6 @@ function splitPath(path){
     let parents = i >= 0 ? path.substring(0, i) : "";
     let name = path.substring(i + 1);
     return [parents, name];
-}
-// eslint-disable-next-line
-function randomstring(len=8, alphabet="abcdefghijklmnopqrstuvwxyz"){
-    // https://jsperf.com/js-random-string-implementation-performance
-    return crypto.getRandomValues(new Uint8Array(len)).reduce((l, r, i) => {
-        // alphabet.chatAt(i / 255 * alphabet.length)
-        l[i] = alphabet[Math.floor(r / 256 * alphabet.length)];
-        return l;
-    }, new Array(len)).join("");
 }
 
 const initialized = (async () => {
@@ -82,6 +74,10 @@ project=main-custom-project&folder&organizationId
     }
 })();
 
+function getAccessToken(){
+  return window.gapi.auth2.getAuthInstance(
+      ).currentUser.get().getAuthResponse().access_token
+}
 
 async function waitTillAuth2Initialized(){
   while(!("gapi" in window) || !("auth2" in gapi)){
@@ -169,38 +165,8 @@ export async function listAppFolder({
     }
 }
 
-export async function uploadFile(path, data){
-    await initialized;
-    log(`GoogleLibrary.js: uploadFile(${path}, ${data})`);
-    try{
-        let [parents, name] = splitPath(path);
-        let res = await gapi.client.drive.files.create({
-            "name": name,
-            parents: [parents],
-            media: {
-                "mimeType": "text/plain",
-                "body": await new Response(data).text(),
-            },
-            fields: "id, parents",
-        }, {
-            body: "asdf",
-            media: {
-                "mimeType": "text/plain",
-                "body": await new Response(data).text(),
-            }
-        });
-        res = res.result;
-        log("file uploaded:", res);
-    } catch(e){
-        console.error(e);
-    }
-
-}
-
 export async function uploadToAppFolder(filename, data, parent){
     await initialized;
-    const access_token = gapi.auth2.getAuthInstance().currentUser.get(
-            ).getAuthResponse().access_token;
 
     let formData = new FormData();
     formData.append("meta", new Blob([JSON.stringify({
@@ -213,7 +179,7 @@ export async function uploadToAppFolder(filename, data, parent){
             "upload/drive/v3/files?uploadType=multipart&fields=id,mimeType", {
             "method": "POST",
             "headers": {
-                "Authorization": "Bearer " + access_token,
+                "Authorization": "Bearer " + getAccessToken(),
             },
             body: formData,
     });
@@ -223,23 +189,20 @@ export async function uploadToAppFolder(filename, data, parent){
 }
 export async function patchToAppFolder(id, data, filename){
     await initialized;
-    const access_token = gapi.auth2.getAuthInstance().currentUser.get(
-            ).getAuthResponse().access_token;
     
     let formData = new FormData();
     formData.append("meta", new Blob([JSON.stringify({
         "name": filename,
-        "mimeType": "application/vnd.google-apps.folder",
+        // "mimeType": "application/vnd.google-apps.folder",
         // "parents": ["appDataFolder"],
     })], { type: "application/json; charset=UTF-8" }));
     formData.append("body", await new Response(data).blob());
 
-    let res = await fetch("https://www.googleapis.com/" +
-            "upload/drive/v3/files/" + id +
+    let res = await fetch(UPLOAD_URL + "/" + id +
             "?uploadType=multipart&fields=id", {
             "method": "PATCH",
             "headers": {
-                "Authorization": "Bearer " + access_token,
+                "Authorization": "Bearer " + getAccessToken(),
             },
             body: formData,
     });
@@ -250,8 +213,6 @@ export async function patchToAppFolder(id, data, filename){
 
 export async function createFolder(name, parent){
     await initialized;
-    const access_token = gapi.auth2.getAuthInstance().currentUser.get(
-            ).getAuthResponse().access_token;
 
     let formData = new FormData();
     formData.append("meta", new Blob([JSON.stringify({
@@ -260,11 +221,11 @@ export async function createFolder(name, parent){
         "parents": [parent || "appDataFolder"],
     })], { type: "application/json; charset=UTF-8" }));
 
-    let res = await fetch("https://www.googleapis.com/" +
-            "upload/drive/v3/files?uploadType=multipart&fields=id,mimeType", {
+    let res = await fetch(UPLOAD_URL +
+            "?uploadType=multipart&fields=id,mimeType", {
             "method": "POST",
             "headers": {
-                "Authorization": "Bearer " + access_token,
+                "Authorization": "Bearer " + getAccessToken(),
             },
             body: formData,
     });
@@ -279,14 +240,12 @@ export async function getFile(id){
     }
     log(`GoogleLibrary.js: getFile(${id})`);
     await initialized;
-    const access_token = gapi.auth2.getAuthInstance().currentUser.get(
-            ).getAuthResponse().access_token;
     try{
         let res = await fetch(
             `https://www.googleapis.com/drive/v3/files/${id}?alt=media`, {
             "method": "GET",
             "headers": {
-                "Authorization": "Bearer " + access_token,
+                "Authorization": "Bearer " + getAccessToken(),
                 "Accept": "text/plain,application/json;q=0.9,*/*;q=0.8",
             },
         });
@@ -350,6 +309,7 @@ export async function getFileChanges(max=1, fields="*"){
   }
 }
 
+
 const GDL = {
     isSignedIn,
     addSignInListener,
@@ -358,7 +318,6 @@ const GDL = {
     signOut,
     listFiles,
     listAppFolder,
-    uploadFile,
     uploadToAppFolder,
     patchToAppFolder,
     createFolder,
