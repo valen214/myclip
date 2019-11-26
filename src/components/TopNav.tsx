@@ -62,6 +62,8 @@ const TopNav = ({
 }: any) => {
   const classes = useStyles({});
   
+  const appBarRef = React.useRef();
+  const [ placeholderHeight, setPlaceholderHeight ] = useState("")
   const dispatch = useDispatch();
   const { visible, mode, searchString } = useSelector(
       (state: RootState) => state.topNav);
@@ -84,14 +86,21 @@ const TopNav = ({
 
   const showBreadcrumbs = parents.length > 1;
 
+  useEffect(() => {
+    let appBarElem = appBarRef.current
+    if(appBarElem){
+      setPlaceholderHeight(window.getComputedStyle(appBarElem).height)
+    }
+  }, [ parents ])
+
   return <React.Fragment>
     <div className={classes.offset}
         style={{ display: "flex", flexDirection: "column",
         justifyContent: "end", background: "#fdd",
-        width: "500px", height: showBreadcrumbs ? 112 : 56, }}>
-      I am Top nav place holder
+        width: "100%", height: placeholderHeight, }}>
+      I am Top nav placeholder
     </div>
-    <AppBar position="fixed">{
+    <AppBar ref={appBarRef} position="fixed">{
       mode == TopNavMode.normal ?
         <React.Fragment>
           <ToolBar>

@@ -49,7 +49,7 @@ function getCols(){
   }
 }
 
-const refreshDelay = 100;
+const refreshDelay = 1000;
 
 const ClipItemContainer = (props: any) => {
   const dispatch = useDispatch();
@@ -63,12 +63,12 @@ const ClipItemContainer = (props: any) => {
     let newCol = getCols();
     if(cols != newCol){
       setCols(newCol)
-      setTimeout(ref.current.refreshLayout, refreshDelay)
+      setTimeout(ref.current.refreshLayout, 100)
       // 200 is an arbitrary number, large enough to wait afte setCols
     } else{
       ref.current.refreshLayout();
     }
-  }, refreshDelay)
+  }, 200)
 
   React.useEffect(() => {
     resizeListener()
@@ -80,27 +80,36 @@ const ClipItemContainer = (props: any) => {
       console.log("%cuseEffect cleanup", "color: #ada");
       window.removeEventListener("resize", resizeListener);
     };
-  });
+  }, [ cols ]);
 
-  return <Container>
+  return <Container style={{
+        position: "absolute"
+      }}>{
+    list.length === 0 ?
+    <div style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center"
+        }}>
+      [ No Content ]
+    </div> :
     <Masonry ref={ref} colMinWidth="100px"
-        balanceColumns={true} hgap={15} cols={cols}>
-      {
-        list.map((id: string) => (
-          <GoogleClipItem key={id} id={id} onLoad={() => {
-              const refresh = () => {
-                if(ref.current){
-                  ref.current.refreshLayout()
-                } else{
-                  setTimeout(refresh, refreshDelay);
-                }
-              };
+        balanceColumns={true} hgap={15} cols={cols}>{
+      list.map((id: string) => (
+        <GoogleClipItem key={id} id={id} onLoad={() => {
+          console.log("GoogleClipItem onload fired");
+          const refresh = () => {
+            if(ref.current){
+              ref.current.refreshLayout()
+            } else{
               setTimeout(refresh, refreshDelay);
-          }} />
-        ))
-      }
-    </Masonry>
-  </Container>;
+            }
+          };
+          setTimeout(refresh, refreshDelay);
+        }} />
+      ))
+    }</Masonry>
+  }</Container>;
 };
 
 export default ClipItemContainer;

@@ -54,7 +54,11 @@ const App = ({}: any) => {
   }, []);
 
   return <div className={classes.root}
-      onPaste={(e: React.SyntheticEvent) => dispatch(onPaste(e))}>
+      onPaste={(e: React.SyntheticEvent) => dispatch(onPaste(e))}
+      style={{
+        display: "flex",
+        flexDirection: "column",
+      }}>
     <CssBaseline />
     <TopNav />
     {
@@ -74,8 +78,17 @@ const App = ({}: any) => {
           </Button>
       ): (
         <React.Fragment>
-          <div style={{ width: "100%", height: 30 }}></div>
-          <ClipItemContainer />
+          <div style={{
+              padding: "30px 0 60px",
+              width: "100%",
+              flex: "1 0 auto",
+              overflowY: "scroll",
+              flexDirection: "column",
+              position: "relative",
+            }}>
+            <ClipItemContainer />
+            <div style={{ height: "60px", position: "absolute" }}></div>
+          </div>
           <CreateClipMenu className={classes.createClipMenu} />
           <TextClipPage />
           <ClipActionDialog />

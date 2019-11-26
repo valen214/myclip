@@ -80,38 +80,12 @@ const Masonry = React.forwardRef(({
     // console.log("Masonry.refreshLayout() invoked");
     selfRef.current.refreshLayout = refreshLayout;
 
-    let max_indexed = 0, unindexed = 0;
     let allChild: HTMLCollection = selfRef.current.children;
-    Array.prototype.forEach.call(allChild, (child: HTMLElement) => {
-      let j = child.dataset.masonry_index
-      if(j){
-        let k = parseInt(j);
-        if(k > max_indexed) max_indexed = k;
-        delete child.dataset.masonry_unordered;
-      } else{
-        child.dataset.masonry_unordered = String(++unindexed);
-      }
-    })
 
-    const calibratedMasonryIndex = (elem: Partial<HTMLElement>) => {
-      let i = elem.dataset.masonry_index
-      if(i){
-        return parseInt(i);
-      } else{
-        return max_indexed + parseInt(elem.dataset.masonry_unordered);
-      }
-    }
-    Array.from(allChild).sort((a, b) => (
-        calibratedMasonryIndex(a) - calibratedMasonryIndex(b)
-    )).forEach(elem => selfRef.current.appendChild(elem))
-
-    // children.length
     let rects = Array.prototype.map.call(allChild,
         (elem: HTMLElement, i: number) => {
-            elem.dataset.masonry_index = String(i)
-            return elem.getBoundingClientRect();
+            return { height: elem.offsetHeight };
     })
-
 
     if(typeof hgap === "number"){
       // hgap = String(hgap) + "px"
@@ -130,7 +104,9 @@ const Masonry = React.forwardRef(({
     });
 
     let _hgap = String(hgap) + "px"
-    let colWidth = `(100% - ${_hgap} * ${cols + 1}) / ${cols}`
+    let colWidth = `(100% - ${_hgap} * ${cols - 1}) / ${cols}`
+
+    let parentHeight = 0;
 
     let len = allChild.length;
     while(--len >= 0){
@@ -144,10 +120,15 @@ const Masonry = React.forwardRef(({
         top: height + "px",
         transition: "top 0.3s, left 0.3s",
       });
+      if(height + child.offsetHeight > parentHeight){
+        parentHeight = height + child.offsetHeight;
+      }
     }
 
+    selfRef.current.style.height = (parentHeight + 50) + "px"
+
     let spent = performance.now() - begin
-    console.log("Masonry.refreshLayout() exiting, used:", spent, "ms");
+    // console.log("Masonry.refreshLayout() exiting, used:", spent, "ms");
   };
 
   React.useImperativeHandle(ref, () => ({
@@ -159,7 +140,8 @@ const Masonry = React.forwardRef(({
   }, [ cols ]);
   // console.log("Masonry: cols:", cols);
 
-  return <div ref={selfRef} {...props} style={parentStyle as React.CSSProperties}>
+  return <div ref={selfRef} {...props}
+      style={parentStyle as React.CSSProperties}>
     {(
       (colMinWidth && balanceColumns) ?
         children
