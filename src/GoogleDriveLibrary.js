@@ -32,12 +32,6 @@ function importScript(url, callback, isAsync = false){
     if(callback instanceof Function) script.onload = callback;
     document.body.appendChild(script);
 }
-function splitPath(path){
-    let i = path.lastIndexOf('/');
-    let parents = i >= 0 ? path.substring(0, i) : "";
-    let name = path.substring(i + 1);
-    return [parents, name];
-}
 
 const initialized = (async () => {
     try{
@@ -175,13 +169,13 @@ export async function uploadToAppFolder(filename, data, parent){
     })], { type: "application/json; charset=UTF-8" }));
     formData.append("body", await new Response(data).blob(), filename);
 
-    let res = await fetch("https://www.googleapis.com/" +
-            "upload/drive/v3/files?uploadType=multipart&fields=id,mimeType", {
-            "method": "POST",
-            "headers": {
-                "Authorization": "Bearer " + getAccessToken(),
-            },
-            body: formData,
+    let res = await fetch(UPLOAD_URL +
+        "?uploadType=multipart&fields=id,mimeType", {
+        "method": "POST",
+        "headers": {
+            "Authorization": "Bearer " + getAccessToken(),
+        },
+        body: formData,
     });
     let obj = await res.json();
     log("file uploaded to app folder: res:", obj);

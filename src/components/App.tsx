@@ -24,6 +24,7 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import Button from "./Button";
 
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
+import Snackbar from "./Snackbar";
 const useStyles = makeStyles((theme: Theme) => createStyles({
   root: {
     display: 'flex',
@@ -63,7 +64,18 @@ const App = ({}: any) => {
     <TopNav />
     {
       !authLoaded ? (
-        "[ Loading... ]"
+        <div
+            style={{
+              flex: "1 0 auto",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+
+              margin: "auto",
+            }}>
+        [ Loading... ]
+        </div>
       ) : !signedIn ? (
           <Button onClick={() => { dispatch(signIn()) }}
               style={{

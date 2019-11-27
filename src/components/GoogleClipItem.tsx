@@ -38,6 +38,7 @@ import FolderIcon from '@material-ui/icons/Folder';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
+import Snackbar from "./Snackbar";
 const useStyles = makeStyles((theme: Theme) => createStyles({
   GCI: {
     border: "1px solid rgba(0, 0, 0, 0.1)",
@@ -90,7 +91,10 @@ const GoogleClipItem = ({
 }) => {
   const classes = useStyles({});
   const dispatch = useDispatch();
+  const textContentRef = React.useRef()
   const [ loaded, setLoaded ] = useState(false);
+  const [ showSnackbar, setShowSnackbar ] = useState(false)
+  const [ snackbarContent, setSnackbarContent ] = useState("");
   const parents = useSelector(
     (state: RootState) => state.clipItem.parents
   )
@@ -148,7 +152,7 @@ const GoogleClipItem = ({
           }}>
         {
           type.startsWith("text") ? (
-            <div className={classes.displayed_text}>
+            <div ref={textContentRef} className={classes.displayed_text}>
               {content}
             </div>
           ): type.startsWith("image") ? (
@@ -205,7 +209,24 @@ const GoogleClipItem = ({
       { type ? (
         type.startsWith("text") ?
           <Button size="small" color="primary"
-              onClick={() => {}}>
+              onClick={() => {
+                let selection = window.getSelection()
+                let range = document.createRange()
+                range.selectNodeContents(textContentRef.current)
+                selection.removeAllRanges();
+                selection.addRange(range);
+
+                // document.execCommand("copy")
+                navigator.clipboard.writeText(content).then(() => {
+                  console.log("copy success!");
+                }, (e) => {
+                  console.log("copy failed:", e)
+                });
+                selection.removeAllRanges();
+
+                setSnackbarContent("text copied to clipboard!")
+                setShowSnackbar(true)
+              }}>
             Copy
           </Button> :
         type.startsWith("image") ?
@@ -215,6 +236,11 @@ const GoogleClipItem = ({
           </Button> : undefined
       ) : undefined}
     </CardActions>
+    <Snackbar show={showSnackbar}
+        onClose={() => { setShowSnackbar(false) }}
+        timeout={2000} >
+      { snackbarContent }
+    </Snackbar>
   </Card>;
 };
 

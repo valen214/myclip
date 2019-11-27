@@ -15,12 +15,13 @@ type PropsType = {
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   button: {
-    cursor: "pointer",
-    padding: 12,
     display: "inline-flex",
-    position: "relative",
     alignItems: "center",
     justifyContent: "center",
+
+    cursor: "pointer",
+    padding: 12,
+    position: "relative",
     borderRadius: "50%",
     background: "transparent",
     overflow: "hidden",
@@ -41,7 +42,8 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     pointerEvents: "none", zIndex: 1,
     borderRadius: "50%",
     // https://jsfiddle.net/xvalen214x/7rLmu9oq/41/show
-    background: "radial-gradient(rgba(0, 0, 0, 0) 20%, rgba(255, 255, 255, 0.3) 35%, rgba(255, 255, 255, 0.2) 100%)",
+    background: "radial-gradient(rgba(0, 0, 0, 0) 20%, " +
+        "rgba(255, 255, 255, 0.3) 35%, rgba(255, 255, 255, 0.2) 100%)",
     // background: "repeating-radial-gradient(rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0.3) 80% 82%, rgba(255, 255, 255, 0.8) 82% 84%)",
     opacity: 0,
   },
@@ -64,8 +66,6 @@ const Button = React.forwardRef(({
   ref = ref || _ref;
 
   const overlayRef = React.useRef(null);
-
-  console.log(children)
   return <div ref={ref} className={classes.button} {...props}
       style={{
         ...(edge == "left" ? { marginLeft: -12 } : {}),

@@ -86,21 +86,39 @@ const TopNav = ({
 
   const showBreadcrumbs = parents.length > 1;
 
-  useEffect(() => {
+  // React.useEffect(() => {
+  //   let appBarElem = appBarRef.current
+  //   if(appBarElem){
+  //     setTimeout(() => {
+  //       setPlaceholderHeight(appBarElem.offsetHeight)
+  //     }, 500);
+  //   }
+  // }, [ parents ])
+
+  React.useEffect(() => {
     let appBarElem = appBarRef.current
-    if(appBarElem){
-      setPlaceholderHeight(window.getComputedStyle(appBarElem).height)
+    console.assert(appBarElem)
+    const onTransition = (e: React.SyntheticEvent) => {
+      setPlaceholderHeight(appBarElem.offsetHeight + "px")
     }
-  }, [ parents ])
+    appBarElem.addEventListener("transitionend", onTransition)
+    return () => {
+      appBarElem.removeEventListener("transitionend", onTransition)
+    }
+  }, [ setPlaceholderHeight ])
 
   return <React.Fragment>
-    <div className={classes.offset}
-        style={{ display: "flex", flexDirection: "column",
-        justifyContent: "end", background: "#fdd",
-        width: "100%", height: placeholderHeight, }}>
+    <div className={classes.offset} style={{
+          display: "flex", flexDirection: "column",
+          justifyContent: "end", background: "#fdd",
+          width: "100%", height: placeholderHeight,
+          transition: "height 0.2s",
+        }}>
       I am Top nav placeholder
     </div>
-    <AppBar ref={appBarRef} position="fixed">{
+    <AppBar ref={appBarRef} position="fixed" style={{
+          // transition: "height 0.5s"
+        }}>{
       mode == TopNavMode.normal ?
         <React.Fragment>
           <ToolBar>
@@ -123,9 +141,11 @@ const TopNav = ({
           </ToolBar>
           <div style={{
             display: "flex",
+            overflow: "hidden",
             borderTop: showBreadcrumbs ? "1px solid rgba(0, 0, 0, 1.0)" : "",
             height: showBreadcrumbs ? 56 : 0, width: "100%",
-            transition: "transform 0.5s ease-in-out",
+            transform: showBreadcrumbs ? "scaleY(1.0)" : "scaleY(0)",
+            transition: "height 0.2s, transform 0.2s",
             alignItems: "center",
           }}>
             { showBreadcrumbs ?
