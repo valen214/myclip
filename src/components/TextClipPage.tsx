@@ -92,9 +92,15 @@ const TextClipPage = (props: any) => {
           onBlur={(e: React.FormEvent<HTMLInputElement>) => {
             dispatch(setContent(e.currentTarget.value))
           }}
+          inputProps={{
+            style: {
+            }
+          }}
           style={{
-            padding: 2,
+            padding: "2px",
             alignItems: "start",
+            height: "100%",
+            overflow: "auto",
             resize: "none",
             background: "#eee",
             fontFamily: "Consolas",

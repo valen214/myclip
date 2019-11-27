@@ -128,7 +128,7 @@ const GoogleClipItem = ({
       style={{
       }}>
     <CardActionArea style={{
-            padding: "12px",
+            padding: "12px 12px 0",
           }}
         onClick={() => {
           if(type.startsWith("text")) return showTextClipPage()

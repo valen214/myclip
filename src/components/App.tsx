@@ -82,7 +82,7 @@ const App = ({}: any) => {
               padding: "30px 0 60px",
               width: "100%",
               flex: "1 0 auto",
-              overflowY: "scroll",
+              overflow: "hidden auto",
               flexDirection: "column",
               position: "relative",
             }}>
