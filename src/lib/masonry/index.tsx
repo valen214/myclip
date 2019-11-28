@@ -1,6 +1,7 @@
 
 //@ts-ignore
 import React from "react"
+import { createUseStyles } from 'react-jss'
 
 const useCallbackRef = () => {
   const [ref, setRef] = React.useState(null);
@@ -51,6 +52,16 @@ const masonryAlgo = ({
 }
 
 
+const useStyles = createUseStyles({
+  masonry: {
+    "& > div": {
+      position: "absolute",
+      width: "var(--masonry-child-width, 50%)",
+      transition: "top 0.2s, left 0.2s",
+    }
+  }
+})
+
 const Masonry = React.forwardRef(({
   cols = 2,
   hgap = 15,
@@ -69,11 +80,11 @@ const Masonry = React.forwardRef(({
   balanceColumns?: boolean
   children?: React.ReactNode
 } = {}, ref?: React.Ref) => {
+  const classes = useStyles()
   const selfRef = React.useRef();
-
-  const parentStyle = {
-    position: "relative"
-  }
+  const [ parentStyle, setParentStyle ] = React.useState({
+      position: "relative"
+  })
 
   const refreshLayout = () => {
     let begin = performance.now();
@@ -114,21 +125,22 @@ const Masonry = React.forwardRef(({
       let [ col, height ] = col_y[len];
       Object.assign(child.style, {
         // consider using css 'attr' and dataset in the future
-        position: "absolute",
-        width: `calc(${colWidth})`,
         left: `calc(${col} * (${colWidth} + ${_hgap}))`,
         top: height + "px",
-        transition: "top 0.3s, left 0.3s",
       });
       if(height + child.offsetHeight > parentHeight){
         parentHeight = height + child.offsetHeight;
       }
     }
 
-    selfRef.current.style.height = (parentHeight + 50) + "px"
+    setParentStyle({
+      ...parentStyle,
+      height: (parentHeight + 50) + "px",
+      "--masonry-child-width": `calc(${colWidth})`,
+    })
 
     let spent = performance.now() - begin
-    // console.log("Masonry.refreshLayout() exiting, used:", spent, "ms");
+    console.log("Masonry.refreshLayout() exiting, used:", spent, "ms");
   };
 
   React.useImperativeHandle(ref, () => ({
@@ -140,7 +152,7 @@ const Masonry = React.forwardRef(({
   }, [ cols ]);
   // console.log("Masonry: cols:", cols);
 
-  return <div ref={selfRef} {...props}
+  return <div ref={selfRef} {...props} className={classes.masonry}
       style={parentStyle as React.CSSProperties}>
     {(
       (colMinWidth && balanceColumns) ?

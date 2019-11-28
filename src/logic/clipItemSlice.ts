@@ -198,25 +198,25 @@ export const loadFolder = (
   parent: string
 ): AppThunk => async (dispatch, getState) => {
   try{
-    console.log("loading folder content");
     if(getChildren(parent)){
-      console.log("HI");
       dispatch(setDisplayedClipItems([]))
       getChildren(parent).forEach(id => dispatch(addDisplayedClipItem(id)))
       return
     }
     const files: Array<{
-      id: string, name: string, mimeType: string
-    }> = await GDL.listAppFolder({ parent });
-    dispatch(setDisplayedClipItems([]))
-    files.forEach(({
-      id, name, mimeType
-    }) => {
-      let obj: ClipItem = { id, name, type: mimeType };
-      dispatch(addDisplayedClipItem(obj));
-      dispatch(downloadClipItemToCache(obj));
-    })
-    saveChildren(parent, files.map(({ id }) => id))
+      id: string
+      name: string
+      mimeType: string
+    }> = await GDL.listAppFolder({
+      parent, fields: "files(id, name, mimeType)"
+    });
+
+    let id_list = files.map(({ id }) => id)
+    dispatch(setDisplayedClipItems(id_list));
+    files.forEach(({ id, name, mimeType }) =>
+        dispatch(downloadClipItemToCache({ id, name, type: mimeType })));
+
+    saveChildren(parent, id_list)
   } catch(e){
     console.error(e);
   }

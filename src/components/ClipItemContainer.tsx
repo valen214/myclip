@@ -4,31 +4,18 @@ import GDL from "../GoogleDriveLibrary";
 import GoogleClipItem from "./GoogleClipItem";
 
 //@ts-ignore
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useSelector, useDispatch } from 'react-redux'
 
 import { RootState } from "../logic/rootReducer";
 
-import {
-  addDisplayedClipItem,
-  setDisplayedClipItems,
-  removeDisplayedClipItem,
-  addCachedClipItem,
-  setCachedClipItemInfo,
-  removeCachedClipItem,
-} from "../logic/clipItemSlice"
 import Masonry from "../lib/masonry";
 
 
-import Card from "@material-ui/core/Card";
-import CardContent from '@material-ui/core/CardContent';
 import Container from '@material-ui/core/Container';
-import Grid from "@material-ui/core/Grid";
 
-import CloseIcon from "@material-ui/icons/Close";
 import { XS, SM, MD, LG, XL } from "../lib/media_queries";
 import { debounce } from "../util";
-import NewUserButton from "./NewUserButton";
 
 
 function getCols(){
@@ -51,6 +38,8 @@ function getCols(){
 
 const refreshDelay = 1000;
 
+const MemoizedGoogleClipItem = React.memo(GoogleClipItem)
+
 const ClipItemContainer = (props: any) => {
   const dispatch = useDispatch();
   const ref = React.useRef(null);
@@ -58,17 +47,30 @@ const ClipItemContainer = (props: any) => {
       return state.clipItem.displayedClipItemsID
   });
   const [ cols, setCols ] = useState(getCols());
-  const resizeListener = debounce((e: React.SyntheticEvent) => {
-    if(!ref.current) return;
-    let newCol = getCols();
-    if(cols != newCol){
-      setCols(newCol)
-      setTimeout(ref.current.refreshLayout, 100)
-      // 200 is an arbitrary number, large enough to wait afte setCols
-    } else{
-      ref.current.refreshLayout();
-    }
-  }, 200)
+  const resizeListener = 
+    debounce((e: React.SyntheticEvent) => {
+      if(!ref.current) return;
+      let newCol = getCols();
+      if(cols != newCol){
+        setCols(newCol)
+        setTimeout(ref.current.refreshLayout, 100)
+        // 200 is an arbitrary number, large enough to wait afte setCols
+      } else{
+        ref.current.refreshLayout();
+      }
+    }, 200)
+
+  const onItemLoad = React.useCallback(() => {
+    console.log("GoogleClipItem onload fired");
+    const refresh = () => {
+      if(ref.current){
+        ref.current.refreshLayout()
+      } else{
+        setTimeout(refresh, refreshDelay);
+      }
+    };
+    setTimeout(refresh, refreshDelay);
+  }, [ ref ]);
 
   React.useEffect(() => {
     resizeListener()
@@ -96,17 +98,7 @@ const ClipItemContainer = (props: any) => {
     <Masonry ref={ref} colMinWidth="100px"
         balanceColumns={true} hgap={15} cols={cols}>{
       list.map((id: string) => (
-        <GoogleClipItem key={id} id={id} onLoad={() => {
-          console.log("GoogleClipItem onload fired");
-          const refresh = () => {
-            if(ref.current){
-              ref.current.refreshLayout()
-            } else{
-              setTimeout(refresh, refreshDelay);
-            }
-          };
-          setTimeout(refresh, refreshDelay);
-        }} />
+        <MemoizedGoogleClipItem key={id} id={id} onLoad={onItemLoad} />
       ))
     }</Masonry>
   }</Container>;

@@ -7,10 +7,8 @@ import { AnyAction } from "redux";
 import { AppThunk } from './store'
 import GDL from "../GoogleDriveLibrary"
 import {
-  ClipItem,
-  addDisplayedClipItem,
-  downloadClipItemToCache,
   uploadClipItemFiles,
+  loadFolder,
 } from './clipItemSlice'
 
 import {
@@ -64,22 +62,6 @@ export const signIn = (): AppThunk => async dispatch => {
   } else{
     let isSignedIn = await GDL.signIn();
     dispatch(setSignedIn(isSignedIn))
-  }
-}
-
-async function initLoadClipItems(dispatch: DispatchType){
-  try{
-    console.log("loading folder content");
-    const files = await GDL.listAppFolder();
-    files.forEach(({
-      id, name, mimeType
-    }: { id: string, name: string, mimeType: string}) => {
-      let obj: ClipItem = { id, name, type: mimeType };
-      dispatch(addDisplayedClipItem(obj));
-      dispatch(downloadClipItemToCache(obj));
-    })
-  } catch(e){
-    console.error(e);
   }
 }
 
@@ -161,5 +143,5 @@ export const init = (): AppThunk => async dispatch => {
 
   await loadAndAuthen(dispatch)
   dispatch(setAuthLoaded(true))
-  initLoadClipItems(dispatch)
+  dispatch(loadFolder("appDataFolder"))
 };

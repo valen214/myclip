@@ -23,9 +23,10 @@ import {
 import {
   setButtonVisible as setCreateClipButtonVisible
 } from "../logic/createClipMenuSlice";
-import { getNameByID } from "../logic/CachedInfo"
 
 import { default as MyButton } from "./Button"
+import useEventListener from "../lib/use-event-listener"
+import { debounce } from "../util"
 
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from '@material-ui/core/AppBar';
@@ -95,29 +96,72 @@ const TopNav = ({
   //   }
   // }, [ parents ])
 
-  React.useEffect(() => {
-    let appBarElem = appBarRef.current
-    console.assert(appBarElem)
-    const onTransition = (e: React.SyntheticEvent) => {
-      setPlaceholderHeight(appBarElem.offsetHeight + "px")
-    }
-    appBarElem.addEventListener("transitionend", onTransition)
-    return () => {
-      appBarElem.removeEventListener("transitionend", onTransition)
-    }
-  }, [ setPlaceholderHeight ])
+  const onTransition = React.useCallback(debounce((e: React.SyntheticEvent) => {
+    console.log("invoked")
+    setPlaceholderHeight(appBarRef.current.offsetHeight + "px")
+  }, 200), [ setPlaceholderHeight ])
+  useEventListener("resize", onTransition)
 
   return <React.Fragment>
     <div className={classes.offset} style={{
           display: "flex", flexDirection: "column",
-          justifyContent: "end", background: "#fdd",
+          justifyContent: "end", background: "#3f51b5",
           width: "100%", height: placeholderHeight,
           transition: "height 0.2s",
         }}>
       I am Top nav placeholder
     </div>
+    <div style={{
+      display: "flex",
+      overflow: "hidden",
+      background: "#3f51b5",
+      borderTop: showBreadcrumbs ? "1px solid rgba(0, 0, 0, 1.0)" : "",
+      height: showBreadcrumbs ? 56 : 0, width: "100%",
+      transform: showBreadcrumbs ? "translateY(0)" : "translateY(-100%)",
+      transition: "height 0.2s, transform 0.2s",
+      alignItems: "center", color: "white",
+      boxShadow: '0px 2px 4px -1px rgba(0,0,0,0.2),' +
+          '0px 4px 5px 0px rgba(0,0,0,0.14),0px 1px 10px 0px rgba(0,0,0,0.12)'
+    }}>
+      <IconButton style={{
+        marginLeft: 12, color: "white",
+      }}
+      onClick={() => {
+        dispatch(changeParents(parents.slice(0, -1)))
+      }}>
+        <ArrowUpwardIcon />
+      </IconButton>
+      {parents.map((e, i) => 
+        <React.Fragment key={i}>
+          {
+            i == 0 ?
+              <span style={{
+                height: "80%",
+                width: 20,
+                borderLeft: "1px solid rgba(0, 0, 0, 0.8)",
+                background: "transparent",
+              }}></span>
+            :
+              <NavigateNextIcon style={{ margin: "0 -2px" }}/>
+          }
+          <MyButton square onClick={() => {
+            dispatch(changeParents(parents.slice(0, i+1)))
+          }}>
+            {
+              i == 0 ?
+                <span style={{
+                  fontSize: "1.2em"
+                }}>/</span>
+              :
+                cachedClipItems[e].name
+            }
+          </MyButton>
+        </React.Fragment>
+      )}
+    </div>
     <AppBar ref={appBarRef} position="fixed" style={{
           // transition: "height 0.5s"
+          ...(showBreadcrumbs && { boxShadow: "none" }),
         }}>{
       mode == TopNavMode.normal ?
         <React.Fragment>
@@ -139,50 +183,6 @@ const TopNav = ({
               { signedIn ? "Sign Out" : "Sign In" }
             </Button>
           </ToolBar>
-          <div style={{
-            display: "flex",
-            overflow: "hidden",
-            borderTop: showBreadcrumbs ? "1px solid rgba(0, 0, 0, 1.0)" : "",
-            height: showBreadcrumbs ? 56 : 0, width: "100%",
-            transform: showBreadcrumbs ? "scaleY(1.0)" : "scaleY(0)",
-            transition: "height 0.2s, transform 0.2s",
-            alignItems: "center",
-          }}>
-            { showBreadcrumbs ?
-              <React.Fragment>
-                <IconButton style={{
-                  marginLeft: 12, color: "white",
-                }}
-                onClick={() => {
-                  dispatch(changeParents(parents.slice(0, -1)))
-                }}>
-                  <ArrowUpwardIcon />
-                </IconButton>
-                {parents.map((e, i) => 
-                  <React.Fragment key={i}>
-                    { i == 0 ?
-                      <span style={{
-                        height: "80%",
-                        width: 20,
-                        borderLeft: "1px solid rgba(0, 0, 0, 0.8)",
-                        background: "transparent",
-                      }}></span> :
-                      <NavigateNextIcon style={{ margin: "0 -2px" }}/>
-                    }
-                    <MyButton square onClick={() => {
-                      dispatch(changeParents(parents.slice(0, i+1)))
-                    }}>{ i == 0 ?
-                      <span style={{
-                        fontSize: "1.2em"
-                      }}>/</span> :
-                      cachedClipItems[e].name
-                    }</MyButton>
-                  </React.Fragment>
-                )}
-              </React.Fragment>
-              : ""
-            }
-          </div>
         </React.Fragment> :
       mode == TopNavMode.input ?
         <ToolBar style={{ background: "#eee" }}>
