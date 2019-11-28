@@ -9,7 +9,7 @@ import { RootState } from "../logic/rootReducer";
 
 import {
   ClipItem,
-  uploadOrUpdateClipItem,
+  uploadItem,
 } from "../logic/clipItemSlice"
 import Masonry from "../lib/masonry";
 
@@ -48,7 +48,7 @@ const NewUserButton = ({
       }} onClick={() => {
         setHide(true);
         tutorial_clip_items.forEach(item => {
-          dispatch(uploadOrUpdateClipItem(item))
+          dispatch(uploadItem(item))
         });
       }}>
     Feeling Empty? Click ME!

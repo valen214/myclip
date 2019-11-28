@@ -137,7 +137,7 @@ export async function listAppFolder({
     await initialized;
     let res;
     try{
-        log('list app folder');
+        console.log('list app folder: parent:', parent, "fields:", fields);
         res = await gapi.client.drive.files.list({
             spaces: "appDataFolder",
             q: `'${parent}' in parents`,
@@ -152,22 +152,25 @@ export async function listAppFolder({
         } else{
             log('no file found');
         }
-        return files;
+        return res.result;
     } catch(e){
-        console.error(`listAppFolder(): ${e}` + "\n\n" +
+        console.error("listAppFolder():", e, "\n\n" +
           "server response:", res);
     }
 }
 
-export async function uploadToAppFolder(filename, data, parent){
+export async function uploadToAppFolder({
+  name, content, parent, id,
+}){
     await initialized;
 
     let formData = new FormData();
     formData.append("meta", new Blob([JSON.stringify({
-        "name": filename,
+        name,
         "parents": [parent || "appDataFolder"],
+        id,
     })], { type: "application/json; charset=UTF-8" }));
-    formData.append("body", await new Response(data).blob(), filename);
+    formData.append("body", await new Response(content).blob(), name);
 
     let res = await fetch(UPLOAD_URL +
         "?uploadType=multipart&fields=id,mimeType", {

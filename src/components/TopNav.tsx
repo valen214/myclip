@@ -70,7 +70,7 @@ const TopNav = ({
       (state: RootState) => state.topNav);
   const { signedIn } = useSelector((state: RootState) => state.app);
   const {
-    parents, cachedClipItems
+      path: parents, cache
   } = useSelector((state: RootState) => state.clipItem);
 
   const setNormalMode = React.useCallback(() => {
@@ -153,7 +153,7 @@ const TopNav = ({
                   fontSize: "1.2em"
                 }}>/</span>
               :
-                cachedClipItems[e].name
+                cache[e].name
             }
           </MyButton>
         </React.Fragment>

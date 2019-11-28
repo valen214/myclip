@@ -13,7 +13,7 @@ import {
   setTarget,
 } from "../logic/textClipPageSlice";
 import {
-  uploadOrUpdateClipItem,
+  uploadItem,
 } from "../logic/clipItemSlice"
 
 import Box from '@material-ui/core/Box';
@@ -67,7 +67,7 @@ const TextClipPage = (props: any) => {
               }}
               style={{ flex: 1 }} margin="dense" />
           <IconButton edge="end" onClick={() => {
-                dispatch(uploadOrUpdateClipItem({
+                dispatch(uploadItem({
                   id: (target as string),
                   name: title,
                   type: "text/plain",

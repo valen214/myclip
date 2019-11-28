@@ -1,6 +1,6 @@
 
-
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { ThunkAction, ThunkDispatch } from "redux-thunk"
 
 import { AppThunk } from './store'
 import GDL from "../GoogleDriveLibrary"
@@ -8,37 +8,37 @@ import { randomstring } from "../util"
 import {
   blobToUrl, urlToBlob, revokeBlob
 } from "./BlobStore"
-import {
-  saveName, getChildren, saveChildren, addChild
-} from "./CachedInfo"
 
 enum LoadingState {
 
 }
+
+export const FOLDER = 'application/vnd.google-apps.folder'
 
 export interface ClipItem {
   id: string
   name?: string
   type?: string
   content?: string
+  objectURL?: string
+  parent?: string
+
   state?: LoadingState
+  md5?: string
+
+  children?: Array<string>
 }
 
-interface DisplayedClipItems {
-  parents: Array<string>
-  displayedClipItemsID: [] | string[]
+type ClipItemState = {
+  path: Array<string>
+  displayedClipItemsID: Array<string>
+  cache: { [id: string]: ClipItem }
 }
-
-interface CachedClipItems {
-  cachedClipItems: { [key: string]: ClipItem }
-}
-
-type ClipItemState = CachedClipItems & DisplayedClipItems;
 
 let initialState: ClipItemState = {
-  parents: ["appDataFolder"],
+  path: ["appDataFolder"],
   displayedClipItemsID: [],
-  cachedClipItems: {},
+  cache: {},
 }
 
 const clipItemSlice = createSlice({
@@ -46,12 +46,13 @@ const clipItemSlice = createSlice({
   initialState,
   reducers: {
     addDisplayedClipItem(state, action: PayloadAction<ClipItem | string>){
-      let id: string, name;
+      let id: string;
       if(typeof action.payload === "string"){
         id = action.payload;
       } else{
-        ({ id, name } = action.payload);
+        ({ id } = action.payload);
       }
+      if(state.displayedClipItemsID.indexOf(id) >= 0) return;
       state.displayedClipItemsID = [...state.displayedClipItemsID, id];
     },
     setDisplayedClipItems(state, action: PayloadAction<string[]>){
@@ -61,43 +62,28 @@ const clipItemSlice = createSlice({
       state.displayedClipItemsID =
           state.displayedClipItemsID.filter(id => id !== action.payload);
     },
-    addCachedClipItem(state, { payload }: PayloadAction<ClipItem>){
-      state.cachedClipItems[payload.id] = payload
+    removeCachedItem(state, { payload }: PayloadAction<string>){
+      delete state.cache[payload]
     },
-    setCachedClipItemInfo(state, { payload }: PayloadAction<ClipItem>){
-      let obj: ClipItem = { id: payload.id }
-      // seriously might cause bug, old, invalid cache
-      Object.assign(obj, state.cachedClipItems[payload.id], payload)
-      state.cachedClipItems[payload.id] = obj;
+    setPath(state, { payload }: PayloadAction<string[]>){
+      state.path = payload
     },
-    removeCachedClipItem(state, { payload }: PayloadAction<ClipItem | string>){
-      let id = (typeof payload === "string" ? payload : payload.id)
-      let { type, content } = state.cachedClipItems[id]
-      setTimeout(() => {
-        if(type && type.startsWith("text")){
-
-        } else if(content){
-          revokeBlob(content);
-        }
+    setItems(state, { payload }: PayloadAction<{ [id: string]: ClipItem }>){
+      Object.entries(payload).forEach(([id, item]) => {
+          if(state.cache[id]){
+            Object.assign(state.cache[id], item)
+          } else{
+            state.cache[id] = item;
+          }
       });
-      delete state.cachedClipItems[id];
     },
-    replaceClipItemID(state, {
-      payload: [ oldId, newId ]
-    }: PayloadAction<[string, string]>){
-      if(oldId in state.cachedClipItems){
-        state.cachedClipItems[newId] = state.cachedClipItems[oldId];
-        state.cachedClipItems[newId].id = newId;
-        delete state.cachedClipItems[oldId]
-      }
-      let i = Array.prototype.indexOf.call(state.displayedClipItemsID, oldId)
-      if(i >= 0){
-        state.displayedClipItemsID[i] = newId;
+    setItem(state, { payload }: PayloadAction<ClipItem>){
+      if(state.cache[payload.id]){
+        Object.assign(state.cache[payload.id], payload)
+      } else{
+        state.cache[payload.id] = payload
       }
     },
-    setParents(state, { payload }: PayloadAction<string[]>){
-      state.parents = payload
-    }
   }
 })
 
@@ -105,74 +91,108 @@ export const {
   addDisplayedClipItem,
   setDisplayedClipItems,
   removeDisplayedClipItem,
-  addCachedClipItem,
-  setCachedClipItemInfo,
-  removeCachedClipItem,
-  replaceClipItemID,
-  setParents,
+  removeCachedItem,
+  setPath,
+  setItems,
+  setItem,
 } = clipItemSlice.actions
 
 export default clipItemSlice.reducer
 
-export const downloadClipItemToCache = (
-  obj: ClipItem | string
+export const downloadItem = (
+  id: string
 ): AppThunk => async dispatch => {
   let id;
-  if(typeof obj === "string"){
-    id = obj;
-    obj = { id }
-  } else{
-    id = obj.id;
-    console.assert(!obj.content,
-        "clip item to be downloaded to cache should have empty content");
-  }
 
-  let res = await GDL.getFile(id);
+  let metaPromise = window.gapi.client.drive.files.get({
+    fields: "id, mimeType, md5Checksum, parents",
+    // + ", thumbnailLink, webContentLink, webViewLink",
+    fileId: "1kE6QPJg0TdcJmYqSxSrBVDfrqOM5pukx_09VivyN0lIjDv-jfw"
+  })
+  let resPromise = GDL.getFile(id);
 
-  let content;
-  if(obj.type && obj.type.startsWith("text")){
+  let [ {
+    id: _id, mimeType: type, md5Checksum: md5
+  }, res ] = await Promise.all([ metaPromise, resPromise ])
+
+  console.assert(_id === id)
+  console.assert(type !== FOLDER)
+
+  let content, objectURL;
+  if(type && type.startsWith("text")){
     content = await res.text();
   } else{
-    content = blobToUrl(await res.blob());
+    objectURL = blobToUrl(await res.blob());
   }
-  dispatch(setCachedClipItemInfo({
-    ...obj, id, content
+  dispatch(setItem({
+    id, type, md5, content, objectURL,
   }))
 }
 
-export const uploadOrUpdateClipItem = (
-  obj: Partial<ClipItem>, displayed: boolean = true
+const getUsableID = async (): Promise<string> => {
+  let res = await window.gapi.client.drive.files.generateIds({
+    space: "appDataFolder", count: 1
+  })
+  return res.result.ids[0]
+};
+
+export const uploadItem = (
+  obj: {
+    id?: string
+    name?: string
+    type?: string
+    content?: string | Blob
+    objectURL?: string
+  }, displayed: boolean = true
 ): AppThunk => async (dispatch, getState) => {
   try{
-    let content: Blob | string = obj.content;
-    if(obj.type && obj.type.startsWith("text")){
-      
-    } else if(content && content.includes("blob:")){
-      content = urlToBlob(content);
-    } else{
-      console.warn("clipItemSlice.ts: undetermined clip item mine type");
+    let parent = getState().clipItem.path.slice(-1)[0]
+    if(!obj.id){
+      let id = await getUsableID()
+      obj.id = id
     }
-    if(Object.prototype.hasOwnProperty.call(obj, "id") && obj.id){
-      dispatch(setCachedClipItemInfo(<ClipItem>obj));
-      let res = await GDL.patchToAppFolder(obj.id, content, obj.name);
-      console.assert(res.id === obj.id);
+    let content;
+    if((obj.content) instanceof Blob){
+      obj.objectURL = blobToUrl(obj.content)
+      obj.content = undefined;
     } else{
-      let parent = getState().clipItem.parents.slice(-1)[0]
-      obj.id = randomstring(16)
-      dispatch(addCachedClipItem(<ClipItem>obj))
-      if(displayed) dispatch(addDisplayedClipItem(obj.id))
-      let res = await GDL.uploadToAppFolder(obj.name, content, parent);
-      dispatch(replaceClipItemID([obj.id, res.id]));
-      addChild(parent, obj.id)
+      content = obj.objectURL ? urlToBlob(obj.objectURL) : obj.content
     }
+    dispatch(setItem(<ClipItem>obj))
+    if(displayed) dispatch(addDisplayedClipItem(obj.id))
+    
+    let res = await GDL.uploadToAppFolder({
+      name, parent, content, id: obj.id
+    });
+    dispatch(setItem({
+      id: parent,
+      children: [...getState().clipItem.cache[parent].children, obj.id]
+    }))
+    dispatch(setItem({
+      id: obj.id,
+      type: res.mimeType,
+    }))
+
   } catch(e){
     console.error(e);
   }
 }
 
-export const deleteClipItem = (id: string): AppThunk => async dispatch => {
+export const deleteItem = (
+  id: string
+): AppThunk => async (dispatch, getState) => {
   try{
-    dispatch(removeCachedClipItem(id))
+
+    let cache = getState().clipItem.cache
+    let obj = cache[id]
+    let url = obj.objectURL
+    if(url) revokeBlob(url)
+    let parent = obj.parent
+    if(parent && cache[parent]) dispatch(setItem({
+      id: parent,
+      children: cache[parent].children.filter(_id => _id !== id)
+    }))
+    dispatch(removeCachedItem(id))
     dispatch(removeDisplayedClipItem(id))
     await GDL.deleteFileByID(id); // expected No-Content
   } catch(e){
@@ -181,7 +201,7 @@ export const deleteClipItem = (id: string): AppThunk => async dispatch => {
 };
 
 export const uploadClipItemFiles = (
-    files: File[]
+  files: File[]
 ): AppThunk => async dispatch => {
   if(files.length > 1){
     console.warn("multiple files (variations) found, only process first");
@@ -189,34 +209,60 @@ export const uploadClipItemFiles = (
   let f = files[0];
   let obj: Partial<ClipItem> = {
     name: f.name, type: f.type,
-    content: blobToUrl(f),
+    objectURL: blobToUrl(f),
   };
-  dispatch(uploadOrUpdateClipItem(obj));
+  dispatch(uploadItem(obj));
 }
 
 export const loadFolder = (
   parent: string
 ): AppThunk => async (dispatch, getState) => {
   try{
-    if(getChildren(parent)){
-      dispatch(setDisplayedClipItems([]))
-      getChildren(parent).forEach(id => dispatch(addDisplayedClipItem(id)))
+    let parentItem = getState().clipItem.cache[parent]
+    if(parentItem){
+      dispatch(setDisplayedClipItems(parentItem.children))
       return
     }
-    const files: Array<{
-      id: string
-      name: string
-      mimeType: string
-    }> = await GDL.listAppFolder({
+    const {
+      files
+    }: {
+      files: Array<{
+        id: string
+        name: string
+        mimeType: string
+      }>
+    } = await GDL.listAppFolder({
       parent, fields: "files(id, name, mimeType)"
     });
 
     let id_list = files.map(({ id }) => id)
     dispatch(setDisplayedClipItems(id_list));
-    files.forEach(({ id, name, mimeType }) =>
-        dispatch(downloadClipItemToCache({ id, name, type: mimeType })));
+    files.forEach(({
+        id, name, mimeType
+    }) => {
+      dispatch(setItem({
+          id, name, type: mimeType, parent
+      }));
+      (async () => {
+        if(mimeType.startsWith("text")){
+          let text = await GDL.getFileAsText(id)
+          dispatch(setItem({
+            id, content: text
+          }));
+        } else if(mimeType !== FOLDER){
+          let blob = await GDL.getFileAsBlob(id)
+          dispatch(setItem({
+            id, objectURL: blobToUrl(blob)
+          }))
+        }
+      })();
+    });
 
-    saveChildren(parent, id_list)
+    dispatch(setItem({
+      id: parent,
+      type: FOLDER,
+      children: id_list,
+    }))
   } catch(e){
     console.error(e);
   }
@@ -225,17 +271,17 @@ export const loadFolder = (
 export const createFolder = (
   name: string
 ): AppThunk => async (dispatch, getState) => {
-  let parent = getState().clipItem.parents.slice(-1)[0]
+  let parent = getState().clipItem.path.slice(-1)[0]
   let { id, mimeType } = await GDL.createFolder(name, parent)
   let obj = { id, name, type: mimeType }
   dispatch(addDisplayedClipItem(obj))
-  dispatch(addCachedClipItem(obj))
+  dispatch(setItem(obj))
 }
 
 export const changeParents = (
-  parents: string[]
+  path: string[]
 ): AppThunk => async (dispatch, getState) => {
-  let last_parent = parents[parents.length - 1]
+  let last_parent = path[path.length - 1]
   dispatch(loadFolder(last_parent))
-  dispatch(setParents(parents))
+  dispatch(setPath(path))
 }

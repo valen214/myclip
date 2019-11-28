@@ -9,7 +9,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from "../logic/rootReducer";
 
 import {
-  deleteClipItem,
+  deleteItem,
   changeParents,
 } from "../logic/clipItemSlice"
 import {
@@ -95,18 +95,14 @@ const GoogleClipItem = ({
   const [ loaded, setLoaded ] = useState(false);
   const [ showSnackbar, setShowSnackbar ] = useState(false)
   const [ snackbarContent, setSnackbarContent ] = useState("");
-  const parents = useSelector(
-    (state: RootState) => state.clipItem.parents
+  const path = useSelector(
+    (state: RootState) => state.clipItem.path
   )
-  const { id: _id, name, content, type = "" } =
-      useSelector((state: RootState) => {
-          if(Object.prototype.hasOwnProperty.call(
-                state.clipItem.cachedClipItems, id)){
-            return state.clipItem.cachedClipItems[id]
-          } else{
-            return { id }
-          }
-      });
+  const {
+    id: _id, name, content, type = "", objectURL
+  } = useSelector((state: RootState) => {
+    return state.clipItem.cache[id] || { id }
+  });
   console.assert(id === _id);
 
   const showTextClipPage = React.useCallback(() => {
@@ -141,7 +137,7 @@ const GoogleClipItem = ({
             dispatch(setOverlayVisible(true))
           }
           if(type === "application/vnd.google-apps.folder"){
-            dispatch(changeParents([ ...parents, id ]))
+            dispatch(changeParents([ ...path, id ]))
           }
         }}>
       <CardContent style={{
@@ -156,7 +152,7 @@ const GoogleClipItem = ({
               {content}
             </div>
           ): type.startsWith("image") ? (
-            <object data={content} type={type} onLoad={() => {
+            <object data={objectURL} type={type} onLoad={() => {
               if(!loaded){
                 setLoaded(true);
                 onLoad()
@@ -184,7 +180,9 @@ const GoogleClipItem = ({
         }
       </CardContent>
     </CardActionArea>
-    <CardActions>
+    <CardActions style={{
+          padding: "2px 8px 8px"
+        }}>
       <Button onClick={showActionDialog}
           size="small" color="primary"
           startIcon={<MoreVertIcon />}
@@ -203,7 +201,7 @@ const GoogleClipItem = ({
         </Typography>
       </Button>
       <Button size="small" color="primary"
-          onClick={() => dispatch(deleteClipItem(id))}>
+          onClick={() => dispatch(deleteItem(id))}>
         Delete
       </Button>
       { type ? (
