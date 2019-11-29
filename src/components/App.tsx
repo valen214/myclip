@@ -49,6 +49,22 @@ const App = ({}: any) => {
   } = useSelector((state: RootState) => {
       return state.app
   });
+  const list: string[] = useSelector((state: RootState) => {
+      return state.clipItem.displayedClipItemsID
+  });
+  const path: string[] = useSelector((state: RootState) => {
+      return state.clipItem.path
+  });
+  const lists: string[][] = useSelector((state: RootState) => {
+      return state.clipItem.path.map(id => {
+        try{
+          return state.clipItem.cache[id].children || []
+        } catch(e){
+          console.log("id:", id)
+          return []
+        }
+      })
+  });
 
   useEffect(() => {
     dispatch(init())
@@ -97,10 +113,12 @@ const App = ({}: any) => {
               overflow: "hidden auto",
               flexDirection: "column",
               position: "relative",
-            }}>
-            <ClipItemContainer />
-            <div style={{ height: "60px", position: "absolute" }}></div>
-          </div>
+            }}>{
+              lists.map((list, i) => {
+                return <ClipItemContainer key={path[i]}
+                    list={list} show={i === lists.length-1} />
+              })
+          }</div>
           <CreateClipMenu className={classes.createClipMenu} />
           <TextClipPage />
           <ClipActionDialog />

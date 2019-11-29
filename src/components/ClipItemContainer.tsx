@@ -1,7 +1,7 @@
 
 //@ts-ignore
 import GDL from "../GoogleDriveLibrary";
-import GoogleClipItem from "./GoogleClipItem";
+import GoogleClipItem, { PropsType as GCIPropsType } from "./GoogleClipItem";
 
 //@ts-ignore
 import React, { useState } from "react";
@@ -15,7 +15,7 @@ import Masonry from "../lib/masonry";
 import Container from '@material-ui/core/Container';
 
 import { XS, SM, MD, LG, XL } from "../lib/media_queries";
-import { debounce } from "../util";
+import { debounce, arrayEqual } from "../util";
 
 
 function getCols(){
@@ -38,14 +38,15 @@ function getCols(){
 
 const refreshDelay = 1000;
 
-const MemoizedGoogleClipItem = React.memo(GoogleClipItem)
-
-const ClipItemContainer = (props: any) => {
+type PropsType = {
+  list: string[]
+  show: boolean
+}
+const ClipItemContainer = ({
+  list, show
+}: PropsType) => {
   const dispatch = useDispatch();
   const ref = React.useRef(null);
-  const list: string[] = useSelector((state: RootState) => {
-      return state.clipItem.displayedClipItemsID
-  });
   const [ cols, setCols ] = useState(getCols());
   const resizeListener = 
     debounce((e: React.SyntheticEvent) => {
@@ -74,6 +75,7 @@ const ClipItemContainer = (props: any) => {
 
   React.useEffect(() => {
     resizeListener()
+    console.log("ClipItemContainer list changed");
   }, [ list ])
 
   React.useLayoutEffect(() => {
@@ -85,7 +87,9 @@ const ClipItemContainer = (props: any) => {
   }, [ cols ]);
 
   return <Container style={{
-        position: "absolute"
+        position: "absolute",
+        // opacity: show ? "1" : "0",
+        display: show ? "block": "none",
       }}>{
     list.length === 0 ?
     <div style={{
@@ -95,13 +99,16 @@ const ClipItemContainer = (props: any) => {
         }}>
       [ No Content ]
     </div> :
-    <Masonry ref={ref} colMinWidth="100px"
+    <Masonry key={list.join(",")} ref={ref} colMinWidth="100px"
         balanceColumns={true} hgap={15} cols={cols}>{
       list.map((id: string) => (
-        <MemoizedGoogleClipItem key={id} id={id} onLoad={onItemLoad} />
+        <GoogleClipItem key={id} id={id} onLoad={onItemLoad} />
       ))
     }</Masonry>
   }</Container>;
 };
 
-export default ClipItemContainer;
+export default React.memo(ClipItemContainer,
+  (prev: PropsType, next: PropsType) => {
+    return arrayEqual(prev.list, next.list) && prev.show == next.show;
+});

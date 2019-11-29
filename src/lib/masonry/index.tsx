@@ -93,10 +93,12 @@ const Masonry = React.forwardRef(({
 
     let allChild: HTMLCollection = selfRef.current.children;
 
-    let rects = Array.prototype.map.call(allChild,
-        (elem: HTMLElement, i: number) => {
-            return { height: elem.offsetHeight };
-    })
+    let rects: Array<{ height: number }> =
+        Array.prototype.map.call(allChild,
+            (elem: HTMLElement, i: number) => {
+                return { height: elem.offsetHeight };
+            }
+        );
 
     if(typeof hgap === "number"){
       // hgap = String(hgap) + "px"

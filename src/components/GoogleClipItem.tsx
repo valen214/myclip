@@ -79,16 +79,13 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   }
 }));
 
-export interface ClipItem {
-  id?: string;
-};
-
-const GoogleClipItem = ({
-  id, onLoad = () => {}
-}: {
+export type PropsType = {
   id: string
   onLoad?: () => void
-}) => {
+}
+const GoogleClipItem = ({
+  id, onLoad = () => {}
+}: PropsType) => {
   const classes = useStyles({});
   const dispatch = useDispatch();
   const textContentRef = React.useRef()
@@ -133,7 +130,7 @@ const GoogleClipItem = ({
         onClick={() => {
           if(type.startsWith("text")) return showTextClipPage()
           if(type.startsWith("image")){
-            dispatch(setOverlayContent({ type, content }))
+            dispatch(setOverlayContent({ type, content: objectURL }))
             dispatch(setOverlayVisible(true))
           }
           if(type === "application/vnd.google-apps.folder"){
