@@ -219,7 +219,7 @@ export const loadFolder = (
 ): AppThunk => async (dispatch, getState) => {
   try{
     let parentItem = getState().clipItem.cache[parent]
-    if(parentItem){
+    if(parentItem && parentItem.children){
       dispatch(setDisplayedClipItems(parentItem.children))
       return
     }

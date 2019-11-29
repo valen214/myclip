@@ -5,9 +5,9 @@
   "scripts": {
     "start": "webpack-dev-server --hot",
     "build": "webpack --mode production",
-    "build_analyze": "webpack --mode production --profile --json > dist/stats.json",
+    "build_analyze": "webpack --mode production --profile --json --display none > dist/stats.json",
     "compile": "webpack --mode development --profile --json > dist/stats.json",
-    "analyze": "webpack-bundle-analyzer dist/stats.json"
+    "analyze": "webpack-bundle-analyzer ./dist/stats.json"
   },
   "devDependencies": {
     "@babel/core": "^7.7.4",
