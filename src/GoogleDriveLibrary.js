@@ -137,7 +137,6 @@ export async function listAppFolder({
     await initialized;
     let res;
     try{
-        console.log('list app folder: parent:', parent, "fields:", fields);
         res = await gapi.client.drive.files.list({
             spaces: "appDataFolder",
             q: `'${parent}' in parents`,

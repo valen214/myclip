@@ -75,7 +75,7 @@ const ClipItemContainer = ({
 
   React.useEffect(() => {
     resizeListener()
-    console.log("ClipItemContainer list changed");
+    console.log("%cClipItemContainer list changed", "color: #ada");
   }, [ list ])
 
   React.useLayoutEffect(() => {

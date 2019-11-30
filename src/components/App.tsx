@@ -57,12 +57,8 @@ const App = ({}: any) => {
   });
   const lists: string[][] = useSelector((state: RootState) => {
       return state.clipItem.path.map(id => {
-        try{
-          return state.clipItem.cache[id].children || []
-        } catch(e){
-          console.log("id:", id)
-          return []
-        }
+        let parent = state.clipItem.cache[id]
+        return (parent && parent.children) || []
       })
   });
 

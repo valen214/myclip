@@ -17,7 +17,7 @@ import {
   setTarget as setClipActionDialogTarget,
 } from "../logic/clipActionDialogSlice";
 import {
-  setVisible, setTarget, setTitle, setContent
+  setVisible, setTarget, setTitle, setContent, PositionRect
 } from "../logic/textClipPageSlice";
 import {
   setVisible as setOverlayVisible, setContent as setOverlayContent
@@ -88,6 +88,7 @@ const GoogleClipItem = ({
 }: PropsType) => {
   const classes = useStyles({});
   const dispatch = useDispatch();
+  const ref = React.useRef();
   const textContentRef = React.useRef()
   const [ loaded, setLoaded ] = useState(false);
   const [ showSnackbar, setShowSnackbar ] = useState(false)
@@ -103,7 +104,10 @@ const GoogleClipItem = ({
   console.assert(id === _id);
 
   const showTextClipPage = React.useCallback(() => {
-    dispatch(setVisible(true))
+    let r = ref.current.getBoundingClientRect();
+    dispatch(setVisible({
+      top: r.top, left: r.left, width: r.width, height: r.height
+    } as PositionRect))
     dispatch(setTarget(id))
     dispatch(setTitle(name))
     dispatch(setContent((content as string) || ""))
@@ -121,7 +125,7 @@ const GoogleClipItem = ({
   }
 
   // https://material-ui.com/components/grid-list/
-  return <Card className={classes.GCI}
+  return <Card ref={ref} className={classes.GCI}
       style={{
       }}>
     <CardActionArea style={{

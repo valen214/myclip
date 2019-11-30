@@ -7,8 +7,15 @@ import GDL from "../GoogleDriveLibrary"
 
 type TextClipPageTarget = string | object;
 
+export type PositionRect = {
+  top: number
+  left: number
+  width: number
+  height: number
+}
+
 interface TextClipPageState {
-  visible: boolean
+  visible: boolean | PositionRect
   target: TextClipPageTarget | null
   title: string
   content: string
@@ -28,7 +35,7 @@ const textClipPageSlice = createSlice({
     setAll(state, { payload }: PayloadAction<TextClipPageState>){
       Object.assign(state, payload);
     },
-    setVisible(state, { payload }: PayloadAction<boolean>){
+    setVisible(state, { payload }: PayloadAction<boolean | PositionRect>){
       state.visible = payload
     },
     setTarget(state, { payload }: PayloadAction<TextClipPageTarget>){

@@ -38,12 +38,22 @@ const masonryAlgo = ({
     instead, the implementation now:
     fill from the first into the smallest bucket one by one
     */
-    let cols_height = Array.from({ length: cols }, (e, i) => [i, 0]);
+    let queue = Array.from({ length: cols }, (e, i) => ({ col: i, h: 0 }));
     let rect_pos = rects.map(({ height: h }) => {
-        let out = cols_height[0].slice();
-        cols_height[0][1] += h + vgap;
-        cols_height.sort((l, r) => l[1] - r[1]);
-        return out;
+        let target = queue[0];
+        for(let i = 1; i < cols; ++i){
+          if(queue[i].h === queue[0].h){
+            if(queue[i].col < target.col){
+              target = queue[i];
+            }
+          } else{
+            break
+          }
+        }
+        let out = [ target.col, target.h ];
+        target.h += (h + vgap);
+        queue.sort((l, r) => l.h - r.h)
+        return out
     });
     return rect_pos;
   default:
@@ -142,7 +152,8 @@ const Masonry = React.forwardRef(({
     })
 
     let spent = performance.now() - begin
-    console.log("Masonry.refreshLayout() exiting, used:", spent, "ms");
+    console.log("%cMasonry.refreshLayout() exiting, used:",
+        "color: #DC143C", spent, "ms");
   };
 
   React.useImperativeHandle(ref, () => ({

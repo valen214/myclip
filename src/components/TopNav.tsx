@@ -132,7 +132,7 @@ const TopNav = ({
         <ArrowUpwardIcon />
       </IconButton>
       {parents.map((e, i) => 
-        <React.Fragment key={i}>
+        <React.Fragment key={e}>
           {
             i == 0 ?
               <span style={{

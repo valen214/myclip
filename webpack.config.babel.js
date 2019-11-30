@@ -54,6 +54,6 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: "./index.html", // template: "./src/index.htm",
     }),
-    // new BundleAnalyzerPlugin(),
+    new BundleAnalyzerPlugin(),
   ],
 };
