@@ -90,6 +90,7 @@ const ClipItemContainer = ({
         position: "absolute",
         // opacity: show ? "1" : "0",
         display: show ? "block": "none",
+        ...(cols === 1 && { padding: 0 })
       }}>{
     list.length === 0 ?
     <div style={{

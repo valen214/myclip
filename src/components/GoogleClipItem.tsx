@@ -5,6 +5,7 @@ import GDL from "../GoogleDriveLibrary";
 //@ts-ignore
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from 'react-redux'
+import { createUseStyles } from "react-jss"
 
 import { RootState } from "../logic/rootReducer";
 
@@ -24,22 +25,14 @@ import {
 } from "../logic/functionalOverlaySlice"
 
 
-import Button from '@material-ui/core/Button';
-import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
-import CardActionArea from "@material-ui/core/CardActionArea";
-import CardContent from '@material-ui/core/CardContent';
-import GridListTile from "@material-ui/core/GridListTile";
-import IconButton from "@material-ui/core/IconButton";
-import Typography from "@material-ui/core/Typography";
+import Button from './Button';
+import Snackbar from "./Snackbar";
 
 import CloseIcon from "@material-ui/icons/Close";
 import FolderIcon from '@material-ui/icons/Folder';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 
-import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
-import Snackbar from "./Snackbar";
-const useStyles = makeStyles((theme: Theme) => createStyles({
+const useStyles = createUseStyles({
   GCI: {
     border: "1px solid rgba(0, 0, 0, 0.1)",
     boxShadow: "none",
@@ -71,13 +64,34 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     },
   },
 
-  displayed_text: {
+  text_style: {
     fontFamily: "Consolas",
     padding: "5px 2px",
     wordBreak: "break-all",
     whiteSpace: "pre-wrap",
-  }
-}));
+  },
+  content: {
+    padding: "0 5px 0 5px",
+    background: "#dfd", width: "100%",
+    maxHeight: "280px", overflow: "hidden",
+    display: "inline-block",
+  },
+  filename_button_text: {
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    textTransform: "none",
+    fontWeight: 600,
+    lineHeight: 1.75,
+    fontSize: "0.8125rem",
+  },
+  action_area: {
+    padding: "0 5px 4px",
+    display: "flex",
+  },
+  action_area_button: {
+    padding: "6px 12px",
+  },
+});
 
 export type PropsType = {
   id: string
@@ -125,10 +139,10 @@ const GoogleClipItem = ({
   }
 
   // https://material-ui.com/components/grid-list/
-  return <Card ref={ref} className={classes.GCI}
+  return <div ref={ref} className={classes.GCI}
       style={{
       }}>
-    <CardActionArea style={{
+    <div style={{
             padding: "12px 12px 0",
           }}
         onClick={() => {
@@ -141,15 +155,10 @@ const GoogleClipItem = ({
             dispatch(changeParents([ ...path, id ]))
           }
         }}>
-      <CardContent style={{
-            padding: "0 5px 0 5px",
-            background: "#dfd", width: "100%",
-            maxHeight: "280px", overflow: "hidden",
-            display: "inline-block",
-          }}>
+      <div className={classes.content}>
         {
           type.startsWith("text") ? (
-            <div ref={textContentRef} className={classes.displayed_text}>
+            <div ref={textContentRef} className={classes.text_style}>
               {content}
             </div>
           ): type.startsWith("image") ? (
@@ -170,7 +179,7 @@ const GoogleClipItem = ({
               alignItems: "center"
             }}>
               <FolderIcon />
-              <span className={classes.displayed_text}
+              <span className={classes.text_style}
                   style={{
                     fontSize: "2em"
                   }}>{name}</span>
@@ -179,35 +188,30 @@ const GoogleClipItem = ({
             "[Loading ...]"
           )
         }
-      </CardContent>
-    </CardActionArea>
-    <CardActions style={{
-          padding: "2px 8px 8px"
-        }}>
+      </div>
+    </div>
+    <div className={classes.action_area}>
       <Button onClick={showActionDialog}
-          size="small" color="primary"
-          startIcon={<MoreVertIcon />}
+          className={classes.action_area_button}
+          color="primary"
           style={{
             maxWidth: "50%",
+            paddingLeft: "0px",
           }}>
-        <Typography style={{
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              textTransform: "none",
-              fontWeight: 600,
-              lineHeight: 1.75,
-              fontSize: "0.8125rem",
-            }}>
+        <MoreVertIcon />
+        <span className={classes.filename_button_text}>
           {name}
-        </Typography>
+        </span>
       </Button>
-      <Button size="small" color="primary"
+      <Button color="primary"
+          className={classes.action_area_button}
           onClick={() => dispatch(deleteItem(id))}>
         Delete
       </Button>
       { type ? (
         type.startsWith("text") ?
-          <Button size="small" color="primary"
+          <Button color="primary"
+            className={classes.action_area_button}
               onClick={() => {
                 let selection = window.getSelection()
                 let range = document.createRange()
@@ -230,17 +234,18 @@ const GoogleClipItem = ({
           </Button> :
         type.startsWith("image") ?
           <Button size="small" color="primary"
+              className={classes.action_area_button}
               onClick={() => {}}>
             Save
           </Button> : undefined
       ) : undefined}
-    </CardActions>
+    </div>
     <Snackbar show={showSnackbar}
         onClose={() => { setShowSnackbar(false) }}
         timeout={2000} >
       { snackbarContent }
     </Snackbar>
-  </Card>;
+  </div>;
 };
 
 export default GoogleClipItem;

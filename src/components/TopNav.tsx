@@ -144,7 +144,7 @@ const TopNav = ({
             :
               <NavigateNextIcon style={{ margin: "0 -2px" }}/>
           }
-          <MyButton square onClick={() => {
+          <MyButton onClick={() => {
             dispatch(changeParents(parents.slice(0, i+1)))
           }}>
             {

@@ -146,11 +146,6 @@ export const uploadItem = (
   }, displayed: boolean = true
 ): AppThunk => async (dispatch, getState) => {
   try{
-    let parent = getState().clipItem.path.slice(-1)[0]
-    if(!obj.id){
-      let id = await getUsableID()
-      obj.id = id
-    }
     let content;
     if((obj.content) instanceof Blob){
       obj.objectURL = blobToUrl(obj.content)
@@ -158,20 +153,30 @@ export const uploadItem = (
     } else{
       content = obj.objectURL ? urlToBlob(obj.objectURL) : obj.content
     }
-    dispatch(setItem(<ClipItem>obj))
-    if(displayed) dispatch(addDisplayedClipItem(obj.id))
+
+    let parent = getState().clipItem.path.slice(-1)[0]
+    if(obj.id){
+      dispatch(setItem(<ClipItem>obj))
+      let res = await GDL.patchToAppFolder(obj.id, content, obj.name)
+    } else{
+      obj.id = await getUsableID();
+      dispatch(setItem(<ClipItem>obj))
+      if(displayed) dispatch(addDisplayedClipItem(obj.id))
+      let res = await GDL.uploadToAppFolder({
+        name, parent, content, id: obj.id
+      });
+
+      let siblings = getState().clipItem.cache[parent].children
+      dispatch(setItem({
+        id: parent,
+        children: [...siblings, obj.id]
+      }))
+      dispatch(setItem({
+        id: obj.id,
+        type: res.mimeType,
+      }))
+    }
     
-    let res = await GDL.uploadToAppFolder({
-      name, parent, content, id: obj.id
-    });
-    dispatch(setItem({
-      id: parent,
-      children: [...getState().clipItem.cache[parent].children, obj.id]
-    }))
-    dispatch(setItem({
-      id: obj.id,
-      type: res.mimeType,
-    }))
 
   } catch(e){
     console.error(e);

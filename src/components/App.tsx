@@ -2,6 +2,7 @@
 //@ts-ignore
 import GDL from "../GoogleDriveLibrary";
 
+import Button from "./Button"; // first because css specifity
 import ClipActionDialog from "./ClipActionDialog";
 import ClipItemContainer from "./ClipItemContainer";
 import CreateClipMenu from "./CreateClipMenu";
@@ -21,7 +22,6 @@ import { useDispatch, useSelector } from "react-redux"
 
 import CssBaseline from "@material-ui/core/CssBaseline";
 
-import Button from "./Button";
 
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import Snackbar from "./Snackbar";

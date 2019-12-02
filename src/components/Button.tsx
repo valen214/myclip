@@ -2,7 +2,7 @@
 //@ts-ignore
 import React from 'react';
 
-import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
+import { createUseStyles } from "react-jss";
 
 type PropsType = {
   onClick: (e: React.MouseEvent<HTMLElement>) => void
@@ -10,10 +10,11 @@ type PropsType = {
   edge?: string
   style?: { [k: string]: any }
   overlayStyle?: { [k: string]: any }
-  square?: boolean
+  round?: boolean
+  className?: string
 }
 
-const useStyles = makeStyles((theme: Theme) => createStyles({
+const useStyles = createUseStyles({
   button: {
     display: "inline-flex",
     alignItems: "center",
@@ -22,7 +23,7 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     cursor: "pointer",
     padding: 12,
     position: "relative",
-    borderRadius: "50%",
+    borderRadius: "2px",
     background: "transparent",
     overflow: "hidden",
     "&:hover": {
@@ -38,7 +39,10 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   },
   overlay: {
     display: "inline-block",
-    position: "absolute", width: "100%", height: "100%",
+    position: "absolute",
+    width: "100%",
+    // height: "100%",
+    paddingBottom: "100%", // square size hack
     pointerEvents: "none", zIndex: 1,
     borderRadius: "50%",
     // https://jsfiddle.net/xvalen214x/7rLmu9oq/41/show
@@ -47,7 +51,7 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     // background: "repeating-radial-gradient(rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0.3) 80% 82%, rgba(255, 255, 255, 0.8) 82% 84%)",
     opacity: 0,
   },
-}));
+});
 
 
 
@@ -58,7 +62,8 @@ const Button = React.forwardRef(({
   edge,
   style,
   overlayStyle,
-  square = false,
+  round = false,
+  className,
   ...props
 }: PropsType, ref?: React.Ref) => {
   const classes = useStyles({})
@@ -66,11 +71,11 @@ const Button = React.forwardRef(({
   ref = ref || _ref;
 
   const overlayRef = React.useRef(null);
-  return <div ref={ref} className={classes.button} {...props}
+  return <div ref={ref} className={classes.button + " " +  className} {...props}
       style={{
         ...(edge == "left" ? { marginLeft: -12 } : {}),
         ...style,
-        ...(square && { borderRadius: "0" }),
+        ...(round && { borderRadius: "50%" }),
       }}
       onPointerDown={(e: React.PointerEvent<HTMLElement>) => {
         let rect = ref.current.getBoundingClientRect(); // parent
@@ -90,17 +95,18 @@ const Button = React.forwardRef(({
         }, 16);
       }}
       onClick={(e: React.MouseEvent<HTMLElement>) => {
+        console.log("BUTTON ONCLICK")
         if(typeof onClick === "function") onClick(e);
       }}>
     <span ref={overlayRef}
         className={classes.overlay}
         style={{
           ...overlayStyle,
-          ...(square && { borderRadius: "0" }),
+          ...(round && { borderRadius: "50%" }),
         }}>
       </span>
     { children }
   </div>
 });
 
-export default Button;
+export default React.memo(Button);

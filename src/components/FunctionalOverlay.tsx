@@ -93,7 +93,7 @@ const FunctionalOverlay = () => {
           }}>
             <div style={{ display: "flex" }}>
               Input Folder Name:
-              <Button square onClick={discard} style={{ marginLeft: "auto" }}>
+              <Button onClick={discard} style={{ marginLeft: "auto" }}>
                 <CloseIcon />
               </Button>
             </div>
@@ -106,8 +106,8 @@ const FunctionalOverlay = () => {
 
             </input>
             <div style={{ marginLeft: "auto", marginTop: "auto" }}>
-              <Button square onClick={discard}>cancel</Button>
-              <Button square onClick={() => {
+              <Button onClick={discard}>cancel</Button>
+              <Button onClick={() => {
                 dispatch(createFolder(text))
                 discard()
               }}>create</Button>
