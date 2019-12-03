@@ -12,8 +12,6 @@ import { RootState } from "../logic/rootReducer";
 import Masonry from "../lib/masonry";
 
 
-import Container from '@material-ui/core/Container';
-
 import { XS, SM, MD, LG, XL } from "../lib/media_queries";
 import { debounce, arrayEqual } from "../util";
 
@@ -59,7 +57,7 @@ const ClipItemContainer = ({
       } else{
         ref.current.refreshLayout();
       }
-    }, 200)
+    }, 120)
 
   const onItemLoad = React.useCallback(() => {
     console.log("GoogleClipItem onload fired");
@@ -86,9 +84,9 @@ const ClipItemContainer = ({
     };
   }, [ cols ]);
 
-  return <Container style={{
+  return <div style={{
         position: "absolute",
-        // opacity: show ? "1" : "0",
+        width: "100%",
         display: show ? "block": "none",
         ...(cols === 1 && { padding: 0 })
       }}>{
@@ -106,7 +104,7 @@ const ClipItemContainer = ({
         <GoogleClipItem key={id} id={id} onLoad={onItemLoad} />
       ))
     }</Masonry>
-  }</Container>;
+  }</div>;
 };
 
 export default React.memo(ClipItemContainer,

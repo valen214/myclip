@@ -5,6 +5,7 @@ import GDL from "../GoogleDriveLibrary";
 //@ts-ignore
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from 'react-redux'
+import { createUseStyles } from "react-jss";
 
 import { RootState } from "../logic/rootReducer";
 
@@ -28,7 +29,6 @@ import { default as MyButton } from "./Button"
 import useEventListener from "../lib/use-event-listener"
 import { debounce } from "../util"
 
-import { makeStyles } from "@material-ui/core/styles";
 import AppBar from '@material-ui/core/AppBar';
 import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
@@ -44,12 +44,33 @@ import MenuIcon from "@material-ui/icons/Menu";
 import PersonIcon from "@material-ui/icons/Person";
 import SearchIcon from "@material-ui/icons/Search";
 
-const useStyles = makeStyles(theme => ({
-  margin: {
-    margin: theme.spacing(1),
+const useStyles = createUseStyles({
+  top_nav: {
+    position: "fixed",
+    top: 0, left: 0, right: 0,
+    display: "flex",
+    flexDirection: "row",
+    height: 56,
+    zIndex: 1100,
+    background: "#3f51b5",
   },
-  offset: theme.mixins.toolbar,
-}));
+  breadcrumbs: {
+    display: "flex",
+    overflow: "hidden",
+    background: "#3f51b5",
+    borderTop: ({ showBreadcrumbs }: { showBreadcrumbs: boolean }) => (
+      showBreadcrumbs ? "1px solid rgba(0, 0, 0, 1.0)" : ""
+    ),
+    width: "100%",
+    height: ({ showBreadcrumbs }: { showBreadcrumbs: boolean }) => showBreadcrumbs ? 56 : 0,
+    transform: ({ showBreadcrumbs }: { showBreadcrumbs: boolean }) => showBreadcrumbs ? "translateY(0)" : "translateY(-100%)",
+    transition: "height 0.2s, transform 0.2s",
+    alignItems: "center",
+    color: "white",
+    boxShadow: '0px 2px 4px -1px rgba(0,0,0,0.2),' +
+        '0px 4px 5px 0px rgba(0,0,0,0.14),0px 1px 10px 0px rgba(0,0,0,0.12)'
+  },
+});
 
 /*
 https://material.io/archive/guidelines/
@@ -61,8 +82,6 @@ patterns/search.html#search-in-app-search
 const TopNav = ({
       placeholder = "",
 }: any) => {
-  const classes = useStyles({});
-  
   const appBarRef = React.useRef();
   const [ placeholderHeight, setPlaceholderHeight ] = useState("")
   const dispatch = useDispatch();
@@ -86,6 +105,8 @@ const TopNav = ({
   console.assert(parents[0] === "appDataFolder")
 
   const showBreadcrumbs = parents.length > 1;
+  
+  const classes = useStyles({ showBreadcrumbs });
 
   // React.useEffect(() => {
   //   let appBarElem = appBarRef.current
@@ -103,26 +124,16 @@ const TopNav = ({
   useEventListener("resize", onTransition)
 
   return <React.Fragment>
-    <div className={classes.offset} style={{
+    <div className={""} style={{
           display: "flex", flexDirection: "column",
           justifyContent: "end", background: "#3f51b5",
-          width: "100%", height: placeholderHeight,
+          width: "100%",
           transition: "height 0.2s",
+          height: placeholderHeight,
         }}>
       I am Top nav placeholder
     </div>
-    <div style={{
-      display: "flex",
-      overflow: "hidden",
-      background: "#3f51b5",
-      borderTop: showBreadcrumbs ? "1px solid rgba(0, 0, 0, 1.0)" : "",
-      height: showBreadcrumbs ? 56 : 0, width: "100%",
-      transform: showBreadcrumbs ? "translateY(0)" : "translateY(-100%)",
-      transition: "height 0.2s, transform 0.2s",
-      alignItems: "center", color: "white",
-      boxShadow: '0px 2px 4px -1px rgba(0,0,0,0.2),' +
-          '0px 4px 5px 0px rgba(0,0,0,0.14),0px 1px 10px 0px rgba(0,0,0,0.12)'
-    }}>
+    <div className={classes.breadcrumbs}>
       <IconButton style={{
         marginLeft: 12, color: "white",
       }}
@@ -159,30 +170,29 @@ const TopNav = ({
         </React.Fragment>
       )}
     </div>
-    <AppBar ref={appBarRef} position="fixed" style={{
+    <div ref={appBarRef} className={classes.top_nav} style={{
           // transition: "height 0.5s"
           ...(showBreadcrumbs && { boxShadow: "none" }),
         }}>{
       mode == TopNavMode.normal ?
         <React.Fragment>
-          <ToolBar>
-            <MyButton edge="left">
-              <MenuIcon />
-            </MyButton>
-            <Typography variant="h6" style={{ flex: 1, userSelect: "none" }}>
-              MyClip
-            </Typography>
-            <IconButton onClick={setInputMode}>
-              <SearchIcon />
-            </IconButton>
-            <Button
-                variant="contained"
-                color="primary"
-                startIcon={<PersonIcon />}
-                onClick={() => dispatch(signIn())}>
-              { signedIn ? "Sign Out" : "Sign In" }
-            </Button>
-          </ToolBar>
+          <MyButton edge="left" style={{ float: "left" }}>
+            <MenuIcon />
+          </MyButton>
+          <Typography variant="h6" style={{ flex: 1, userSelect: "none" }}>
+            MyClip
+          </Typography>
+          <IconButton onClick={setInputMode}>
+            <SearchIcon />
+          </IconButton>
+          <Button
+              style={{ alignSelf: "flex-end" }}
+              variant="contained"
+              color="primary"
+              startIcon={<PersonIcon />}
+              onClick={() => dispatch(signIn())}>
+            { signedIn ? "Sign Out" : "Sign In" }
+          </Button>
         </React.Fragment> :
       mode == TopNavMode.input ?
         <ToolBar style={{ background: "#eee" }}>
@@ -200,7 +210,7 @@ const TopNav = ({
           </IconButton>
         </ToolBar> : <div>OH Hello!</div>
       }
-    </AppBar>
+    </div>
   </React.Fragment>;
 };
 
