@@ -5,7 +5,7 @@ import React from 'react';
 import { createUseStyles } from "react-jss";
 
 type PropsType = {
-  onClick: (e: React.MouseEvent<HTMLElement>) => void
+  // onClick: (e: React.MouseEvent<HTMLElement>) => void
   children?: React.ReactNode
   edge?: string
   style?: { [k: string]: any }
@@ -20,10 +20,11 @@ const useStyles = createUseStyles({
     alignItems: "center",
     justifyContent: "center",
 
+    border: "0",
     cursor: "pointer",
     padding: 12,
     position: "relative",
-    borderRadius: "2px",
+    borderRadius: "6px",
     background: "transparent",
     overflow: "hidden",
     "&:hover": {
@@ -35,7 +36,8 @@ const useStyles = createUseStyles({
       // "&>span": {
         background: "rgba(0, 0, 0, 0.2)"
       // }
-    }
+    },
+    fontFamily: "Consolas",
   },
   overlay: {
     display: "inline-block",
@@ -57,31 +59,37 @@ const useStyles = createUseStyles({
 
 
 const Button = React.forwardRef(({
-  onClick,
   children,
   edge,
   style,
   overlayStyle,
   round = false,
-  className,
+  className = "",
   ...props
 }: PropsType, ref?: React.Ref) => {
   const classes = useStyles({})
   const _ref = React.useRef(null)
   ref = ref || _ref;
 
+  const [ pointerDown, setPointerDown ] = React.useState(false)
+
   const overlayRef = React.useRef(null);
-  return <div ref={ref} className={classes.button + " " +  className} {...props}
+  return <button ref={ref}
+      className={classes.button + " " + className}
+      {...props}
       style={{
         ...(edge == "left" ? { marginLeft: -12 } : {}),
         ...style,
         ...(round && { borderRadius: "50%" }),
       }}
       onPointerDown={(e: React.PointerEvent<HTMLElement>) => {
+        setPointerDown(true)
         let rect = ref.current.getBoundingClientRect(); // parent
+        console.log(e.clientX, rect)
         Object.assign(overlayRef.current.style, {
           left: (e.clientX - rect.left - rect.width/2) + "px",
-          top: (e.clientY - rect.top - rect.height/2) + "px",
+          // rect.width instead of height because of the "square padding hack"
+          top: (e.clientY - rect.top - rect.width/2) + "px",
           transform: "scale(0.25)",
           transition: "none",
           opacity: 1,
@@ -93,10 +101,6 @@ const Button = React.forwardRef(({
             transition: "transform 1s, opacity 1s",
           })
         }, 16);
-      }}
-      onClick={(e: React.MouseEvent<HTMLElement>) => {
-        console.log("BUTTON ONCLICK")
-        if(typeof onClick === "function") onClick(e);
       }}>
     <span ref={overlayRef}
         className={classes.overlay}
@@ -106,7 +110,7 @@ const Button = React.forwardRef(({
         }}>
       </span>
     { children }
-  </div>
+  </button>
 });
 
 export default React.memo(Button);

@@ -25,13 +25,10 @@ import {
   setButtonVisible as setCreateClipButtonVisible
 } from "../logic/createClipMenuSlice";
 
-import { default as MyButton } from "./Button"
 import useEventListener from "../lib/use-event-listener"
 import { debounce } from "../util"
 
-import AppBar from '@material-ui/core/AppBar';
-import Button from "@material-ui/core/Button";
-import IconButton from "@material-ui/core/IconButton";
+import Button from "./Button";
 import TextField from "@material-ui/core/TextField";
 import ToolBar from '@material-ui/core/ToolBar';
 import Typography from "@material-ui/core/Typography";
@@ -50,9 +47,17 @@ const useStyles = createUseStyles({
     top: 0, left: 0, right: 0,
     display: "flex",
     flexDirection: "row",
+    alignItems: "center",
     height: 56,
+    width: "100%",
     zIndex: 1100,
     background: "#3f51b5",
+    color: "white",
+  },
+  title: {
+    flex: "1 1 auto",
+    userSelect: "none",
+    marginLeft: "8px",
   },
   breadcrumbs: {
     display: "flex",
@@ -85,9 +90,12 @@ const TopNav = ({
   const appBarRef = React.useRef();
   const [ placeholderHeight, setPlaceholderHeight ] = useState("")
   const dispatch = useDispatch();
-  const { visible, mode, searchString } = useSelector(
-      (state: RootState) => state.topNav);
-  const { signedIn } = useSelector((state: RootState) => state.app);
+  const {
+    signedIn
+  } = useSelector((state: RootState) => state.app);
+  const {
+    visible, mode, searchString
+  } = useSelector((state: RootState) => state.topNav);
   const {
       path: parents, cache
   } = useSelector((state: RootState) => state.clipItem);
@@ -106,7 +114,9 @@ const TopNav = ({
 
   const showBreadcrumbs = parents.length > 1;
   
-  const classes = useStyles({ showBreadcrumbs });
+  const classes = useStyles({
+    showBreadcrumbs
+  });
 
   // React.useEffect(() => {
   //   let appBarElem = appBarRef.current
@@ -118,7 +128,7 @@ const TopNav = ({
   // }, [ parents ])
 
   const onTransition = React.useCallback(debounce((e: React.SyntheticEvent) => {
-    console.log("invoked")
+    console.log("invoked top nav ontransition listener")
     setPlaceholderHeight(appBarRef.current.offsetHeight + "px")
   }, 200), [ setPlaceholderHeight ])
   useEventListener("resize", onTransition)
@@ -134,14 +144,14 @@ const TopNav = ({
       I am Top nav placeholder
     </div>
     <div className={classes.breadcrumbs}>
-      <IconButton style={{
+      <Button style={{
         marginLeft: 12, color: "white",
       }}
       onClick={() => {
         dispatch(changeParents(parents.slice(0, -1)))
       }}>
         <ArrowUpwardIcon />
-      </IconButton>
+      </Button>
       {parents.map((e, i) => 
         <React.Fragment key={e}>
           {
@@ -155,7 +165,7 @@ const TopNav = ({
             :
               <NavigateNextIcon style={{ margin: "0 -2px" }}/>
           }
-          <MyButton onClick={() => {
+          <Button onClick={() => {
             dispatch(changeParents(parents.slice(0, i+1)))
           }}>
             {
@@ -166,7 +176,7 @@ const TopNav = ({
               :
                 cache[e].name
             }
-          </MyButton>
+          </Button>
         </React.Fragment>
       )}
     </div>
@@ -176,39 +186,60 @@ const TopNav = ({
         }}>{
       mode == TopNavMode.normal ?
         <React.Fragment>
-          <MyButton edge="left" style={{ float: "left" }}>
+          <Button style={{
+                float: "left",
+                borderRadius: "16px",
+                marginLeft: "6px",
+              }}>
             <MenuIcon />
-          </MyButton>
-          <Typography variant="h6" style={{ flex: 1, userSelect: "none" }}>
+          </Button>
+          <Typography variant="h6" className={classes.title}>
             MyClip
           </Typography>
-          <IconButton onClick={setInputMode}>
+          <Button round onClick={setInputMode}>
             <SearchIcon />
-          </IconButton>
-          <Button
-              style={{ alignSelf: "flex-end" }}
-              variant="contained"
-              color="primary"
-              startIcon={<PersonIcon />}
-              onClick={() => dispatch(signIn())}>
+          </Button>
+          <Button onClick={() => dispatch(signIn())}
+              style={{
+                border: "1px solid rgba(0, 0, 0, 0.5)",
+                marginRight: "16px",
+                borderRadius: "16px",
+              }}>
+            <PersonIcon />
             { signedIn ? "Sign Out" : "Sign In" }
           </Button>
         </React.Fragment> :
       mode == TopNavMode.input ?
-        <ToolBar style={{ background: "#eee" }}>
-          <IconButton edge="start" onClick={setNormalMode}>
+        <div style={{
+              background: "#eee",
+              color: "black",
+              width: "100%",
+              height: "100%",
+              display: "flex",
+            }}>
+          <Button round onClick={ setNormalMode } style={{ flex: "0 0 56px" }}>
             <ArrowBackIcon />
-          </IconButton>
-          <TextField placeholder={placeholder}
+          </Button>
+          <input type="text"
+              placeholder={placeholder}
               value={searchString}
               onChange={(e: React.FormEvent<HTMLInputElement>) => {
                 dispatch(setSearchString(e.currentTarget.value));
               }}
-              style={{ flex: 1 }} margin="dense" />
-          <IconButton edge="end" onClick={setNormalMode}>
+              style={{
+                flex: "1 1 auto",
+                height: "100%",
+                background: "transparent",
+                border: "1px solid rgba(0, 0, 0, 0.15)",
+                padding: "0 2px",
+              }} />
+          <Button round onClick={() => {
+                setNormalMode()
+                console.log("serach:", searchString)
+              }} style={{ flex: "0 0 56px" }}>
             <DoneIcon />
-          </IconButton>
-        </ToolBar> : <div>OH Hello!</div>
+          </Button>
+        </div> : <div>OH Hello!</div>
       }
     </div>
   </React.Fragment>;

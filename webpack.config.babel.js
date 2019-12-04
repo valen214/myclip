@@ -6,10 +6,16 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 
 module.exports = {
   mode: 'development',
-  entry: ['./src/index'],
+  entry: {
+    app: './src/index'
+  },
   output: {
     path: path.join(__dirname, 'dist'),
     filename: 'bundle.js',
+  },
+  devServer: {
+    contentBase: "./dist",
+    hot: true,
   },
   resolve: {
     modules: ['node_modules'],

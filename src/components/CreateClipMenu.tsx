@@ -2,6 +2,7 @@
 //@ts-ignore
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { createUseStyles } from "react-jss";
 
 import { RootState } from "../logic/rootReducer";
 import { signIn } from "../logic/appSlice"
@@ -20,8 +21,6 @@ import {
   setVisible as setOverlayVisible, setContent as setOverlayContent
 } from "../logic/functionalOverlaySlice"
 
-import { makeStyles, Theme, createStyles }
-    from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import Box from "@material-ui/core/Box";
 import Fab from '@material-ui/core/Fab';
@@ -35,11 +34,11 @@ import { TransitionProps } from '@material-ui/core/transitions';
 
 import AddIcon from "@material-ui/icons/Add";
 
-const useStyles = makeStyles((theme: Theme) => createStyles({
+const useStyles = createUseStyles({
   createClipButton: {
     height: "100%",
   }
-}));
+});
 
 const Transition = React.forwardRef<unknown, TransitionProps>(
     (props: any, ref: any) => (<Zoom ref={ref} {...props} />)
