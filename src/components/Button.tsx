@@ -52,6 +52,11 @@ const useStyles = createUseStyles({
         "rgba(255, 255, 255, 0.3) 35%, rgba(255, 255, 255, 0.2) 100%)",
     // background: "repeating-radial-gradient(rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0.3) 80% 82%, rgba(255, 255, 255, 0.8) 82% 84%)",
     opacity: 0,
+
+    "&.focus": {
+      background: "rgba(0, 0, 0, 0.5)",
+      opacity: 1,
+    },
   },
 });
 
@@ -71,8 +76,6 @@ const Button = React.forwardRef(({
   const _ref = React.useRef(null)
   ref = ref || _ref;
 
-  const [ pointerDown, setPointerDown ] = React.useState(false)
-
   const overlayRef = React.useRef(null);
   return <button ref={ref}
       className={classes.button + " " + className}
@@ -82,10 +85,31 @@ const Button = React.forwardRef(({
         ...style,
         ...(round && { borderRadius: "50%" }),
       }}
-      onPointerDown={(e: React.PointerEvent<HTMLElement>) => {
-        setPointerDown(true)
+      onFocus={() => {
+        console.log("on focus")
         let rect = ref.current.getBoundingClientRect(); // parent
-        console.log(e.clientX, rect)
+        Object.assign(overlayRef.current.style, {
+          left: "0px",
+          top: ((rect.height - rect.width) / 2) + "px",
+          transform: "scale(0.25)",
+          transition: "none",
+          opacity: 1,
+        });
+        setTimeout(() => {
+          Object.assign(overlayRef.current.style, {
+            transform: "scale(0.85)",
+            opacity: 0.4,
+            transition: "transform 0.2s, opacity 0.2s",
+          })
+        }, 16);
+        overlayRef.current.classList.add("focus")
+      }}
+      onBlur={() => {
+        overlayRef.current.classList.remove("focus")
+      }}
+
+      onPointerDown={(e: React.PointerEvent<HTMLElement>) => {
+        let rect = ref.current.getBoundingClientRect(); // parent
         Object.assign(overlayRef.current.style, {
           left: (e.clientX - rect.left - rect.width/2) + "px",
           // rect.width instead of height because of the "square padding hack"

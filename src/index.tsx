@@ -35,6 +35,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 
 import { Provider } from "react-redux";
+import { JssProvider } from "react-jss";
 
 import store from "./logic/store";
 
@@ -44,7 +45,9 @@ const rootElem = document.getElementById("app");
 
 const render = (App: React.Component) => (
   <Provider store={store}>
-    <App />
+    <JssProvider>
+      <App />
+    </JssProvider>
   </Provider>
 );
 
