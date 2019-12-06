@@ -38,6 +38,12 @@ const useStyles = createUseStyles({
       // }
     },
     fontFamily: "Consolas",
+    "&:focus": {
+      outline: "none",
+    },
+    "&::-moz-focus-inner": {
+      outline: "none",
+    }
   },
   overlay: {
     display: "inline-block",
@@ -55,6 +61,8 @@ const useStyles = createUseStyles({
 
     "&.focus": {
       background: "rgba(0, 0, 0, 0.5)",
+      transform: "scale(0.25)",
+      transition: "none",
       opacity: 1,
     },
   },
@@ -76,6 +84,8 @@ const Button = React.forwardRef(({
   const _ref = React.useRef(null)
   ref = ref || _ref;
 
+  const [ pointerDown, setPointerDown ] = React.useState(false);
+
   const overlayRef = React.useRef(null);
   return <button ref={ref}
       className={classes.button + " " + className}
@@ -87,13 +97,12 @@ const Button = React.forwardRef(({
       }}
       onFocus={() => {
         console.log("on focus")
+        if(pointerDown) return
         let rect = ref.current.getBoundingClientRect(); // parent
         Object.assign(overlayRef.current.style, {
           left: "0px",
           top: ((rect.height - rect.width) / 2) + "px",
           transform: "scale(0.25)",
-          transition: "none",
-          opacity: 1,
         });
         setTimeout(() => {
           Object.assign(overlayRef.current.style, {
@@ -105,10 +114,19 @@ const Button = React.forwardRef(({
         overlayRef.current.classList.add("focus")
       }}
       onBlur={() => {
+        console.log("on blur")
         overlayRef.current.classList.remove("focus")
+        Object.assign(overlayRef.current.style, {
+          transform: "0",
+          opacity: 0,
+          transition: "none",
+        })
       }}
 
       onPointerDown={(e: React.PointerEvent<HTMLElement>) => {
+        console.log("setPointerDown")
+        setPointerDown(true)
+        overlayRef.current.classList.remove("focus")
         let rect = ref.current.getBoundingClientRect(); // parent
         Object.assign(overlayRef.current.style, {
           left: (e.clientX - rect.left - rect.width/2) + "px",
@@ -119,6 +137,7 @@ const Button = React.forwardRef(({
           opacity: 1,
         });
         setTimeout(() => {
+          setPointerDown(false)
           Object.assign(overlayRef.current.style, {
             transform: "scale(3.0)",
             opacity: 0,
