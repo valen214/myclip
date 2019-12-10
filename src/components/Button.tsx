@@ -42,7 +42,7 @@ const useStyles = createUseStyles({
       outline: "none",
     },
     "&::-moz-focus-inner": {
-      outline: "none",
+      borderStyle: "none",
     }
   },
   overlay: {
@@ -135,6 +135,8 @@ const Button = React.forwardRef(({
           transform: "scale(0.25)",
           transition: "none",
           opacity: 1,
+          outline: 0,
+          "-moz-outline-style": "none",
         });
         setTimeout(() => {
           setPointerDown(false)
@@ -142,6 +144,7 @@ const Button = React.forwardRef(({
             transform: "scale(3.0)",
             opacity: 0,
             transition: "transform 1s, opacity 1s",
+            outline: null,
           })
         }, 16);
       }}>

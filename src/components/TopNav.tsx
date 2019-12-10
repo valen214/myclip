@@ -190,13 +190,16 @@ const TopNav = ({
                 float: "left",
                 borderRadius: "16px",
                 marginLeft: "6px",
+                color: "white",
               }}>
             <MenuIcon />
           </Button>
-          <Typography variant="h6" className={classes.title}>
+          <h2 className={classes.title}>
             MyClip
-          </Typography>
-          <Button round onClick={setInputMode}>
+          </h2>
+          <Button round onClick={setInputMode} style={{
+                color: "white",
+              }}>
             <SearchIcon />
           </Button>
           <Button onClick={() => dispatch(signIn())}
@@ -204,6 +207,8 @@ const TopNav = ({
                 border: "1px solid rgba(0, 0, 0, 0.5)",
                 marginRight: "16px",
                 borderRadius: "16px",
+                padding: "5px 16px",
+                color: "white",
               }}>
             <PersonIcon />
             { signedIn ? "Sign Out" : "Sign In" }
