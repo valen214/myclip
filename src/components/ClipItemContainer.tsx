@@ -76,6 +76,10 @@ const ClipItemContainer = ({
     console.log("%cClipItemContainer list changed", "color: #ada");
   }, [ list ])
 
+  // React.useEffect(() => {
+  //   ref.current.refreshLayout()
+  // }, [ ref, show ]);
+
   React.useLayoutEffect(() => {
     window.addEventListener("resize", resizeListener);
     return () => {
@@ -87,8 +91,8 @@ const ClipItemContainer = ({
   return <div style={{
         position: "absolute",
         width: "100%",
-        display: show ? "block": "none",
-        ...(cols === 1 && { padding: 0 })
+        opacity: show ? "1.0": "0.0",
+        padding: (cols === 1 ? "15px 0 0" : "15px 15px"),
       }}>{
     list.length === 0 ?
     <div style={{

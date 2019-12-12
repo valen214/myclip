@@ -88,7 +88,7 @@ const TopNav = ({
       placeholder = "",
 }: any) => {
   const appBarRef = React.useRef();
-  const [ placeholderHeight, setPlaceholderHeight ] = useState("")
+  const [ placeholderHeight, setPlaceholderHeight ] = useState("56px")
   const dispatch = useDispatch();
   const {
     signedIn
@@ -161,11 +161,14 @@ const TopNav = ({
                 width: 20,
                 borderLeft: "1px solid rgba(0, 0, 0, 0.8)",
                 background: "transparent",
+                color: "white",
               }}></span>
             :
               <NavigateNextIcon style={{ margin: "0 -2px" }}/>
           }
-          <Button onClick={() => {
+          <Button style={{
+            color: "white",
+          }} onClick={() => {
             dispatch(changeParents(parents.slice(0, i+1)))
           }}>
             {
@@ -204,7 +207,7 @@ const TopNav = ({
           </Button>
           <Button onClick={() => dispatch(signIn())}
               style={{
-                border: "1px solid rgba(0, 0, 0, 0.5)",
+                border: "1px solid rgba(255, 255, 255, 0.5)",
                 marginRight: "16px",
                 borderRadius: "16px",
                 padding: "5px 16px",

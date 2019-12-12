@@ -15,6 +15,7 @@ import Button from "./Button";
 
 import CloseIcon from '@material-ui/icons/Close';
 import { createFolder } from "../logic/clipItemSlice";
+import useEventListener from "../lib/use-event-listener";
 
 
 
@@ -26,6 +27,7 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     width: "100%",
     height: "100%",
     pointerEvents: "none",
+    padding: "15px",
   },
   invisible: {
     color: "rgba(0, 0, 0, 0)",
@@ -49,6 +51,13 @@ const FunctionalOverlay = () => {
     dispatch(setContent({ type: "", content: "" }))
   }
 
+  useEventListener("keydown", () => {
+    if(visible){
+      console.log("oh dear")
+      discard()
+    }
+  }, document)
+
   return <React.Fragment>
     <div ref={overlayRef} className={classes.fullscreenOverlay}
         onClick={(e: React.MouseEvent<HTMLElement>) => {
@@ -61,15 +70,17 @@ const FunctionalOverlay = () => {
           background: "rgba(0, 0, 0, 0.2)", 
           pointerEvents: visible ? "all" : "none",
           zIndex: visible ? 1200 : 0,
-        }}>
+        } as React.CSSProperties}>
       {
         type && (
           type.startsWith("image") ?
-          <img src={content} onLoad={(e) => {
+          <img src={content}
+            onLoad={(e) => {
             if(e.target instanceof Image){
               let self = e.target
               console.log("loaded:", self.width, self.height, self)
-              if(self.naturalWidth > self.naturalHeight){
+              // if(self.naturalWidth > self.naturalHeight){
+              if(document.body.clientWidth < document.body.clientHeight){
                 self.style.width = "100%";
                 self.style.height = "auto";
               } else{
@@ -78,10 +89,9 @@ const FunctionalOverlay = () => {
               }
             }
           }} style={{
-            objectFit: "fill",
-            padding: 15,
+            objectFit: "contain",
             margin: "auto",
-          }}></img> :
+          } as React.CSSProperties}></img> :
           type === "create_folder" ?
           <div style={{
             minWidth: "300px",

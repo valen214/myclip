@@ -73,6 +73,7 @@ const useStyles = createUseStyles({
   content: {
     padding: "0 5px 0 5px",
     background: "#dfd", width: "100%",
+    height: "100px",
     maxHeight: "280px", overflow: "hidden",
     display: "inline-block",
   },
